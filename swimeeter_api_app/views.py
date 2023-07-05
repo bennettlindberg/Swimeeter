@@ -23,6 +23,15 @@ class Event_view(APIView):
             return Response({'get_success': False, 'reason': 'invalid \'specific_to\' specification'}, status = status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
+        # ? not logged in
+        if not request.user.is_authenticated:
+            return Response({'post_success': False, 'reason': 'not logged in'}, status = status.HTTP_401_UNAUTHORIZED)
+        
+        # ? not logged in to meet host account
+        meet_host_id = Meet.objects.get(id = request.data['meet_id']).host_id
+        if request.user.id != meet_host_id:
+            return Response({'post_success': False, 'reason': 'not logged in to meet host account'}, status = status.HTTP_403_FORBIDDEN)
+
         try:
             new_event = Event.objects.create(
                 stroke = request.data['stroke'], 
@@ -42,10 +51,19 @@ class Event_view(APIView):
         return Response({'post_success': True, 'data': new_event_JSON})
 
     def delete(self, request):
+        # ? not logged in
+        if not request.user.is_authenticated:
+            return Response({'delete_success': False, 'reason': 'not logged in'}, status = status.HTTP_401_UNAUTHORIZED)
+        
         # ? no event id passed
         if 'event_id' not in request.data:
             return Response({'delete_success': False, 'reason': 'no event id passed'}, status = status.HTTP_400_BAD_REQUEST)
         
+        # ? not logged in to meet host account
+        meet_host_id = Event.objects.get(id = request.data['event_id']).meet.host_id
+        if request.user.id != meet_host_id:
+            return Response({'delete_success': False, 'reason': 'not logged in to meet host account'}, status = status.HTTP_403_FORBIDDEN)
+
         Event.objects.get(id = request.data['event_id']).delete()
         return Response({'delete_success': True})
 
@@ -66,6 +84,15 @@ class Swimmer_view(APIView):
             return Response({'get_success': False, 'reason': 'invalid \'specific_to\' specification'}, status = status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
+        # ? not logged in
+        if not request.user.is_authenticated:
+            return Response({'post_success': False, 'reason': 'not logged in'}, status = status.HTTP_401_UNAUTHORIZED)
+        
+        # ? not logged in to meet host account
+        meet_host_id = Meet.objects.get(id = request.data['meet_id']).host_id
+        if request.user.id != meet_host_id:
+            return Response({'post_success': False, 'reason': 'not logged in to meet host account'}, status = status.HTTP_403_FORBIDDEN)
+
         try:
             new_swimmer = Swimmer.objects.create(
                 first_name = request.data['first_name'], 
@@ -85,10 +112,19 @@ class Swimmer_view(APIView):
         return Response({'post_success': True, 'data': new_swimmer_JSON})
 
     def delete(self, request):
-        # ? no event id passed
+        # ? not logged in
+        if not request.user.is_authenticated:
+            return Response({'delete_success': False, 'reason': 'not logged in'}, status = status.HTTP_401_UNAUTHORIZED)
+        
+        # ? no swimmer id passed
         if 'swimmer_id' not in request.data:
             return Response({'delete_success': False, 'reason': 'no swimmer id passed'}, status = status.HTTP_400_BAD_REQUEST)
         
+        # ? not logged in to meet host account
+        meet_host_id = Swimmer.objects.get(id = request.data['swimmer_id']).meet.host_id
+        if request.user.id != meet_host_id:
+            return Response({'delete_success': False, 'reason': 'not logged in to meet host account'}, status = status.HTTP_403_FORBIDDEN)
+
         Swimmer.objects.get(id = request.data['swimmer_id']).delete()
         return Response({'delete_success': True})
 
@@ -125,6 +161,15 @@ class Entry_view(APIView):
             return Response({'get_success': False, 'reason': 'invalid \'specific_to\' specification'}, status = status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
+        # ? not logged in
+        if not request.user.is_authenticated:
+            return Response({'post_success': False, 'reason': 'not logged in'}, status = status.HTTP_401_UNAUTHORIZED)
+        
+        # ? not logged in to meet host account
+        meet_host_id = Swimmer.objects.get(id = request.data['swimmer_id']).meet.host_id
+        if request.user.id != meet_host_id:
+            return Response({'post_success': False, 'reason': 'not logged in to meet host account'}, status = status.HTTP_403_FORBIDDEN)
+
         try:
             new_entry = Entry.objects.create(
                 seed_time = request.data['seed_time'], 
@@ -141,10 +186,19 @@ class Entry_view(APIView):
         return Response({'post_success': True, 'data': new_entry_JSON})
 
     def delete(self, request):
+        # ? not logged in
+        if not request.user.is_authenticated:
+            return Response({'delete_success': False, 'reason': 'not logged in'}, status = status.HTTP_401_UNAUTHORIZED)
+        
         # ? no entry id passed
         if 'entry_id' not in request.data:
             return Response({'delete_success': False, 'reason': 'no entry id passed'}, status = status.HTTP_400_BAD_REQUEST)
         
+        # ? not logged in to meet host account
+        meet_host_id = Entry.objects.get(id = request.data['entry_id']).swimmer.meet.host_id
+        if request.user.id != meet_host_id:
+            return Response({'delete_success': False, 'reason': 'not logged in to meet host account'}, status = status.HTTP_403_FORBIDDEN)
+
         Entry.objects.get(id = request.data['entry_id']).delete()
         return Response({'delete_success': True})
 
@@ -171,6 +225,10 @@ class Meet_view(APIView):
             return Response({'get_success': False, 'reason': 'invalid \'specific_to\' specification'}, status = status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
+        # ? not logged in
+        if not request.user.is_authenticated:
+            return Response({'post_success': False, 'reason': 'not logged in'}, status = status.HTTP_401_UNAUTHORIZED)
+
         try:
             new_meet = Meet.objects.create(
                 name = request.data['name'], 
@@ -187,10 +245,19 @@ class Meet_view(APIView):
         return Response({'post_success': True, 'data': new_meet_JSON})
 
     def delete(self, request):
+        # ? not logged in
+        if not request.user.is_authenticated:
+            return Response({'delete_success': False, 'reason': 'not logged in'}, status = status.HTTP_401_UNAUTHORIZED)
+        
         # ? no meet id passed
         if 'meet_id' not in request.data:
             return Response({'delete_success': False, 'reason': 'no meet id passed'}, status = status.HTTP_400_BAD_REQUEST)
         
+        # ? not logged in to meet host account
+        meet_host_id = Meet.objects.get(id = request.data['meet_id']).host_id
+        if request.user.id != meet_host_id:
+            return Response({'delete_success': False, 'reason': 'not logged in to meet host account'}, status = status.HTTP_403_FORBIDDEN)
+
         Meet.objects.get(id = request.data['meet_id']).delete()
         return Response({'delete_success': True})
 
