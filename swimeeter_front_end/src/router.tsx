@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "./App.tsx";
+import { App } from "./App.tsx";
 
 import HomePage from "./components/misc_pages/HomePage.tsx";
 import EntryEditPage from "./components/misc_pages/EntryEditPage.tsx";
@@ -25,6 +25,7 @@ import HeatSheetCreationPage from "./components/heat_sheet_pages/HeatSheetCreati
 import HostLogInPage from "./components/host_pages/HostLogInPage.tsx";
 import HostSignUpPage from "./components/host_pages/HostSignUpPage.tsx";
 import HostEditPage from "./components/host_pages/HostEditPage.tsx";
+import HostViewPage from "./components/host_pages/HostViewPage.tsx";
 
 const router = createBrowserRouter([
     {
@@ -112,6 +113,10 @@ const router = createBrowserRouter([
                 path: "host/edit",
                 element: <HostEditPage />,
             },
+            {
+                path: "host/view",
+                element: <HostViewPage />,
+            },
         ],
     },
 ]);
@@ -139,5 +144,6 @@ export default router;
 /host <-- doesn't exist as a page
     /log_in
     /sign_up
+    /view --login only
     /edit [HOST] --login only
 */

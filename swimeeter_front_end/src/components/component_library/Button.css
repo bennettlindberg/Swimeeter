@@ -1,0 +1,15 @@
+.buttonComponent {
+    --font-size: 32px;
+    font-weight: bold;
+
+    display: block;
+    
+    margin: 0;
+    padding: calc(var(--font-size) * 0.3);
+    border: 0;
+    border-radius: 5px;
+}
+
+.buttonComponent:hover {
+    filter: brightness(70%);
+}

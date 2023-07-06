@@ -1,6 +1,6 @@
 from django.db import models
 from django.core import validators
-import validators as v
+from . import validators as v
 from swimeeter_auth_app.models import Host
 
 class Meet(models.Model):

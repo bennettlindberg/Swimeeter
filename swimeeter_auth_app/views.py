@@ -17,8 +17,7 @@ class Log_in(APIView):
         if user is not None and user.is_active:
             login(request, user)
             userJSON = json.loads(serialize("json", [user], fields = ['email', 'first_name', 'last_name']))[0]
-            return Response({
-                'log_in_success': True, 'user': userJSON})
+            return Response({'log_in_success': True, 'user': userJSON})
         else:
             return Response({'log_in_success': False, 'reason': 'account does not exist'}, status = status.HTTP_403_FORBIDDEN)
 
@@ -38,8 +37,7 @@ class Sign_up(APIView):
                                             last_name=request.data['last_name'])
             login(request, user)
             userJSON = json.loads(serialize("json", [user], fields = ['email', 'first_name', 'last_name']))[0]
-            return Response({
-                'sign_up_success': True, 'user': userJSON})
+            return Response({'sign_up_success': True, 'user': userJSON})
 
 class Log_out(APIView):
     def post(self, request):
@@ -93,3 +91,11 @@ class Delete_account(APIView):
         # ? not logged into account requested to be deleted
         else:
             return Response({'delete_success': False, 'reason': 'not logged into account requested to be deleted'}, status = status.HTTP_403_FORBIDDEN)
+
+class Init_check(APIView):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return Response({'get_success': False, 'reason': 'back end not logged in'})
+        else:
+            userJSON = json.loads(serialize("json", [request.user], fields = ['email', 'first_name', 'last_name']))[0]
+            return Response({'get_success': True, 'user': userJSON})
