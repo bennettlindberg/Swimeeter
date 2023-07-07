@@ -1,5 +1,6 @@
 from rest_framework.views import APIView, Response
 from rest_framework import status
+from django.core.exceptions import ValidationError
 
 from django.core.serializers import serialize
 import json
@@ -35,6 +36,13 @@ class Sign_up(APIView):
                                             password=request.data['password'],
                                             first_name=request.data['first_name'],
                                             last_name=request.data['last_name'])
+            
+            try:
+                user.full_clean()
+            except ValidationError as v:
+                user.delete()
+                return Response({'sign_up_success': False, 'reason': '; '.join(v.messages)}, status = status.HTTP_400_BAD_REQUEST)
+
             login(request, user)
             userJSON = json.loads(serialize("json", [user], fields = ['email', 'first_name', 'last_name']))[0]
             return Response({'sign_up_success': True, 'user': userJSON})
@@ -61,17 +69,20 @@ class Update_account(APIView):
                 if 'first_name' in request.data:
                     requested_host.first_name = request.data['first_name']
                 if 'last_name' in request.data:
-                    requested_host.first_name = request.data['last_name']
+                    requested_host.last_name = request.data['last_name']
                 
                 requested_host.full_clean()
                 requested_host.save()
+            except ValidationError as v:
+                # ? cleaning input failed
+                return Response({'put_success': False, 'reason': 'invalid update data passed'}, status = status.HTTP_400_BAD_REQUEST)
             except:
                 # ? invalid update data passed
                 return Response({'put_success': False, 'reason': 'invalid update data passed'}, status = status.HTTP_400_BAD_REQUEST)
 
             updated_host = Host.objects.get(id = request.data['host_id'])
             updated_host_JSON = json.loads(serialize("json", [updated_host], fields = ['email', 'first_name', 'last_name']))[0]
-            return Response({'put_success': True, 'data': updated_host_JSON})
+            return Response({'put_success': True, 'user': updated_host_JSON})
         
         # ? not logged into account requested to be edited
         else:

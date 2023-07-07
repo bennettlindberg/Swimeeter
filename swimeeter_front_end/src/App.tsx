@@ -44,6 +44,10 @@ export function App() {
     setCSRFHeader();
 
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [navItems, setNavItems] = useState<navItem[]>([{text: 'Home', route: '/'}]);
+    const [navSelected, setNavSelected] = useState<boolean>(false);
+
+    const navigate = useNavigate();
 
     // log in the user on the front-end if session data maintained the user's log in on the back-end
     useEffect(() => {
@@ -61,11 +65,6 @@ export function App() {
             // ? not logged in on the back-end: silently fail
         })
     }, []);
-
-    const [navItems, setNavItems] = useState<navItem[]>([{text: 'Home', route: '/'}]);
-    const [navSelected, setNavSelected] = useState<boolean>(false);
-
-    const navigate = useNavigate();
 
     return (
         <>

@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
-import { SetUserContext, UserContext } from "../../App.tsx";
+import { SetNavContext, SetUserContext, UserContext } from "../../App.tsx";
 import { useContext } from 'react';
 import axios from 'axios';
 import { NavigateFunction, useNavigate } from "react-router-dom";
-
 import type { User } from '../../App.tsx';
 
 async function handleSignUp(
@@ -55,7 +54,7 @@ async function handleSignUp(
         if (axios.isAxiosError(error)) {
             console.error(error.response?.data.reason);
         } else {
-            console.error('an unknown error occurred');
+            console.error(error);
         }
     }
 }
@@ -65,6 +64,15 @@ function HostSignUpPage() {
     const setCurrentUser = useContext(SetUserContext);
 
     const navigate = useNavigate();
+
+    // update nav bar
+    const setNavItems = useContext(SetNavContext);
+    if (setNavItems) {
+        setNavItems([
+            {text: 'Home', route: '/'},
+            {text: 'Sign up', route: '/host/sign_up'}
+        ]);
+    }
 
     return (
         <>
@@ -81,7 +89,7 @@ function HostSignUpPage() {
                 <input id = 'email-field' type = 'email'></input>
                 <label htmlFor = 'password-field'>Password: </label>
                 <input id = 'password-field' type = 'password'></input>
-                <input type='submit' value='Log in'></input>
+                <input type='submit' value='Sign up'></input>
             </form>
             <p>Already have an account? <Link to='/host/log_in'>Log in</Link>.</p>
         </>

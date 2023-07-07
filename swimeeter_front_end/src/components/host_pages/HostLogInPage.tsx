@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
-import { SetUserContext, UserContext } from "../../App.tsx";
+import { SetNavContext, SetUserContext, UserContext } from "../../App.tsx";
 import { useContext } from 'react';
 import axios from 'axios';
 import { NavigateFunction, useNavigate } from "react-router-dom";
-
 import type { User } from '../../App.tsx';
 
 async function handleLogIn(
@@ -31,7 +30,7 @@ async function handleLogIn(
 
     try {
         const response = await axios.post('/auth/log_in/', {'email': emailInputValue, 'password': passwordInputValue});
-        console.log(response.data)
+        
         setCurrentUser({
             id: response.data.user.pk, 
             first_name: response.data.user.fields.first_name,
@@ -44,7 +43,7 @@ async function handleLogIn(
         if (axios.isAxiosError(error)) {
             console.error(error.response?.data.reason);
         } else {
-            console.error('an unknown error occurred');
+            console.error(error);
         }
     }
 }
@@ -54,6 +53,15 @@ function HostLogInPage() {
     const setCurrentUser = useContext(SetUserContext);
 
     const navigate = useNavigate();
+
+    // update nav bar
+    const setNavItems = useContext(SetNavContext);
+    if (setNavItems) {
+        setNavItems([
+            {text: 'Home', route: '/'},
+            {text: 'Log in', route: '/host/log_in'}
+        ]);
+    }
 
     return (
         <>
