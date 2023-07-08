@@ -17,7 +17,6 @@ export default async function handleLogOut(
         const response = await axios.post('/auth/log_out/');
         
         setCurrentUser(null);
-        navigate(-1); // route to where user came from
     } catch (error) {
         // ? log out failed on the back-end
         if (axios.isAxiosError(error)) {

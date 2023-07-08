@@ -2,13 +2,13 @@ from django.urls import path
 from .views import Event_view, Swimmer_view, Entry_view, Meet_view, Heat_view, Heat_assignment_view, Heat_sheet_view
 
 urlpatterns = [
-    path('event/', Event_view.as_view()),
-    path('swimmer/', Swimmer_view.as_view()),
-    path('entry/', Entry_view.as_view()),
-    path('meet/', Meet_view.as_view()),
-    path('heat/', Heat_view.as_view()),
-    path('assignment/', Heat_assignment_view.as_view()),
-    path('heat_sheet/', Heat_sheet_view.as_view()),
+    path('events/', Event_view.as_view()),
+    path('swimmers/', Swimmer_view.as_view()),
+    path('entries/', Entry_view.as_view()),
+    path('meets/', Meet_view.as_view()),
+    path('heats/', Heat_view.as_view()),
+    path('assignments/', Heat_assignment_view.as_view()),
+    path('heat_sheets/', Heat_sheet_view.as_view()),
 ]
 
 # ! HOST

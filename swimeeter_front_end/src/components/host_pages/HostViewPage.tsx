@@ -10,7 +10,7 @@ export default function HostViewPage() {
     const navigate = useNavigate();
 
     if (currentUser == null) {
-        navigate(-1);
+        navigate('/host/log_in', {state: {forward_to: '/host/view'}});
         return;
     }
 

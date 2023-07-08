@@ -140,7 +140,7 @@ export default router;
             /generate --login only
         /entries/:entry_id/edit [ENTRY] --login only
         /edit [MEET] --login only
-    /create
+    /create --login only
 /host <-- doesn't exist as a page
     /log_in
     /sign_up
