@@ -1,0 +1,12 @@
+#data-row-container {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.even {
+    background-color: lightgray;
+}
+
+.odd {
+    background-color: white;
+}

@@ -1,5 +1,5 @@
 import './App.css'
-import NavSelection from './components/component_library/NavSelection.tsx'
+import NavSelection from './components/misc_pages/NavSelection.tsx'
 import { useState, useEffect, createContext } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';

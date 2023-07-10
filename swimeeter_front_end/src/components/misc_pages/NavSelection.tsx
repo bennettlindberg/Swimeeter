@@ -1,7 +1,7 @@
 import { SetUserContext, UserContext } from "../../App.tsx";
 import { useContext } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import handleLogOut from "./LogOutHandler.tsx";
+import handleLogOut from "../host_pages/LogOutHandler.tsx";
 
 export default function NavSelection({ setHeaderSelect }: { setHeaderSelect: React.Dispatch<React.SetStateAction<boolean>> }) {
     const currentUser = useContext(UserContext);

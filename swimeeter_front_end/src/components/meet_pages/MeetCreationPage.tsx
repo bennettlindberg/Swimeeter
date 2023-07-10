@@ -1,10 +1,9 @@
 import { SetNavContext, UserContext } from "../../App.tsx";
 import { useContext } from 'react';
 import axios from 'axios';
-import type { User } from '../../App.tsx';
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
-async function handleMeetCreation(currentUser: User, navigate: NavigateFunction) {
+async function handleMeetCreation(navigate: NavigateFunction) {
     const nameInputField = document.getElementById('name-field') as HTMLInputElement;
     const nameInputValue = nameInputField.value;
 
@@ -34,7 +33,6 @@ async function handleMeetCreation(currentUser: User, navigate: NavigateFunction)
 
     try {
         const response = await axios.post('/api/v1/meets/', {
-            host_id: currentUser.id,
             name: nameInputValue,
             lanes: lanesInputValue,
             measure_unit: unitsInputValue
@@ -70,13 +68,14 @@ export default function MeetCreationPage() {
             { text: 'Create meet', route: '/meets/create' }
         ]);
     }
+
     return (
         <>
             <h1>Create meet</h1>
 
             <form onSubmit={(event) => {
                 event.preventDefault();
-                handleMeetCreation(currentUser, navigate);
+                handleMeetCreation(navigate);
             }}>
                 <p>Meet information</p>
                 <label htmlFor='name-field'>Meet name: </label>

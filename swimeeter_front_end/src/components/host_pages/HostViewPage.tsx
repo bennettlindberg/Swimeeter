@@ -1,7 +1,7 @@
 import { SetNavContext, SetUserContext, UserContext } from "../../App.tsx";
 import { useContext } from 'react';
 import { useNavigate } from "react-router-dom";
-import handleLogOut from "../component_library/LogOutHandler.tsx";
+import handleLogOut from "./LogOutHandler.tsx";
 
 export default function HostViewPage() {
     const currentUser = useContext(UserContext);

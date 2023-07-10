@@ -12,10 +12,12 @@ import MeetCreationPage from "./components/meet_pages/MeetCreationPage.tsx";
 import EventsListPage from "./components/event_pages/EventsListPage.tsx";
 import EventPage from "./components/event_pages/EventPage.tsx";
 import EventEditPage from "./components/event_pages/EventEditPage.tsx";
+import EventCreationPage from "./components/event_pages/EventCreationPage.tsx";
 
 import SwimmersListPage from "./components/swimmer_pages/SwimmersListPage.tsx";
 import SwimmerPage from "./components/swimmer_pages/SwimmerPage.tsx";
 import SwimmerEditPage from "./components/swimmer_pages/SwimmerEditPage.tsx";
+import SwimmerCreationPage from "./components/swimmer_pages/SwimmerCreationPage.tsx";
 
 import HeatSheetPage from "./components/heat_sheet_pages/HeatSheetPage.tsx";
 import HeatSheetEventPage from "./components/heat_sheet_pages/HeatSheetEventPage.tsx";
@@ -50,12 +52,13 @@ const router = createBrowserRouter([
                 element: <MeetEditPage />,
             },
             {
-                path: "meets/:meet_id/entries/:entry_id/edit",
-                element: <EntryEditPage />,
-            },
-            {
                 path: "meets/create",
                 element: <MeetCreationPage />,
+            },
+            // * MEET ENTRIES
+            {
+                path: "meets/:meet_id/entries/:entry_id/edit",
+                element: <EntryEditPage />,
             },
             // * MEET EVENTS
             {
@@ -70,6 +73,10 @@ const router = createBrowserRouter([
                 path: "meets/:meet_id/events/:event_id/edit",
                 element: <EventEditPage />,
             },
+            {
+                path: "meets/:meet_id/events/create",
+                element: <EventCreationPage />,
+            },
             // * MEET SWIMMERS
             {
                 path: "meets/:meet_id/swimmers",
@@ -82,6 +89,10 @@ const router = createBrowserRouter([
             {
                 path: "meets/:meet_id/swimmers/:swimmer_id/edit",
                 element: <SwimmerEditPage />,
+            },
+            {
+                path: "meets/:meet_id/swimmers/create",
+                element: <SwimmerCreationPage />,
             },
             // * MEET HEAT SHEET
             {
