@@ -1,6 +1,7 @@
 #data-row-container {
     display: flex;
     flex-flow: row nowrap;
+    column-gap: 50px;
 }
 
 .even {
@@ -9,4 +10,8 @@
 
 .odd {
     background-color: white;
+}
+
+.owner {
+    background-color: lightskyblue;
 }

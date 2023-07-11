@@ -1,14 +1,10 @@
-import './DataRow.css'
+import './DataRow.css';
+import { ReactNode } from 'react';
 
-type RowEntry = {
-    count: number,
-    data: JSX.Element[]
-}
-
-export default function DataRow({ rowEntryData }: { rowEntryData: RowEntry }) {
+export default function DataRow({ kind, children }: { kind: string, children: ReactNode }) {
     return (
-        <div id="data-row-container" className={rowEntryData.count % 2 === 0 ? "even" : "odd"}>
-            {...rowEntryData.data}
+        <div id="data-row-container" className={kind}>
+            {children}
         </div>
     )
 }

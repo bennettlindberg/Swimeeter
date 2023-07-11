@@ -1,5 +1,5 @@
 import { SetNavContext, UserContext } from "../../App.tsx";
-import type MeetData from "./MeetDataType.tsx";
+import type { MeetData } from "../ModelTypes.tsx";
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
@@ -47,7 +47,7 @@ async function handleMeetEdit(navigate: NavigateFunction, meet_id_int: number) {
         // lanes: all heat sheet data
         // units, name: nothing
 
-        navigate(`/meets/${response.data.meet.pk}`)
+        navigate(`/meets/${response.data.data.pk}`)
     } catch (error) {
         // ? meet creation failed on the back-end
         if (axios.isAxiosError(error)) {
@@ -75,15 +75,8 @@ export default function MeetEditPage() {
 
     // retrieve initial meet data
     useEffect(() => {
-        axios.get('/api/meets/', { params: {specific_to: 'id', meet_id: meet_id_int } })
-            .then(response => {
-                setMeetInfo({
-                    name: response.data.name,
-                    lanes: response.data.lanes,
-                    measure_unit: response.data.measure_unit,
-                    host_id: response.data.host
-                });
-            })
+        axios.get('/api/v1/meets/', { params: {specific_to: 'id', meet_id: meet_id_int } })
+            .then(response => setMeetInfo(response.data.data))
             .catch(error => {
                 // ? get request failed on the back-end
                 if (axios.isAxiosError(error)) {
@@ -98,7 +91,7 @@ export default function MeetEditPage() {
     // log in checking
     if (meetInfo == null) {
         ; // ! ignore log in check when meet info is null
-    } else if (currentUser == null || currentUser.id !== meetInfo.host_id) {
+    } else if (currentUser == null || currentUser.id !== meetInfo.fields.host) {
         navigate('/host/log_in', { state: { forward_to: `/meets/${meet_id_int}/edit` } });
         return;
     }
@@ -109,7 +102,7 @@ export default function MeetEditPage() {
         setNavItems([
             { text: 'Home', route: '/' },
             { text: 'Meets', route: '/meets' },
-            { text: `Edit ${meetInfo ? meetInfo.name : "Meet"}`, route: `/meets/${meet_id_int}/edit` }
+            { text: `Edit ${meetInfo ? meetInfo.fields.name : "Meet"}`, route: `/meets/${meet_id_int}/edit` }
         ]);
     }
 
@@ -123,48 +116,48 @@ export default function MeetEditPage() {
             }}>
                 <p>Meet information</p>
                 <label htmlFor='name-field'>Meet name: </label>
-                <input id='name-field' type='text' value={meetInfo ? meetInfo.name : ""}></input>
+                <input id='name-field' type='text' value={meetInfo ? meetInfo.fields.name : ""}></input>
 
                 <p>Pool information</p>
                 <label htmlFor='lanes-field'>Number of pool lanes: </label>
                 <select id="lanes-field">
                     <option value="3" selected={
-                        meetInfo && meetInfo.lanes === 3 ? true : false
+                        meetInfo && meetInfo.fields.lanes === 3 ? true : false
                     }>3</option>
                     <option value="4" selected={
-                        meetInfo && meetInfo.lanes === 4 ? true : false
+                        meetInfo && meetInfo.fields.lanes === 4 ? true : false
                     }>4</option>
                     <option value="5" selected={
-                        meetInfo && meetInfo.lanes === 5 ? true : false
+                        meetInfo && meetInfo.fields.lanes === 5 ? true : false
                     }>5</option>
                     <option value="6" selected={
-                        meetInfo && meetInfo.lanes === 6 ? true : false
+                        meetInfo && meetInfo.fields.lanes === 6 ? true : false
                     }>6</option>
                     <option value="7" selected={
-                        meetInfo && meetInfo.lanes === 7 ? true : false
+                        meetInfo && meetInfo.fields.lanes === 7 ? true : false
                     }>7</option>
                     <option value="8" selected={
-                        meetInfo && meetInfo.lanes === 8 ? true : false
+                        meetInfo && meetInfo.fields.lanes === 8 ? true : false
                     }>8</option>
                     <option value="9" selected={
-                        meetInfo && meetInfo.lanes === 9 ? true : false
+                        meetInfo && meetInfo.fields.lanes === 9 ? true : false
                     }>9</option>
                     <option value="10" selected={
-                        meetInfo && meetInfo.lanes === 10 ? true : false
+                        meetInfo && meetInfo.fields.lanes === 10 ? true : false
                     }>10</option>
                 </select>
 
                 <label htmlFor='units-field'>Pool measuring units: </label>
                 <select id="units-field">
                     <option value="meters" selected={
-                        meetInfo && meetInfo.measure_unit === 'meters' ? true : false
+                        meetInfo && meetInfo.fields.measure_unit === 'meters' ? true : false
                     }>{'Meters (m)'}</option>
                     <option value="yards" selected={
-                        meetInfo && meetInfo.measure_unit === 'yards' ? true : false
+                        meetInfo && meetInfo.fields.measure_unit === 'yards' ? true : false
                     }>{'Yards (yd)'}</option>
                 </select>
 
-                <input type='submit' value='Create' disabled={
+                <input type='submit' value='Save changes' disabled={
                     meetInfo ? false : true
                 }></input>
             </form>

@@ -38,7 +38,7 @@ async function handleMeetCreation(navigate: NavigateFunction) {
             measure_unit: unitsInputValue
         });
 
-        navigate(`/meets/${response.data.meet.pk}`)
+        navigate(`/meets/${response.data.data.pk}`)
     } catch (error) {
         // ? meet creation failed on the back-end
         if (axios.isAxiosError(error)) {

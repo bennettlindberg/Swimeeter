@@ -1,5 +1,5 @@
 import { SetNavContext, UserContext } from "../../App.tsx";
-import type MeetData from "./MeetDataType.tsx";
+import type { MeetData } from "../ModelTypes.tsx";
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
@@ -20,17 +20,10 @@ export default function MeetPage() {
         meet_id_int = parseInt(meet_id);
     }
 
-    // retrieve initial meet data
+    // retrieve meet data
     useEffect(() => {
-        axios.get('/api/meets/', { params: { specific_to: 'id', meet_id: meet_id_int } })
-            .then(response => {
-                setMeetInfo({
-                    name: response.data.name,
-                    lanes: response.data.lanes,
-                    measure_unit: response.data.measure_unit,
-                    host_id: response.data.host
-                });
-            })
+        axios.get('/api/v1/meets/', { params: { specific_to: 'id', meet_id: meet_id_int } })
+            .then(response => setMeetInfo(response.data.data))
             .catch(error => {
                 // ? get request failed on the back-end
                 if (axios.isAxiosError(error)) {
@@ -42,11 +35,11 @@ export default function MeetPage() {
     }, []);
 
     // check if viewer is meet host
-    if (currentUser && meetInfo && currentUser.id === meetInfo.host_id) {
-        setViewerIsHost(true);
-    } else {
-        setViewerIsHost(false);
-    }
+    useEffect(() => {
+        if (currentUser && meetInfo && currentUser.id === meetInfo.fields.host) {
+            setViewerIsHost(true);
+        }
+    }, [meetInfo]);
 
     // update nav bar
     const setNavItems = useContext(SetNavContext);
@@ -54,20 +47,20 @@ export default function MeetPage() {
         setNavItems([
             { text: 'Home', route: '/' },
             { text: 'Meets', route: '/meets' },
-            { text: `${meetInfo ? meetInfo.name : "Meet"}`, route: `/meets/${meet_id_int}` },
+            { text: `${meetInfo ? meetInfo.fields.name : "Meet"}`, route: `/meets/${meet_id_int}` },
         ]);
     }
 
     return (
         <>
-            <h1>`${meetInfo ? meetInfo.name : "Meet"}`</h1>
+            <h1>{`${meetInfo ? meetInfo.fields.name : "Meet"}`}</h1>
             {viewerIsHost &&
                 <p>You are the host of this meet</p>
             }
 
             <p>Pool information</p>
-            <p>Number of pool lanes: {meetInfo ? meetInfo.lanes : "Unknown"}</p>
-            <p>Pool measuring units: {meetInfo ? meetInfo.measure_unit : "Unknown"}</p>
+            <p>Number of pool lanes: {meetInfo ? meetInfo.fields.lanes : "Unknown"}</p>
+            <p>Pool measuring units: {meetInfo ? meetInfo.fields.measure_unit : "Unknown"}</p>
 
             {viewerIsHost &&
                 <button onClick={() => navigate(`/meets/${meet_id_int}/edit`)}>Edit meet</button>
