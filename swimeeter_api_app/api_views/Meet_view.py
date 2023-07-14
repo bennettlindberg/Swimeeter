@@ -7,6 +7,7 @@ import json
 from ..models import Meet
 from swimeeter_auth_app.models import Host
 
+
 class Meet_view(APIView):
     def get(self, request):
         specific_to = request.query_params.get("specific_to")
@@ -26,9 +27,10 @@ class Meet_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                meet_of_id = Meet.objects.get(id=meet_id)
-                # ? no meet with the given id exists
-                if meet_of_id is None:
+                try:
+                    meet_of_id = Meet.objects.get(id=meet_id)
+                except:
+                    # ? no meet with the given id exists
                     return Response(
                         {
                             "get_success": False,
@@ -37,6 +39,7 @@ class Meet_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                # * get meet JSON
                 meet_of_id_JSON = json.loads(
                     serialize(
                         "json",
@@ -49,6 +52,16 @@ class Meet_view(APIView):
                         ],
                     )
                 )[0]
+
+                # * get FK host JSON
+                meet_of_id__host = Host.objects.get(id=meet_of_id.host_id)
+                meet_of_id__host_JSON = json.loads(
+                    serialize(
+                        "json", [meet_of_id__host], fields=["first_name", "last_name"]
+                    )
+                )[0]
+                meet_of_id_JSON["fields"]["host"] = meet_of_id__host_JSON
+
                 return Response({"get_success": True, "data": meet_of_id_JSON})
 
             case "host":
@@ -60,9 +73,10 @@ class Meet_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                host_of_id = Host.objects.get(id=host_id)
-                # ? no meet with the given id exists
-                if host_of_id is None:
+                try:
+                    host_of_id = Host.objects.get(id=host_id)
+                except:
+                    # ? no host with the given id exists
                     return Response(
                         {
                             "post_success": False,
@@ -71,7 +85,10 @@ class Meet_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                meets_of_host = Meet.objects.filter(host_id=host_id)[lower_bound:upper_bound]
+                # * get meets JSON
+                meets_of_host = Meet.objects.filter(host_id=host_id)[
+                    lower_bound:upper_bound
+                ]
                 meets_of_host_JSON = json.loads(
                     serialize(
                         "json",
@@ -84,9 +101,18 @@ class Meet_view(APIView):
                         ],
                     )
                 )
+
+                # * get FK host JSON
+                meets_of_host__host_JSON = json.loads(
+                    serialize("json", [host_of_id], fields=["first_name", "last_name"])
+                )[0]
+                for meet_JSON in meets_of_host_JSON:
+                    meet_JSON["fields"]["host"] = meets_of_host__host_JSON
+
                 return Response({"get_success": True, "data": meets_of_host_JSON})
 
             case "all":
+                # * get meets JSON
                 meets_of_all = Meet.objects.all()[lower_bound:upper_bound]
                 meets_of_all_JSON = json.loads(
                     serialize(
@@ -100,6 +126,17 @@ class Meet_view(APIView):
                         ],
                     )
                 )
+
+                # * get FK hosts JSON
+                for meet_JSON in meets_of_all_JSON:
+                    meet__host = Host.objects.get(id=meet_JSON["fields"]["host"])
+                    meet__host_JSON = json.loads(
+                        serialize(
+                            "json", [meet__host], fields=["first_name", "last_name"]
+                        )
+                    )[0]
+                    meet_JSON["fields"]["host"] = meet__host_JSON
+
                 return Response({"get_success": True, "data": meets_of_all_JSON})
 
             # ? invalid 'specific_to' specification
@@ -161,9 +198,10 @@ class Meet_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        meet_of_id = Meet.objects.get(id=meet_id)
-        # ? no meet with the given id exists
-        if meet_of_id is None:
+        try:
+            meet_of_id = Meet.objects.get(id=meet_id)
+        except:
+            # ? no meet with the given id exists
             return Response(
                 {"put_success": False, "reason": "no meet with the given id exists"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -229,9 +267,10 @@ class Meet_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        meet_of_id = Meet.objects.get(id=meet_id)
-        # ? no meet with the given id exists
-        if meet_of_id is None:
+        try:
+            meet_of_id = Meet.objects.get(id=meet_id)
+        except:
+            # ? no meet with the given id exists
             return Response(
                 {"delete_success": False, "reason": "no meet with the given id exists"},
                 status=status.HTTP_400_BAD_REQUEST,

@@ -54,6 +54,8 @@ export default function MeetListPage() {
         getNextTenResults();
     }, []);
 
+    // TODO: MAKE BACK-END API ENDPOINTS RETURN FK DATA AUTOMATICALLY!!!!!!!
+
     // // retrieve data for all meet hosts
     // useEffect(() => {
     //     if (allMeetsInfo == null) {
@@ -96,7 +98,7 @@ export default function MeetListPage() {
                     <DataRow kind={
                         currentUser && currentUser.id === meet.fields.host
                             ? "owner"
-                            : index % 2 == 0
+                            : index % 2 === 0
                                 ? "even"
                                 : "odd"
                     }>

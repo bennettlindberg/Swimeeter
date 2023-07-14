@@ -4,7 +4,8 @@ from rest_framework import status
 from django.core.serializers import serialize
 import json
 
-from ..models import Heat, HeatLaneAssignment
+from ..models import Heat, HeatLaneAssignment, Entry
+
 
 class Heat_assignment_view(APIView):
     def get(self, request):
@@ -21,9 +22,10 @@ class Heat_assignment_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                heat_of_id = Heat.objects.get(id=heat_id)
-                # ? no heat with the given id exists
-                if heat_of_id is None:
+                try:
+                    heat_of_id = Heat.objects.get(id=heat_id)
+                except:
+                    # ? no heat with the given id exists
                     return Response(
                         {
                             "get_success": False,
@@ -32,6 +34,7 @@ class Heat_assignment_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                # * get assignments JSON
                 assignments_of_meet_event_heat = HeatLaneAssignment.objects.filter(
                     heat_id=heat_id
                 )
@@ -46,6 +49,39 @@ class Heat_assignment_view(APIView):
                         ],
                     )
                 )[0]
+
+                # * get FK heat JSON
+                assignments_of_meet_event_heat__heat_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [heat_of_id],
+                        fields=[
+                            "order_in_event",
+                            "event",
+                        ],
+                    )
+                )[0]
+                for assignment_JSON in assignments_of_meet_event_heat_JSON:
+                    assignment_JSON["fields"][
+                        "heat"
+                    ] = assignments_of_meet_event_heat__heat_JSON
+
+                # * get FK entries JSON
+                for assignment_JSON in assignments_of_meet_event_heat_JSON:
+                    assignment_of_meet_event_heat__entry = Entry.objects.get(
+                        id=assignment_JSON["fields"]["entry"]
+                    )
+                    assignment_of_meet_event_heat__entry_JSON = json.loads(
+                        serialize(
+                            "json",
+                            [assignment_of_meet_event_heat__entry],
+                            fields=["seed_time", "swimmer", "event"],
+                        )
+                    )[0]
+                    assignment_JSON["fields"][
+                        "entry"
+                    ] = assignment_of_meet_event_heat__entry_JSON
+
                 return Response(
                     {
                         "get_success": True,

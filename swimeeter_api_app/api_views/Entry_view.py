@@ -6,6 +6,7 @@ import json
 
 from ..models import Event, Swimmer, Entry
 
+
 class Entry_view(APIView):
     def get(self, request):
         specific_to = request.query_params.get("specific_to")
@@ -25,9 +26,10 @@ class Entry_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                entry_of_id = Entry.objects.get(id=entry_id)
-                # ? no entry with the given id exists
-                if entry_of_id is None:
+                try:
+                    entry_of_id = Entry.objects.get(id=entry_id)
+                except:
+                    # ? no entry with the given id exists
                     return Response(
                         {
                             "get_success": False,
@@ -36,6 +38,7 @@ class Entry_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                # * get entry JSON
                 entry_of_id_JSON = json.loads(
                     serialize(
                         "json",
@@ -43,6 +46,43 @@ class Entry_view(APIView):
                         fields=["seed_time", "swimmer", "event"],
                     )
                 )[0]
+
+                # * get FK swimmer JSON
+                entry_of_id__swimmer = Swimmer.objects.get(id=entry_of_id.swimmer_id)
+                entry_of_id__swimmer_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [entry_of_id__swimmer],
+                        fields=[
+                            "first_name",
+                            "last_name",
+                            "age",
+                            "gender",
+                            "team",
+                            "meet",
+                        ],
+                    )
+                )[0]
+                entry_of_id_JSON["fields"]["swimmer"] = entry_of_id__swimmer_JSON
+
+                # * get FK event JSON
+                entry_of_id__event = Event.objects.get(id=entry_of_id.event_id)
+                entry_of_id__event_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [entry_of_id__event],
+                        fields=[
+                            "stroke",
+                            "distance",
+                            "competing_gender",
+                            "competing_max_age",
+                            "competing_min_age",
+                            "meet",
+                        ],
+                    )
+                )[0]
+                entry_of_id_JSON["fields"]["event"] = entry_of_id__event_JSON
+
                 return Response({"get_success": True, "data": entry_of_id_JSON})
 
             case "meet_event":
@@ -54,9 +94,10 @@ class Entry_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                event_of_id = Event.objects.get(id=event_id)
-                # ? no event with the given id exists
-                if event_of_id is None:
+                try:
+                    event_of_id = Event.objects.get(id=event_id)
+                except:
+                    # ? no event with the given id exists
                     return Response(
                         {
                             "post_success": False,
@@ -65,7 +106,10 @@ class Entry_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                entries_of_meet_event = Entry.objects.filter(event_id=event_id)[lower_bound:upper_bound]
+                # * get entries JSON
+                entries_of_meet_event = Entry.objects.filter(event_id=event_id)[
+                    lower_bound:upper_bound
+                ]
                 entries_of_meet_event_JSON = json.loads(
                     serialize(
                         "json",
@@ -73,6 +117,44 @@ class Entry_view(APIView):
                         fields=["seed_time", "swimmer", "event"],
                     )
                 )
+
+                # * get FK event JSON
+                entries_of_meet_event__event_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [event_of_id],
+                        fields=[
+                            "stroke",
+                            "distance",
+                            "competing_gender",
+                            "competing_max_age",
+                            "competing_min_age",
+                            "meet",
+                        ],
+                    )
+                )[0]
+                for entry_JSON in entries_of_meet_event_JSON:
+                    entry_JSON["fields"]["event"] = entries_of_meet_event__event_JSON
+
+                # * get FK swimmers JSON
+                for entry_JSON in entries_of_meet_event_JSON:
+                    entry_of_meet_event__swimmer = Swimmer.objects.get(id=entry_JSON["fields"]["swimmer"])
+                    entry_of_meet_event__swimmer_JSON = json.loads(
+                        serialize(
+                            "json",
+                            [entry_of_meet_event__swimmer],
+                            fields=[
+                                "first_name",
+                                "last_name",
+                                "age",
+                                "gender",
+                                "team",
+                                "meet",
+                            ],
+                        )
+                    )[0]
+                    entry_JSON["fields"]["swimmer"] = entry_of_meet_event__swimmer_JSON
+
                 return Response(
                     {"get_success": True, "data": entries_of_meet_event_JSON}
                 )
@@ -86,9 +168,10 @@ class Entry_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                swimmer_of_id = Swimmer.objects.get(id=swimmer_id)
-                # ? no swimmer with the given id exists
-                if swimmer_of_id is None:
+                try:
+                    swimmer_of_id = Swimmer.objects.get(id=swimmer_id)
+                except:
+                    # ? no swimmer with the given id exists
                     return Response(
                         {
                             "post_success": False,
@@ -97,7 +180,10 @@ class Entry_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                entries_of_meet_swimmer = Entry.objects.filter(swimmer_id=swimmer_id)[lower_bound:upper_bound]
+                # * get entries JSON
+                entries_of_meet_swimmer = Entry.objects.filter(swimmer_id=swimmer_id)[
+                    lower_bound:upper_bound
+                ]
                 entries_of_meet_swimmer_JSON = json.loads(
                     serialize(
                         "json",
@@ -105,6 +191,44 @@ class Entry_view(APIView):
                         fields=["seed_time", "swimmer", "event"],
                     )
                 )
+
+                # * get FK swimmer JSON
+                entries_of_meet_swimmer__swimmer_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [swimmer_of_id],
+                        fields=[
+                            "first_name",
+                            "last_name",
+                            "age",
+                            "gender",
+                            "team",
+                            "meet",
+                        ],
+                    )
+                )[0]
+                for entry_JSON in entries_of_meet_swimmer_JSON:
+                    entry_JSON["fields"]["swimmer"] = entries_of_meet_swimmer__swimmer_JSON
+
+                # * get FK entries JSON
+                for entry_JSON in entries_of_meet_swimmer_JSON:
+                    entries_of_meet_swimmer__event = Event.objects.get(id=entry_JSON["fields"]["event"])
+                    entries_of_meet_swimmer__event_JSON = json.loads(
+                        serialize(
+                            "json",
+                            [entries_of_meet_swimmer__event],
+                            fields=[
+                                "stroke",
+                                "distance",
+                                "competing_gender",
+                                "competing_max_age",
+                                "competing_min_age",
+                                "meet",
+                            ],
+                        )
+                    )[0]
+                    entry_JSON["fields"]["event"] = entries_of_meet_swimmer__event_JSON
+
                 return Response(
                     {"get_success": True, "data": entries_of_meet_swimmer_JSON}
                 )
@@ -143,9 +267,10 @@ class Entry_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        swimmer_of_id = Swimmer.objects.get(id=swimmer_id)
-        # ? no swimmer with the given id exists
-        if swimmer_of_id is None:
+        try:
+            swimmer_of_id = Swimmer.objects.get(id=swimmer_id)
+        except:
+            # ? no swimmer with the given id exists
             return Response(
                 {
                     "post_success": False,
@@ -154,9 +279,10 @@ class Entry_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        event_of_id = Event.objects.get(id=event_id)
-        # ? no event with the given id exists
-        if event_of_id is None:
+        try:
+            event_of_id = Event.objects.get(id=event_id)
+        except:
+            # ? no event with the given id exists
             return Response(
                 {"post_success": False, "reason": "no event with the given id exists"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -174,7 +300,7 @@ class Entry_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # ? not logged in to meet host accountj swimmer/event meet host account
+        # ? not logged in to meet host account swimmer/event meet host account
         if request.user.id != swimmer_of_id.meet.host_id:
             return Response(
                 {"post_success": False, "reason": "not logged in to meet host account"},
@@ -225,16 +351,17 @@ class Entry_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        entry_of_id = Entry.objects.get(id=entry_id)
-        # ? no entry with the given id exists
-        if entry_of_id is None:
+        try:
+            entry_of_id = Entry.objects.get(id=entry_id)
+        except:
+            # ? no entry with the given id exists
             return Response(
                 {"put_success": False, "reason": "no entry with the given id exists"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         entry_swimmer_meet_host_id = entry_of_id.swimmer.meet.host_id
-        # ? not logged in to meet host accountj swimmer/event meet host account
+        # ? not logged in to meet host account swimmer/event meet host account
         if request.user.id != entry_swimmer_meet_host_id:
             return Response(
                 {
@@ -288,9 +415,10 @@ class Entry_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        entry_of_id = Entry.objects.get(id=entry_id)
-        # ? no entry with the given id exists
-        if entry_of_id is None:
+        try:
+            entry_of_id = Entry.objects.get(id=entry_id)
+        except:
+            # ? no entry with the given id exists
             return Response(
                 {
                     "delete_success": False,
@@ -300,7 +428,7 @@ class Entry_view(APIView):
             )
 
         entry_swimmer_meet_host_id = entry_of_id.swimmer.meet.host_id
-        # ? not logged in to meet host accountj swimmer/event meet host account
+        # ? not logged in to meet host account swimmer/event meet host account
         if request.user.id != entry_swimmer_meet_host_id:
             return Response(
                 {

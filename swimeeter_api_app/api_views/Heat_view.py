@@ -25,9 +25,10 @@ class Heat_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                event_of_id = Event.objects.get(id=event_id)
-                # ? no event with the given id exists
-                if event_of_id is None:
+                try:
+                    event_of_id = Event.objects.get(id=event_id)
+                except:
+                    # ? no event with the given id exists
                     return Response(
                         {
                             "get_success": False,
@@ -36,6 +37,7 @@ class Heat_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                # * get heats JSON
                 heats_of_meet_event = Heat.objects.filter(event_id=event_id)[lower_bound:upper_bound]
                 heats_of_meet_event_JSON = json.loads(
                     serialize(
@@ -47,6 +49,25 @@ class Heat_view(APIView):
                         ],
                     )
                 )[0]
+
+                # * get FK event JSON
+                heats_of_meet_event__event_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [event_of_id],
+                        fields=[
+                            "stroke",
+                            "distance",
+                            "competing_gender",
+                            "competing_max_age",
+                            "competing_min_age",
+                            "meet",
+                        ],
+                    )
+                )[0]
+                for heat_JSON in heats_of_meet_event_JSON:
+                    heat_JSON["fields"]["event"] = heats_of_meet_event__event_JSON
+
                 return Response({"get_success": True, "data": heats_of_meet_event_JSON})
 
             # ? invalid 'specific_to' specification

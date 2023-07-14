@@ -25,9 +25,10 @@ class Event_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                event_of_id = Event.objects.get(id=event_id)
-                # ? no event with the given id exists
-                if event_of_id is None:
+                try:
+                    event_of_id = Event.objects.get(id=event_id)
+                except:
+                    # ? no event with the given id exists
                     return Response(
                         {
                             "get_success": False,
@@ -36,6 +37,7 @@ class Event_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                # * get event JSON
                 event_of_id_JSON = json.loads(
                     serialize(
                         "json",
@@ -50,6 +52,23 @@ class Event_view(APIView):
                         ],
                     )
                 )[0]
+
+                # * get FK meet JSON
+                event_of_id__meet = Meet.objects.get(id=event_of_id.meet_id)
+                event_of_id__meet_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [event_of_id__meet],
+                        fields=[
+                            "name",
+                            "lanes",
+                            "measure_unit",
+                            "host",
+                        ],
+                    )
+                )[0]
+                event_of_id_JSON["fields"]["meet"] = event_of_id__meet_JSON
+
                 return Response({"get_success": True, "data": event_of_id_JSON})
 
             case "meet":
@@ -61,9 +80,10 @@ class Event_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                meet_of_id = Meet.objects.get(id=meet_id)
-                # ? no meet with the given id exists
-                if meet_of_id is None:
+                try:
+                    meet_of_id = Meet.objects.get(id=meet_id)
+                except:
+                    # ? no meet with the given id exists
                     return Response(
                         {
                             "post_success": False,
@@ -72,6 +92,7 @@ class Event_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                # * get events JSON
                 events_of_meet = Event.objects.filter(meet_id=meet_id)[lower_bound:upper_bound]
                 events_of_meet_JSON = json.loads(
                     serialize(
@@ -87,6 +108,23 @@ class Event_view(APIView):
                         ],
                     )
                 )
+
+                # * get FK meet JSON
+                events_of_meet__meet_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [meet_of_id],
+                        fields=[
+                            "name",
+                            "lanes",
+                            "measure_unit",
+                            "host",
+                        ],
+                    )
+                )[0]
+                for event_JSON in events_of_meet_JSON:
+                    event_JSON["fields"]["meet"] = events_of_meet__meet_JSON
+
                 return Response({"get_success": True, "data": events_of_meet_JSON})
 
             # ? invalid 'specific_to' specification
@@ -115,9 +153,10 @@ class Event_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        meet_of_id = Meet.objects.get(id=meet_id)
-        # ? no meet with the given id exists
-        if meet_of_id is None:
+        try:
+            meet_of_id = Meet.objects.get(id=meet_id)
+        except:
+            # ? no meet with the given id exists
             return Response(
                 {"post_success": False, "reason": "no meet with the given id exists"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -181,21 +220,22 @@ class Event_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        event_of_id = Event.objects.get(id=event_id)
-        # ? no event with the given id exists
-        if event_of_id is None:
+        try:
+            event_of_id = Event.objects.get(id=event_id)
+        except:
+            # ? no event with the given id exists
             return Response(
                 {"put_success": False, "reason": "no event with the given id exists"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         event_meet_host_id = event_of_id.meet.host_id
-        # ? not logged in to meet host accountj event meet host account
+        # ? not logged in to meet host account event meet host account
         if request.user.id != event_meet_host_id:
             return Response(
                 {
                     "put_success": False,
-                    "reason": "not logged in to meet host accountj event meet host account",
+                    "reason": "not logged in to meet host account event meet host account",
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
@@ -255,9 +295,10 @@ class Event_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        event_of_id = Event.objects.get(id=event_id)
-        # ? no event with the given id exists
-        if event_of_id is None:
+        try:
+            event_of_id = Event.objects.get(id=event_id)
+        except:
+            # ? no event with the given id exists
             return Response(
                 {
                     "delete_success": False,

@@ -21,9 +21,10 @@ class Host_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                host_of_id = Host.objects.get(id=host_id)
-                # ? no meet with the given id exists
-                if host_of_id is None:
+                try:
+                    host_of_id = Host.objects.get(id=host_id)
+                except:
+                    # ? no meet with the given id exists
                     return Response(
                         {
                             "get_success": False,

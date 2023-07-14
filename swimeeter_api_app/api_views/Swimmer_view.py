@@ -6,6 +6,7 @@ import json
 
 from ..models import Event, Swimmer, Meet
 
+
 class Swimmer_view(APIView):
     def get(self, request):
         specific_to = request.query_params.get("specific_to")
@@ -25,9 +26,10 @@ class Swimmer_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                swimmer_of_id = Swimmer.objects.get(id=swimmer_id)
-                # ? no swimmer with the given id exists
-                if swimmer_of_id is None:
+                try:
+                    swimmer_of_id = Swimmer.objects.get(id=swimmer_id)
+                except:
+                    # ? no swimmer with the given id exists
                     return Response(
                         {
                             "get_success": False,
@@ -36,6 +38,7 @@ class Swimmer_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                # * get swimmer JSON
                 swimmer_of_id_JSON = json.loads(
                     serialize(
                         "json",
@@ -50,6 +53,23 @@ class Swimmer_view(APIView):
                         ],
                     )
                 )[0]
+
+                # * get FK meet JSON
+                swimmer_of_id__meet = Meet.objects.get(id=swimmer_of_id.meet_id)
+                swimmer_of_id__meet_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [swimmer_of_id__meet],
+                        fields=[
+                            "name",
+                            "lanes",
+                            "measure_unit",
+                            "host",
+                        ],
+                    )
+                )[0]
+                swimmer_of_id_JSON["fields"]["meet"] = swimmer_of_id__meet_JSON
+
                 return Response({"get_success": True, "data": swimmer_of_id_JSON})
 
             case "meet":
@@ -61,9 +81,10 @@ class Swimmer_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                meet_of_id = Meet.objects.get(id=meet_id)
-                # ? no meet with the given id exists
-                if meet_of_id is None:
+                try:
+                    meet_of_id = Meet.objects.get(id=meet_id)
+                except:
+                    # ? no meet with the given id exists
                     return Response(
                         {
                             "post_success": False,
@@ -72,7 +93,10 @@ class Swimmer_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                swimmers_of_meet = Swimmer.objects.filter(meet_id=meet_id)[lower_bound:upper_bound]
+                # * get swimmers JSON
+                swimmers_of_meet = Swimmer.objects.filter(meet_id=meet_id)[
+                    lower_bound:upper_bound
+                ]
                 swimmers_of_meet_JSON = json.loads(
                     serialize(
                         "json",
@@ -87,6 +111,23 @@ class Swimmer_view(APIView):
                         ],
                     )
                 )
+
+                # * get FK meet JSON
+                swimmers_of_meet__meet_JSON = json.loads(
+                    serialize(
+                        "json",
+                        [meet_of_id],
+                        fields=[
+                            "name",
+                            "lanes",
+                            "measure_unit",
+                            "host",
+                        ],
+                    )
+                )[0]
+                for swimmer_JSON in swimmers_of_meet_JSON:
+                    swimmer_JSON["fields"]["meet"] = swimmers_of_meet__meet_JSON
+
                 return Response({"get_success": True, "data": swimmers_of_meet_JSON})
 
             # ? invalid 'specific_to' specification
@@ -115,9 +156,10 @@ class Swimmer_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        meet_of_id = Meet.objects.get(id=meet_id)
-        # ? no meet with the given id exists
-        if meet_of_id is None:
+        try:
+            meet_of_id = Meet.objects.get(id=meet_id)
+        except:
+            # ? no meet with the given id exists
             return Response(
                 {"post_success": False, "reason": "no meet with the given id exists"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -181,16 +223,17 @@ class Swimmer_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        swimmer_of_id = Swimmer.objects.get(id=swimmer_id)
-        # ? no swimmer with the given id exists
-        if swimmer_of_id is None:
+        try:
+            swimmer_of_id = Swimmer.objects.get(id=swimmer_id)
+        except:
+            # ? no swimmer with the given id exists
             return Response(
                 {"put_success": False, "reason": "no swimmer with the given id exists"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         swimmer_meet_host_id = swimmer_of_id.meet.host_id
-        # ? not logged in to meet host accountj swimmer meet host account
+        # ? not logged in to meet host account swimmer meet host account
         if request.user.id != swimmer_meet_host_id:
             return Response(
                 {
@@ -255,9 +298,10 @@ class Swimmer_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        swimmer_of_id = Event.objects.get(id=swimmer_id)
-        # ? no event with the given id exists
-        if swimmer_of_id is None:
+        try:
+            swimmer_of_id = Event.objects.get(id=swimmer_id)
+        except:
+            # ? no event with the given id exists
             return Response(
                 {
                     "delete_success": False,
