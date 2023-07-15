@@ -4,7 +4,7 @@ from rest_framework import status
 from django.core.serializers import serialize
 import json
 
-from ..models import Event, Swimmer, Entry, Meet, Heat, HeatLaneAssignment
+from ..models import Event, Swimmer, Entry, Meet
 from swimeeter_auth_app.models import Host
 
 # TODO: implement generating a heat sheet

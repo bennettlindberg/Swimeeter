@@ -13,6 +13,30 @@ async function handleMeetCreation(navigate: NavigateFunction) {
         return;
     }
 
+    const beginDateInputField = document.getElementById('begin-date-field') as HTMLInputElement;
+    const beginDateInputValue = beginDateInputField.value;
+
+    // ? begin date must be valid
+    if (Number.isNaN(Date.parse(beginDateInputValue))) {
+        console.error('begin date must be valid (front-end catch)');
+        return;
+    }
+
+    const endDateInputField = document.getElementById('end-date-field') as HTMLInputElement;
+    const endDateInputValue = endDateInputField.value;
+
+    // ? end date must be valid
+    if (Number.isNaN(Date.parse(endDateInputValue))) {
+        console.error('end date must be valid (front-end catch)');
+        return;
+    }
+
+    // ? end date must be on the same day or after begin date
+    if (Date.parse(beginDateInputValue) > Date.parse(endDateInputValue)) {
+        console.error('end date must be on the same day or after begin date (front-end catch)');
+        return;
+    }
+
     const lanesInputField = document.getElementById('lanes-field') as HTMLSelectElement;
     const lanesInputValue = parseInt(lanesInputField.value); // ! potentially NaN
 
@@ -34,6 +58,8 @@ async function handleMeetCreation(navigate: NavigateFunction) {
     try {
         const response = await axios.post('/api/v1/meets/', {
             name: nameInputValue,
+            begin_date: beginDateInputField,
+            end_date: endDateInputField,
             lanes: lanesInputValue,
             measure_unit: unitsInputValue
         });
@@ -69,6 +95,9 @@ export default function MeetCreationPage() {
         ]);
     }
 
+    // used to retrieve current date
+    const todayString = new Date().toJSON().slice(0, 10);
+
     return (
         <>
             <h1>Create meet</h1>
@@ -78,8 +107,14 @@ export default function MeetCreationPage() {
                 handleMeetCreation(navigate);
             }}>
                 <p>Meet information</p>
-                <label htmlFor='name-field'>Meet name: </label>
+                <label htmlFor='name-field'>Name: </label>
                 <input id='name-field' type='text'></input>
+
+                <label htmlFor='begin-date-field'>Begin date: </label>
+                <input id="begin-date-field" type="date" value={todayString} min="1970-01-01" max="2100-12-31"></input>
+
+                <label htmlFor='end-date-field'>End date: </label>
+                <input id="end-date-field" type="date" value={todayString} min="1970-01-01" max="2100-12-31"></input>
 
                 <p>Pool information</p>
                 <label htmlFor='lanes-field'>Number of pool lanes: </label>

@@ -1,6 +1,6 @@
 import { SetNavContext, UserContext } from "../../App.tsx";
 import DataRow from "../component_library/DataRow.tsx";
-import type { MeetData, HostData } from "../ModelTypes.tsx";
+import type { MeetData } from "../ModelTypes.tsx";
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
@@ -10,8 +10,6 @@ export default function MeetListPage() {
     const navigate = useNavigate();
 
     const [allMeetsInfo, setAllMeetsInfo] = useState<MeetData[] | null>(null);
-    const [allMeetHostsInfo, setAllMeetHostsInfo] = useState<HostData[] | null>(null);
-
     const [resultsUpperBound, setResultsUpperBound] = useState<number>(0);
     const [allResultsDisplayed, setAllResultsDisplayed] = useState<boolean>(false);
 
@@ -54,32 +52,6 @@ export default function MeetListPage() {
         getNextTenResults();
     }, []);
 
-    // TODO: MAKE BACK-END API ENDPOINTS RETURN FK DATA AUTOMATICALLY!!!!!!!
-
-    // // retrieve data for all meet hosts
-    // useEffect(() => {
-    //     if (allMeetsInfo == null) {
-    //         setAllMeetHostsInfo(null);
-    //         return;
-    //     }
-
-    //     let meet_host_ids: number[] = [];
-    //     for (const meet of allMeetsInfo) {
-    //         meet_host_ids.push(meet.fields.host);
-    //     }
-
-    //     axios.get('/api/v1/hosts/', { params: { specific_to: 'id', host_id:  } })
-    //         .then(response => setAllMeetHostsInfo(...allMeetHostsInfo, response.data.data))
-    //         .catch(error => {
-    //             // ? get request failed on the back-end
-    //             if (axios.isAxiosError(error)) {
-    //                 console.error(error.response?.data.reason);
-    //             } else {
-    //                 console.error(error);
-    //             }
-    //         });
-    // }, [allMeetsInfo]);
-
     // update nav bar
     const setNavItems = useContext(SetNavContext);
     if (setNavItems) {
@@ -96,14 +68,15 @@ export default function MeetListPage() {
             {
                 allMeetsInfo && allMeetsInfo.map((meet: MeetData, index: number) =>
                     <DataRow kind={
-                        currentUser && currentUser.id === meet.fields.host
+                        currentUser && currentUser.id === meet.fields.host.pk
                             ? "owner"
                             : index % 2 === 0
                                 ? "even"
                                 : "odd"
                     }>
                         <p>{meet.fields.name}</p>
-                        <p>{meet.fields.host}</p>
+                        <p>{meet.fields.begin_date} -- {meet.fields.end_date}</p>
+                        <p>{meet.fields.host.fields.last_name}, {meet.fields.host.fields.first_name}</p>
                         
                         <button onClick={() => navigate(`/meets/${meet.pk}`)}>View meet</button>
                     </DataRow>

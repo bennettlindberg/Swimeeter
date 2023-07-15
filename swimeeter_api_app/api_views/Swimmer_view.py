@@ -4,7 +4,7 @@ from rest_framework import status
 from django.core.serializers import serialize
 import json
 
-from ..models import Event, Swimmer, Meet
+from ..models import Swimmer, Meet
 
 
 class Swimmer_view(APIView):
@@ -62,6 +62,8 @@ class Swimmer_view(APIView):
                         [swimmer_of_id__meet],
                         fields=[
                             "name",
+                            "begin_date",
+                            "end_date",
                             "lanes",
                             "measure_unit",
                             "host",
@@ -94,7 +96,7 @@ class Swimmer_view(APIView):
                     )
 
                 # * get swimmers JSON
-                swimmers_of_meet = Swimmer.objects.filter(meet_id=meet_id)[
+                swimmers_of_meet = Swimmer.objects.filter(meet_id=meet_id).order_by('last_name', 'first_name')[
                     lower_bound:upper_bound
                 ]
                 swimmers_of_meet_JSON = json.loads(
@@ -119,6 +121,8 @@ class Swimmer_view(APIView):
                         [meet_of_id],
                         fields=[
                             "name",
+                            "begin_date",
+                            "end_date",
                             "lanes",
                             "measure_unit",
                             "host",
@@ -233,7 +237,7 @@ class Swimmer_view(APIView):
             )
 
         swimmer_meet_host_id = swimmer_of_id.meet.host_id
-        # ? not logged in to meet host account swimmer meet host account
+        # ? not logged in to meet host account
         if request.user.id != swimmer_meet_host_id:
             return Response(
                 {
@@ -299,9 +303,9 @@ class Swimmer_view(APIView):
             )
 
         try:
-            swimmer_of_id = Event.objects.get(id=swimmer_id)
+            swimmer_of_id = Swimmer.objects.get(id=swimmer_id)
         except:
-            # ? no event with the given id exists
+            # ? no swimmer with the given id exists
             return Response(
                 {
                     "delete_success": False,

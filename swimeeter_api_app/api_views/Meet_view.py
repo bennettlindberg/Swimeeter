@@ -7,6 +7,8 @@ import json
 from ..models import Meet
 from swimeeter_auth_app.models import Host
 
+from datetime import date
+
 
 class Meet_view(APIView):
     def get(self, request):
@@ -46,6 +48,8 @@ class Meet_view(APIView):
                         [meet_of_id],
                         fields=[
                             "name",
+                            "begin_date",
+                            "end_date",
                             "lanes",
                             "measure_unit",
                             "host",
@@ -86,7 +90,7 @@ class Meet_view(APIView):
                     )
 
                 # * get meets JSON
-                meets_of_host = Meet.objects.filter(host_id=host_id)[
+                meets_of_host = Meet.objects.filter(host_id=host_id).order_by('-begin_date', '-end_date')[
                     lower_bound:upper_bound
                 ]
                 meets_of_host_JSON = json.loads(
@@ -95,6 +99,8 @@ class Meet_view(APIView):
                         meets_of_host,
                         fields=[
                             "name",
+                            "begin_date",
+                            "end_date",
                             "lanes",
                             "measure_unit",
                             "host",
@@ -113,13 +119,15 @@ class Meet_view(APIView):
 
             case "all":
                 # * get meets JSON
-                meets_of_all = Meet.objects.all()[lower_bound:upper_bound]
+                meets_of_all = Meet.objects.all().order_by('-begin_date', '-end_date')[lower_bound:upper_bound]
                 meets_of_all_JSON = json.loads(
                     serialize(
                         "json",
                         meets_of_all,
                         fields=[
                             "name",
+                            "begin_date",
+                            "end_date",
                             "lanes",
                             "measure_unit",
                             "host",
@@ -160,6 +168,8 @@ class Meet_view(APIView):
         try:
             new_meet = Meet(
                 name=request.data["name"],
+                begin_date=date.strptime(request.data["begin_date"], "%Y-%m-%d"),
+                end_date=date.strptime(request.data["end_date"], "%Y-%m-%d"),
                 lanes=request.data["lanes"],
                 measure_unit=request.data["measure_unit"],
                 host_id=request.user.id,
@@ -177,7 +187,14 @@ class Meet_view(APIView):
             serialize(
                 "json",
                 [new_meet],
-                fields=["name", "lanes", "measure_unit" "host"],
+                fields=[
+                    "name",
+                    "begin_date",
+                    "end_date",
+                    "lanes",
+                    "measure_unit",
+                    "host",
+                ],
             )
         )[0]
         return Response({"post_success": True, "data": new_meet_JSON})
@@ -223,6 +240,14 @@ class Meet_view(APIView):
 
             if "name" in request.data:
                 edited_meet.name = request.data["name"]
+            if "begin_date" in request.data:
+                edited_meet.begin_date = (
+                    date.strptime(request.data["begin_date"], "%Y-%m-%d"),
+                )
+            if "end_date" in request.data:
+                edited_meet.end_date = (
+                    date.strptime(request.data["end_date"], "%Y-%m-%d"),
+                )
             if "lanes" in request.data:
                 edited_meet.lanes = request.data["lanes"]
             if "measure_unit" in request.data:
@@ -243,6 +268,8 @@ class Meet_view(APIView):
                 [edited_meet],
                 fields=[
                     "name",
+                    "begin_date",
+                    "end_date",
                     "lanes",
                     "measure_unit",
                     "host",

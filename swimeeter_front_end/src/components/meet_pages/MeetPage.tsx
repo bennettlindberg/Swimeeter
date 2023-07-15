@@ -36,7 +36,7 @@ export default function MeetPage() {
 
     // check if viewer is meet host
     useEffect(() => {
-        if (currentUser && meetInfo && currentUser.id === meetInfo.fields.host) {
+        if (currentUser && meetInfo && currentUser.id === meetInfo.fields.host.pk) {
             setViewerIsHost(true);
         }
     }, [meetInfo]);
@@ -57,6 +57,10 @@ export default function MeetPage() {
             {viewerIsHost &&
                 <p>You are the host of this meet</p>
             }
+
+            <p>Meet information</p>
+            <p>Begin date: {meetInfo ? meetInfo.fields.begin_date : "Unknown"}</p>
+            <p>End date: {meetInfo ? meetInfo.fields.end_date : "Unknown"}</p>
 
             <p>Pool information</p>
             <p>Number of pool lanes: {meetInfo ? meetInfo.fields.lanes : "Unknown"}</p>

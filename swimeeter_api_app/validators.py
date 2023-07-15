@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 import re
+import datetime
 
 def meet_measure_unit_validator(unit):
     if unit != 'meters' and unit != 'yards':

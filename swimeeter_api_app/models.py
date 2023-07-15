@@ -5,9 +5,14 @@ from swimeeter_auth_app.models import Host
 
 
 class Meet(models.Model):
+    # * meet fields
     name = models.CharField(
         max_length=255, validators=[validators.MinLengthValidator(2)]
     )
+    begin_date = models.DateField()
+    end_date = models.DateField() # front-end check end_date >= begin_date
+
+    # * pool fields
     lanes = models.PositiveSmallIntegerField(
         validators=[validators.MinValueValidator(3), validators.MaxValueValidator(10)]
     )
@@ -49,38 +54,31 @@ class Event(models.Model):
     )  # front-end check for max >= min
     competing_min_age = models.PositiveSmallIntegerField()
 
-    meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="events")
-
-    # via association: entries, heats
-
-
-class Heat(models.Model):
-    order_in_event = models.PositiveSmallIntegerField(
+    # * heat sheet fields
+    order_in_meet = models.PositiveSmallIntegerField(
         validators=[validators.MinValueValidator(1)]
     )
+    total_heats = (
+        models.PositiveSmallIntegerField()
+    )  # ! invalid assignments indicated by total_heats == 0
 
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="heats")
+    meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="events")
 
-    # via association: assignments
+    # via association: entries
 
 
 class Entry(models.Model):
     seed_time = models.PositiveIntegerField()  # converted to a multiple of 0.01 seconds
 
+    # * heat sheet fields
+    heat_number = (
+        models.PositiveSmallIntegerField()
+    )  # ! invalid assignment indicated by heat_number == 0
+    lane_number = (
+        models.PositiveSmallIntegerField()
+    )  # ! invalid assignment indicated by lane_number == 0
+
     swimmer = models.ForeignKey(
         Swimmer, on_delete=models.CASCADE, related_name="entries"
     )
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="entries")
-
-    # via association: assignment
-
-
-class HeatLaneAssignment(models.Model):
-    lane = models.PositiveSmallIntegerField(
-        validators=[validators.MinValueValidator(1)]
-    )
-
-    heat = models.ForeignKey(Heat, on_delete=models.CASCADE, related_name="assignments")
-    entry = models.OneToOneField(
-        Entry, on_delete=models.CASCADE, related_name="assignment"
-    )

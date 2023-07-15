@@ -6,6 +6,7 @@ import json
 
 from ..models import Event, Meet
 
+
 class Event_view(APIView):
     def get(self, request):
         specific_to = request.query_params.get("specific_to")
@@ -48,6 +49,8 @@ class Event_view(APIView):
                             "competing_gender",
                             "competing_max_age",
                             "competing_min_age",
+                            "order_in_meet",
+                            "total_heats",
                             "meet",
                         ],
                     )
@@ -61,6 +64,8 @@ class Event_view(APIView):
                         [event_of_id__meet],
                         fields=[
                             "name",
+                            "begin_date",
+                            "end_date",
                             "lanes",
                             "measure_unit",
                             "host",
@@ -93,7 +98,9 @@ class Event_view(APIView):
                     )
 
                 # * get events JSON
-                events_of_meet = Event.objects.filter(meet_id=meet_id)[lower_bound:upper_bound]
+                events_of_meet = Event.objects.filter(meet_id=meet_id).order_by('order_in_meet')[
+                    lower_bound:upper_bound
+                ]
                 events_of_meet_JSON = json.loads(
                     serialize(
                         "json",
@@ -104,6 +111,8 @@ class Event_view(APIView):
                             "competing_gender",
                             "competing_max_age",
                             "competing_min_age",
+                            "order_in_meet",
+                            "total_heats",
                             "meet",
                         ],
                     )
@@ -116,6 +125,8 @@ class Event_view(APIView):
                         [meet_of_id],
                         fields=[
                             "name",
+                            "begin_date",
+                            "end_date",
                             "lanes",
                             "measure_unit",
                             "host",
@@ -171,12 +182,19 @@ class Event_view(APIView):
             )
 
         try:
+            if 'order_in_meet' in request.data:
+                next_order_number = request.data['order_in_meet']
+            else:
+                next_order_number = Event.objects.all().order_by('-order_in_meet')[:1].order_in_meet + 1
+
             new_event = Event(
                 stroke=request.data["stroke"],
                 distance=request.data["distance"],
                 competing_gender=request.data["competing_gender"],
                 competing_max_age=request.data["competing_max_age"],
                 competing_min_age=request.data["competing_min_age"],
+                order_in_meet=next_order_number,
+                total_heats=0,
                 meet_id=meet_id,
             )
             new_event.full_clean()
@@ -187,6 +205,12 @@ class Event_view(APIView):
                 {"post_success": False, "reason": "invalid creation data passed"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        # * move event order numbers forward
+        if 'order_in_meet' in request.data:
+            order_shifted_events = Event.objects.filter(order_in_meet__gte=next_order_number).exclude(id=new_event.id)
+        for event in order_shifted_events:
+            event.order_in_meet += 1
 
         new_event_JSON = json.loads(
             serialize(
@@ -198,6 +222,8 @@ class Event_view(APIView):
                     "competing_gender",
                     "competing_max_age",
                     "competing_min_age",
+                    "order_in_meet",
+                    "total_heats",
                     "meet",
                 ],
             )
@@ -230,17 +256,19 @@ class Event_view(APIView):
             )
 
         event_meet_host_id = event_of_id.meet.host_id
-        # ? not logged in to meet host account event meet host account
+        # ? not logged in to meet host account
         if request.user.id != event_meet_host_id:
             return Response(
                 {
                     "put_success": False,
-                    "reason": "not logged in to meet host account event meet host account",
+                    "reason": "not logged in to meet host account",
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
 
         try:
+            current_highest_order_number = Event.objects.all().order_by('-order_in_meet')[:1].order_in_meet
+
             edited_event = Event.objects.get(id=event_id)
 
             if "stroke" in request.data:
@@ -253,6 +281,8 @@ class Event_view(APIView):
                 edited_event.competing_max_age = request.data["competing_max_age"]
             if "competing_min_age" in request.data:
                 edited_event.competing_min_age = request.data["competing_min_age"]
+            if "order_in_meet" in request.data:
+                edited_event.order_in_meet = min(request.data["order_in_meet"], current_highest_order_number + 1)
 
             edited_event.full_clean()
             edited_event.save()
@@ -262,6 +292,12 @@ class Event_view(APIView):
                 {"put_success": False, "reason": "invalid editing data passed"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        # * move event order numbers forward
+        if 'order_in_meet' in request.data and request.data["order_in_meet"] > current_highest_order_number:
+            order_shifted_events = Event.objects.filter(order_in_meet__gt=current_highest_order_number).exclude(id=edited_event.id)
+        for event in order_shifted_events:
+            event.order_in_meet += 1
 
         edited_event_JSON = json.loads(
             serialize(
@@ -273,6 +309,8 @@ class Event_view(APIView):
                     "competing_gender",
                     "competing_max_age",
                     "competing_min_age",
+                    "order_in_meet",
+                    "total_heats",
                     "meet",
                 ],
             )
@@ -317,6 +355,11 @@ class Event_view(APIView):
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
+        
+        # * move event order numbers backward
+        order_shifted_events = Event.objects.filter(order_in_meet__gt=event_of_id.order_in_meet)
+        for event in order_shifted_events:
+            event.order_in_meet -= 1
 
         event_of_id.delete()
         return Response({"delete_success": True})
