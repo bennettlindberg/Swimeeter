@@ -15,8 +15,13 @@ class Meet_view(APIView):
         specific_to = request.query_params.get("specific_to")
 
         # set record range
-        upper_bound = int(request.query_params.get("upper_bound"))
-        lower_bound = int(request.query_params.get("lower_bound"))
+        upper_bound_str = request.query_params.get("upper_bound")
+        if upper_bound_str is not None:
+            upper_bound = int(upper_bound_str)
+
+        lower_bound_str = request.query_params.get("lower_bound")
+        if lower_bound_str is not None:
+            lower_bound = int(lower_bound_str)
 
         # get all meets for a specific...
         match specific_to:
@@ -168,12 +173,13 @@ class Meet_view(APIView):
         try:
             new_meet = Meet(
                 name=request.data["name"],
-                begin_date=date.strptime(request.data["begin_date"], "%Y-%m-%d"),
-                end_date=date.strptime(request.data["end_date"], "%Y-%m-%d"),
+                begin_date=request.data["begin_date"],
+                end_date=request.data["end_date"],
                 lanes=request.data["lanes"],
                 measure_unit=request.data["measure_unit"],
                 host_id=request.user.id,
             )
+            
             new_meet.full_clean()
             new_meet.save()
         except:
@@ -241,13 +247,9 @@ class Meet_view(APIView):
             if "name" in request.data:
                 edited_meet.name = request.data["name"]
             if "begin_date" in request.data:
-                edited_meet.begin_date = (
-                    date.strptime(request.data["begin_date"], "%Y-%m-%d"),
-                )
+                edited_meet.begin_date = request.data["begin_date"]
             if "end_date" in request.data:
-                edited_meet.end_date = (
-                    date.strptime(request.data["end_date"], "%Y-%m-%d"),
-                )
+                edited_meet.end_date = request.data["end_date"]
             if "lanes" in request.data:
                 edited_meet.lanes = request.data["lanes"]
             if "measure_unit" in request.data:

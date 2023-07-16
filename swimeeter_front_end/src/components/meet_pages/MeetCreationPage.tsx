@@ -1,5 +1,5 @@
 import { SetNavContext, UserContext } from "../../App.tsx";
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import axios from 'axios';
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
@@ -58,8 +58,8 @@ async function handleMeetCreation(navigate: NavigateFunction) {
     try {
         const response = await axios.post('/api/v1/meets/', {
             name: nameInputValue,
-            begin_date: beginDateInputField,
-            end_date: endDateInputField,
+            begin_date: beginDateInputValue,
+            end_date: endDateInputValue,
             lanes: lanesInputValue,
             measure_unit: unitsInputValue
         });
@@ -77,6 +77,8 @@ async function handleMeetCreation(navigate: NavigateFunction) {
 
 export default function MeetCreationPage() {
     const currentUser = useContext(UserContext);
+    const [beginDateStr, setBeginDateStr] = useState<string>(new Date().toJSON().slice(0, 10))
+    const [endDateStr, setEndDateStr] = useState<string>(new Date().toJSON().slice(0, 10))
 
     const navigate = useNavigate();
 
@@ -95,9 +97,6 @@ export default function MeetCreationPage() {
         ]);
     }
 
-    // used to retrieve current date
-    const todayString = new Date().toJSON().slice(0, 10);
-
     return (
         <>
             <h1>Create meet</h1>
@@ -111,10 +110,14 @@ export default function MeetCreationPage() {
                 <input id='name-field' type='text'></input>
 
                 <label htmlFor='begin-date-field'>Begin date: </label>
-                <input id="begin-date-field" type="date" value={todayString} min="1970-01-01" max="2100-12-31"></input>
+                <input id="begin-date-field" type="date" value={beginDateStr} min="1970-01-01" max="2100-12-31" onChange={
+                    (event) => setBeginDateStr(event.target.value)
+                }></input>
 
                 <label htmlFor='end-date-field'>End date: </label>
-                <input id="end-date-field" type="date" value={todayString} min="1970-01-01" max="2100-12-31"></input>
+                <input id="end-date-field" type="date" value={endDateStr} min="1970-01-01" max="2100-12-31" onChange={
+                    (event) => setEndDateStr(event.target.value)
+                }></input>
 
                 <p>Pool information</p>
                 <label htmlFor='lanes-field'>Number of pool lanes: </label>

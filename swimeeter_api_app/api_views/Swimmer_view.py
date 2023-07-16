@@ -12,8 +12,13 @@ class Swimmer_view(APIView):
         specific_to = request.query_params.get("specific_to")
 
         # set record range
-        upper_bound = int(request.query_params.get("upper_bound"))
-        lower_bound = int(request.query_params.get("lower_bound"))
+        upper_bound_str = request.query_params.get("upper_bound")
+        if upper_bound_str is not None:
+            upper_bound = int(upper_bound_str)
+
+        lower_bound_str = request.query_params.get("lower_bound")
+        if lower_bound_str is not None:
+            lower_bound = int(lower_bound_str)
 
         # get all swimmers for a specific...
         match specific_to:

@@ -59,8 +59,8 @@ async function handleMeetEdit(navigate: NavigateFunction, meet_id_int: number) {
     try {
         const response = await axios.put('/api/v1/meets/', {
             name: nameInputValue,
-            begin_date: beginDateInputField,
-            end_date: endDateInputField,
+            begin_date: beginDateInputValue,
+            end_date: endDateInputValue,
             lanes: lanesInputValue,
             measure_unit: unitsInputValue
         }, {
@@ -87,6 +87,9 @@ async function handleMeetEdit(navigate: NavigateFunction, meet_id_int: number) {
 export default function MeetEditPage() {
     const currentUser = useContext(UserContext);
     const [meetInfo, setMeetInfo] = useState<MeetData | null>(null);
+    const [beginDateStr, setBeginDateStr] = useState<string>('1970-01-01')
+    const [endDateStr, setEndDateStr] = useState<string>('1970-01-01')
+
     const { meet_id } = useParams();
 
     const navigate = useNavigate();
@@ -102,7 +105,11 @@ export default function MeetEditPage() {
     // retrieve initial meet data
     useEffect(() => {
         axios.get('/api/v1/meets/', { params: {specific_to: 'id', meet_id: meet_id_int } })
-            .then(response => setMeetInfo(response.data.data))
+            .then(response => {
+                setMeetInfo(response.data.data);
+                setBeginDateStr(response.data.data.fields.begin_date);
+                setEndDateStr(response.data.data.fields.end_date);
+            })
             .catch(error => {
                 // ? get request failed on the back-end
                 if (axios.isAxiosError(error)) {
@@ -144,10 +151,14 @@ export default function MeetEditPage() {
                 <input id='name-field' type='text' value={meetInfo ? meetInfo.fields.name : ""}></input>
 
                 <label htmlFor='begin-date-field'>Begin date: </label>
-                <input id="begin-date-field" type="date" value={meetInfo ? meetInfo.fields.begin_date : '1970-01-01'} min="1970-01-01" max="2100-12-31"></input>
+                <input id="begin-date-field" type="date" value={beginDateStr} min="1970-01-01" max="2100-12-31" onChange={
+                    (event) => setBeginDateStr(event.target.value)
+                }></input>
 
                 <label htmlFor='end-date-field'>End date: </label>
-                <input id="end-date-field" type="date" value={meetInfo ? meetInfo.fields.end_date : '1970-01-01'} min="1970-01-01" max="2100-12-31"></input>
+                <input id="end-date-field" type="date" value={endDateStr} min="1970-01-01" max="2100-12-31" onChange={
+                    (event) => setEndDateStr(event.target.value)
+                }></input>
 
                 <p>Pool information</p>
                 <label htmlFor='lanes-field'>Number of pool lanes: </label>
