@@ -441,10 +441,10 @@ class Entry_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # ? not logged in to meet host account
+        # ? not logged into meet host account
         if request.user.id != swimmer_of_id.meet.host_id:
             return Response(
-                {"post_success": False, "reason": "not logged in to meet host account"},
+                {"post_success": False, "reason": "not logged into meet host account"},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -500,12 +500,12 @@ class Entry_view(APIView):
             )
 
         entry_swimmer_meet_host_id = entry_of_id.swimmer.meet.host_id
-        # ? not logged in to meet host account
+        # ? not logged into meet host account
         if request.user.id != entry_swimmer_meet_host_id:
             return Response(
                 {
                     "put_success": False,
-                    "reason": "not logged in to meet host account",
+                    "reason": "not logged into meet host account",
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
@@ -563,12 +563,12 @@ class Entry_view(APIView):
             )
 
         entry_swimmer_meet_host_id = entry_of_id.swimmer.meet.host_id
-        # ? not logged in to meet host account
+        # ? not logged into meet host account
         if request.user.id != entry_swimmer_meet_host_id:
             return Response(
                 {
                     "delete_success": False,
-                    "reason": "not logged in to meet host account",
+                    "reason": "not logged into meet host account",
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )

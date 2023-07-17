@@ -6,6 +6,8 @@ import json
 
 from ..models import Swimmer, Meet
 
+from django.core.exceptions import ValidationError
+
 
 class Swimmer_view(APIView):
     def get(self, request):
@@ -51,9 +53,13 @@ class Swimmer_view(APIView):
                         fields=[
                             "first_name",
                             "last_name",
+                            "prefix",
+                            "suffix",
+                            "middle_initials",
                             "age",
                             "gender",
-                            "team",
+                            "team_name",
+                            "team_acronym",
                             "meet",
                         ],
                     )
@@ -67,9 +73,11 @@ class Swimmer_view(APIView):
                         [swimmer_of_id__meet],
                         fields=[
                             "name",
-                            "begin_date",
-                            "end_date",
+                            "begin_time",
+                            "end_time",
+                            "is_public",
                             "lanes",
+                            "side_length",
                             "measure_unit",
                             "host",
                         ],
@@ -111,9 +119,13 @@ class Swimmer_view(APIView):
                         fields=[
                             "first_name",
                             "last_name",
+                            "prefix",
+                            "suffix",
+                            "middle_initials",
                             "age",
                             "gender",
-                            "team",
+                            "team_name",
+                            "team_acronym",
                             "meet",
                         ],
                     )
@@ -126,9 +138,11 @@ class Swimmer_view(APIView):
                         [meet_of_id],
                         fields=[
                             "name",
-                            "begin_date",
-                            "end_date",
+                            "begin_time",
+                            "end_time",
+                            "is_public",
                             "lanes",
+                            "side_length",
                             "measure_unit",
                             "host",
                         ],
@@ -183,20 +197,36 @@ class Swimmer_view(APIView):
             )
 
         try:
+            formatted_mi = ""
+            if "middle_initials" in request.data and request.data["middle_initials"] is not None:
+                for initial in request.data["middle_initials"]:
+                    formatted_mi += initial + " "
+                formatted_mi = formatted_mi[:-1] # remove trailing space
+
             new_swimmer = Swimmer(
                 first_name=request.data["first_name"],
                 last_name=request.data["last_name"],
+                prefix=request.data["prefix"],
+                suffix=request.data["suffix"],
+                middle_initials=formatted_mi,
                 age=request.data["age"],
                 gender=request.data["gender"],
-                team=request.data["team"],
+                team_name=request.data["team_name"],
+                team_acronym=request.data["team_acronym"],
                 meet_id=meet_id,
             )
             new_swimmer.full_clean()
             new_swimmer.save()
-        except:
-            # ? invalid creation data passed
+        except ValidationError as err:
+            # ? invalid creation data passed -> validators
             return Response(
-                {"post_success": False, "reason": "invalid creation data passed"},
+                {"post_success": False, "reason": "; ".join(err.messages)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as err:
+            # ? invalid creation data passed -> general
+            return Response(
+                {"post_success": False, "reason": str(err)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -207,9 +237,13 @@ class Swimmer_view(APIView):
                 fields=[
                     "first_name",
                     "last_name",
+                    "prefix",
+                    "suffix",
+                    "middle_initials",
                     "age",
                     "gender",
-                    "team",
+                    "team_name",
+                    "team_acronym",
                     "meet",
                 ],
             )
@@ -259,19 +293,38 @@ class Swimmer_view(APIView):
                 edited_swimmer.first_name = request.data["first_name"]
             if "last_name" in request.data:
                 edited_swimmer.last_name = request.data["last_name"]
+            if "prefix" in request.data:
+                edited_swimmer.prefix = request.data["prefix"]
+            if "suffix" in request.data:
+                edited_swimmer.suffix = request.data["suffix"]
+            if "middle_initials" in request.data:
+                formatted_mi = ""
+                if request.data["middle_initials"] is not None:
+                    for initial in request.data["middle_initials"]:
+                        formatted_mi += initial + " "
+                    formatted_mi = formatted_mi[:-1] # remove trailing space
+                edited_swimmer.middle_initials = formatted_mi
             if "age" in request.data:
                 edited_swimmer.age = request.data["age"]
             if "gender" in request.data:
                 edited_swimmer.gender = request.data["gender"]
-            if "team" in request.data:
-                edited_swimmer.team = request.data["team"]
+            if "team_name" in request.data:
+                edited_swimmer.team_name = request.data["team_name"]
+            if "team_acronym" in request.data:
+                edited_swimmer.team_acronym = request.data["team_acronym"]
 
             edited_swimmer.full_clean()
             edited_swimmer.save()
-        except:
-            # ? invalid creation data passed
+        except ValidationError as err:
+            # ? invalid creation data passed -> validators
             return Response(
-                {"put_success": False, "reason": "invalid editing data passed"},
+                {"put_success": False, "reason": "; ".join(err.messages)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as err:
+            # ? invalid creation data passed -> general
+            return Response(
+                {"put_success": False, "reason": str(err)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -282,9 +335,13 @@ class Swimmer_view(APIView):
                 fields=[
                     "first_name",
                     "last_name",
+                    "prefix",
+                    "suffix",
+                    "middle_initials",
                     "age",
                     "gender",
-                    "team",
+                    "team_name",
+                    "team_acronym",
                     "meet",
                 ],
             )

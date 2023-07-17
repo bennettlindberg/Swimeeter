@@ -174,9 +174,9 @@ export default function EventCreationPage() {
                 <p>Competitor information</p>
                 <label htmlFor='gender-field'>{'Competing gender(s): '}</label>
                 <select id="gender-field">
-                    <option value="open" selected>Open</option>
-                    <option value="men">Men</option>
-                    <option value="women">Women</option>
+                    <option value="Mixed" selected>Open</option>
+                    <option value="Men">Men</option>
+                    <option value="Women">Women</option>
                     <option value="specify">Specify</option>
                 </select>
                 <div style={{

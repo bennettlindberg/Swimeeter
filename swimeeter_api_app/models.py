@@ -9,6 +9,8 @@ class Meet(models.Model):
     name = models.CharField(
         max_length=255, validators=[validators.MinLengthValidator(1)]
     )
+    begin_time = models.DateTimeField(null=True) # handled programmatically
+    end_time = models.DateTimeField(null=True) # handled programmatically
     is_public = models.BooleanField()
 
     # * pool info fields
@@ -45,6 +47,7 @@ class Event(models.Model):
     stroke = models.CharField(max_length=255)
     distance = models.PositiveSmallIntegerField()
     is_relay = models.BooleanField()
+    swimmers_per_entry = models.PositiveSmallIntegerField(validators=[validators.MinValueValidator(1)])
 
     # * competitor info fields
     competing_gender = models.CharField(max_length=255)
@@ -58,8 +61,8 @@ class Event(models.Model):
         validators=[validators.MinValueValidator(1)]
     )
     total_heats = (
-        models.PositiveSmallIntegerField()
-    )  # ! invalid assignments indicated by total_heats == 0
+        models.PositiveSmallIntegerField(null=True)
+    )  # ! invalid assignments indicated by total_heats == null
 
     # * association fields
     session = models.ForeignKey(
@@ -117,11 +120,11 @@ class Individual_entry(models.Model):
 
     # * heat sheet fields
     heat_number = (
-        models.PositiveSmallIntegerField()
-    )  # ! invalid assignment indicated by heat_number == 0
+        models.PositiveSmallIntegerField(null=True)
+    )  # ! invalid assignment indicated by heat_number == null
     lane_number = (
-        models.PositiveSmallIntegerField()
-    )  # ! invalid assignment indicated by lane_number == 0
+        models.PositiveSmallIntegerField(null=True)
+    )  # ! invalid assignment indicated by lane_number == null
 
     # * association fields
     swimmer = models.ForeignKey(
@@ -136,11 +139,11 @@ class Relay_entry(models.Model):
 
     # * heat sheet fields
     heat_number = (
-        models.PositiveSmallIntegerField()
-    )  # ! invalid assignment indicated by heat_number == 0
+        models.PositiveSmallIntegerField(null=True)
+    )  # ! invalid assignment indicated by heat_number == null
     lane_number = (
-        models.PositiveSmallIntegerField()
-    )  # ! invalid assignment indicated by lane_number == 0
+        models.PositiveSmallIntegerField(null=True)
+    )  # ! invalid assignment indicated by lane_number == null
 
     # * association fields
     swimmer = models.ManyToManyField(

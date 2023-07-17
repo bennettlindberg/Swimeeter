@@ -7,7 +7,7 @@ import json
 from ..models import Meet
 from swimeeter_auth_app.models import Host
 
-from datetime import date
+from django.core.exceptions import ValidationError
 
 
 class Meet_view(APIView):
@@ -46,6 +46,25 @@ class Meet_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                # ? meet is private and not logged into host account
+                if not meet_of_id.is_public:
+                    if not request.user.is_authenticated:
+                        return Response(
+                            {
+                                "get_success": False,
+                                "reason": "meet is private and not logged into host account",
+                            },
+                            status=status.HTTP_401_UNAUTHORIZED,
+                        )
+                    elif meet_of_id.host_id != request.user.id:
+                        return Response(
+                            {
+                                "get_success": False,
+                                "reason": "meet is private and not logged into host account",
+                            },
+                            status=status.HTTP_403_FORBIDDEN,
+                        )
+
                 # * get meet JSON
                 meet_of_id_JSON = json.loads(
                     serialize(
@@ -53,9 +72,11 @@ class Meet_view(APIView):
                         [meet_of_id],
                         fields=[
                             "name",
-                            "begin_date",
-                            "end_date",
+                            "begin_time",
+                            "end_time",
+                            "is_public",
                             "lanes",
+                            "side_length",
                             "measure_unit",
                             "host",
                         ],
@@ -66,7 +87,15 @@ class Meet_view(APIView):
                 meet_of_id__host = Host.objects.get(id=meet_of_id.host_id)
                 meet_of_id__host_JSON = json.loads(
                     serialize(
-                        "json", [meet_of_id__host], fields=["first_name", "last_name"]
+                        "json",
+                        [meet_of_id__host],
+                        fields=[
+                            "first_name",
+                            "last_name",
+                            "prefix",
+                            "suffix",
+                            "middle_initials",
+                        ],
                     )
                 )[0]
                 meet_of_id_JSON["fields"]["host"] = meet_of_id__host_JSON
@@ -94,19 +123,28 @@ class Meet_view(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                # * determine if logged in as host
+                if request.user.is_authenticated and host_id == request.user.id:
+                    meets_of_host = Meet.objects.filter(host_id=host_id).order_by(
+                        "-begin_time", "-end_time"
+                    )[lower_bound:upper_bound]
+                else:  # ! only include public meets for non-host viewers
+                    meets_of_host = Meet.objects.filter(
+                        host_id=host_id, is_public=True
+                    ).order_by("-begin_time", "-end_time")[lower_bound:upper_bound]
+
                 # * get meets JSON
-                meets_of_host = Meet.objects.filter(host_id=host_id).order_by('-begin_date', '-end_date')[
-                    lower_bound:upper_bound
-                ]
                 meets_of_host_JSON = json.loads(
                     serialize(
                         "json",
                         meets_of_host,
                         fields=[
                             "name",
-                            "begin_date",
-                            "end_date",
+                            "begin_time",
+                            "end_time",
+                            "is_public",
                             "lanes",
+                            "side_length",
                             "measure_unit",
                             "host",
                         ],
@@ -115,7 +153,17 @@ class Meet_view(APIView):
 
                 # * get FK host JSON
                 meets_of_host__host_JSON = json.loads(
-                    serialize("json", [host_of_id], fields=["first_name", "last_name"])
+                    serialize(
+                        "json",
+                        [host_of_id],
+                        fields=[
+                            "first_name",
+                            "last_name",
+                            "prefix",
+                            "suffix",
+                            "middle_initials",
+                        ],
+                    )
                 )[0]
                 for meet_JSON in meets_of_host_JSON:
                     meet_JSON["fields"]["host"] = meets_of_host__host_JSON
@@ -124,16 +172,20 @@ class Meet_view(APIView):
 
             case "all":
                 # * get meets JSON
-                meets_of_all = Meet.objects.all().order_by('-begin_date', '-end_date')[lower_bound:upper_bound]
+                meets_of_all = Meet.objects.filter(is_public=True).order_by(
+                    "-begin_time", "-end_time"
+                )[lower_bound:upper_bound]
                 meets_of_all_JSON = json.loads(
                     serialize(
                         "json",
                         meets_of_all,
                         fields=[
                             "name",
-                            "begin_date",
-                            "end_date",
+                            "begin_time",
+                            "end_time",
+                            "is_public",
                             "lanes",
+                            "side_length",
                             "measure_unit",
                             "host",
                         ],
@@ -145,7 +197,15 @@ class Meet_view(APIView):
                     meet__host = Host.objects.get(id=meet_JSON["fields"]["host"])
                     meet__host_JSON = json.loads(
                         serialize(
-                            "json", [meet__host], fields=["first_name", "last_name"]
+                            "json",
+                            [meet__host],
+                            fields=[
+                                "first_name",
+                                "last_name",
+                                "prefix",
+                                "suffix",
+                                "middle_initials",
+                            ],
                         )
                     )[0]
                     meet_JSON["fields"]["host"] = meet__host_JSON
@@ -173,19 +233,27 @@ class Meet_view(APIView):
         try:
             new_meet = Meet(
                 name=request.data["name"],
-                begin_date=request.data["begin_date"],
-                end_date=request.data["end_date"],
+                # begin_time => null
+                # end_time => null
+                is_public=request.data["is_public"],
                 lanes=request.data["lanes"],
+                side_length=request.data["side_length"],
                 measure_unit=request.data["measure_unit"],
                 host_id=request.user.id,
             )
-            
+
             new_meet.full_clean()
             new_meet.save()
-        except:
-            # ? invalid creation data passed
+        except ValidationError as err:
+            # ? invalid creation data passed -> validators
             return Response(
-                {"post_success": False, "reason": "invalid creation data passed"},
+                {"post_success": False, "reason": "; ".join(err.messages)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as err:
+            # ? invalid creation data passed -> general
+            return Response(
+                {"post_success": False, "reason": str(err)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -195,9 +263,11 @@ class Meet_view(APIView):
                 [new_meet],
                 fields=[
                     "name",
-                    "begin_date",
-                    "end_date",
+                    "begin_time",
+                    "end_time",
+                    "is_public",
                     "lanes",
+                    "side_length",
                     "measure_unit",
                     "host",
                 ],
@@ -231,12 +301,12 @@ class Meet_view(APIView):
             )
 
         meet_host_id = meet_of_id.host_id
-        # ? not logged in to meet host account
+        # ? not logged into meet host account
         if request.user.id != meet_host_id:
             return Response(
                 {
                     "put_success": False,
-                    "reason": "not logged in to meet host account",
+                    "reason": "not logged into meet host account",
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
@@ -246,21 +316,27 @@ class Meet_view(APIView):
 
             if "name" in request.data:
                 edited_meet.name = request.data["name"]
-            if "begin_date" in request.data:
-                edited_meet.begin_date = request.data["begin_date"]
-            if "end_date" in request.data:
-                edited_meet.end_date = request.data["end_date"]
+            if "is_public" in request.data:
+                edited_meet.is_public = request.data["is_public"]
             if "lanes" in request.data:
                 edited_meet.lanes = request.data["lanes"]
+            if "side_length" in request.data:
+                edited_meet.lanes = request.data["side_length"]
             if "measure_unit" in request.data:
                 edited_meet.measure_unit = request.data["measure_unit"]
 
             edited_meet.full_clean()
             edited_meet.save()
-        except:
-            # ? invalid creation data passed
+        except ValidationError as err:
+            # ? invalid update data passed -> validators
             return Response(
-                {"put_success": False, "reason": "invalid editing data passed"},
+                {"put_success": False, "reason": "; ".join(err.messages)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as err:
+            # ? invalid update data passed -> general
+            return Response(
+                {"put_success": False, "reason": str(err)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -270,9 +346,11 @@ class Meet_view(APIView):
                 [edited_meet],
                 fields=[
                     "name",
-                    "begin_date",
-                    "end_date",
+                    "begin_time",
+                    "end_time",
+                    "is_public",
                     "lanes",
+                    "side_length",
                     "measure_unit",
                     "host",
                 ],
@@ -306,12 +384,12 @@ class Meet_view(APIView):
             )
 
         meet_host_id = meet_of_id.host_id
-        # ? not logged in to meet host account
+        # ? not logged into meet host account
         if request.user.id != meet_host_id:
             return Response(
                 {
                     "delete_success": False,
-                    "reason": "not logged in to meet host account",
+                    "reason": "not logged into meet host account",
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
