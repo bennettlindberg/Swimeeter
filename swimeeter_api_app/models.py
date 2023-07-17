@@ -69,7 +69,7 @@ class Event(models.Model):
         Session, on_delete=models.CASCADE, related_name="events"
     )
 
-    # via association: entries
+    # via association: individual_entries, relay_entries
 
 
 class Swimmer(models.Model):
@@ -111,7 +111,7 @@ class Swimmer(models.Model):
     # * association fields
     meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="swimmers")
 
-    # via association: entries
+    # via association: individual_entries, relay_entries
 
 
 class Individual_entry(models.Model):
@@ -130,7 +130,7 @@ class Individual_entry(models.Model):
     swimmer = models.ForeignKey(
         Swimmer, on_delete=models.CASCADE, related_name="individual_entries"
     )
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="entries")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="individual_entries")
 
 
 class Relay_entry(models.Model):
@@ -146,7 +146,7 @@ class Relay_entry(models.Model):
     )  # ! invalid assignment indicated by lane_number == null
 
     # * association fields
-    swimmer = models.ManyToManyField(
-        Swimmer, on_delete=models.CASCADE, related_name="relay_entries"
+    swimmers = models.ManyToManyField(
+        Swimmer, blank=True, on_delete=models.CASCADE, related_name="relay_entries"
     )
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="entries")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="relay_entries")
