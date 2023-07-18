@@ -4,7 +4,7 @@ from rest_framework import status
 from django.core.serializers import serialize
 import json
 
-from ..models import Event, Swimmer, Individual_entry, Relay_entry
+from ..models import Event, Swimmer, Individual_entry, Relay_entry, Relay_assignment
 
 
 class Entry_view(APIView):
@@ -410,7 +410,10 @@ class Entry_view(APIView):
                     )
 
                 # ? no heat with the given number exists
-                if event_of_id.total_heats is None or heat_number > event_of_id.total_heats:
+                if (
+                    event_of_id.total_heats is None
+                    or heat_number > event_of_id.total_heats
+                ):
                     return Response(
                         {
                             "get_success": False,
@@ -464,8 +467,8 @@ class Entry_view(APIView):
 
                     # * get FK swimmers JSON
                     for entry_JSON in entries_of_meet_session_event_heat_JSON:
-                        entry_of_meet_session_event_heat__swimmers = Swimmer.objects.get(
-                            id__in=entry_JSON["fields"]["swimmers"]
+                        entry_of_meet_session_event_heat__swimmers = (
+                            Swimmer.objects.get(id__in=entry_JSON["fields"]["swimmers"])
                         )
                         entry_of_meet_session_event_heat__swimmers_JSON = json.loads(
                             serialize(
@@ -498,9 +501,11 @@ class Entry_view(APIView):
 
                 else:  # individual event
                     # * get entries JSON
-                    entries_of_meet_session_event_heat = Individual_entry.objects.filter(
-                        event_id=event_id, heat_number=heat_number
-                    ).order_by("seed_time")
+                    entries_of_meet_session_event_heat = (
+                        Individual_entry.objects.filter(
+                            event_id=event_id, heat_number=heat_number
+                        ).order_by("seed_time")
+                    )
                     entries_of_meet_session_event_heat_JSON = json.loads(
                         serialize(
                             "json",
@@ -598,8 +603,10 @@ class Entry_view(APIView):
                 entries_of_meet_swimmer = swimmer_of_id.individual_entries.all()
                 entries_of_meet_swimmer.union(swimmer_of_id.relay_entries.all())
 
-                entries_of_meet_swimmer.order_by("event__session__order_in_meet", "event__order_in_session")[lower_bound:upper_bound]
-                
+                entries_of_meet_swimmer.order_by(
+                    "event__session__order_in_meet", "event__order_in_session"
+                )[lower_bound:upper_bound]
+
                 entries_of_meet_swimmer_JSON = []
                 for entry in entries_of_meet_swimmer:
                     if isinstance(entry, Individual_entry):
@@ -707,6 +714,7 @@ class Entry_view(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
+    # ! create relay_assignments on POST !!!
     def post(self, request):
         # ? not logged in
         if not request.user.is_authenticated:
@@ -738,7 +746,7 @@ class Entry_view(APIView):
                 {"post_success": False, "reason": "not logged into meet host account"},
                 status=status.HTTP_403_FORBIDDEN,
             )
-        
+
         # ! RELAY EVENT
         if event_of_id.is_relay:
             swimmer_ids = request.query_params.get("swimmer_ids")
@@ -754,7 +762,10 @@ class Entry_view(APIView):
             # ? incorrect number of swimmers assigned to entry
             if swimmers_of_ids.count() != event_of_id.swimmers_per_entry:
                 return Response(
-                    {"post_success": False, "reason": "incorrect number of swimmers assigned to entry"},
+                    {
+                        "post_success": False,
+                        "reason": "incorrect number of swimmers assigned to entry",
+                    },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -787,7 +798,7 @@ class Entry_view(APIView):
                     {"post_success": False, "reason": "invalid creation data passed"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            
+
             try:
                 for relay_swimmer_id in request.data["swimmer_ids"]:
                     new_relay_entry.swimmers.add(relay_swimmer_id)
@@ -802,7 +813,13 @@ class Entry_view(APIView):
                 serialize(
                     "json",
                     [new_relay_entry],
-                    fields=["seed_time", "heat_number", "lane_number", "swimmers", "event"],
+                    fields=[
+                        "seed_time",
+                        "heat_number",
+                        "lane_number",
+                        "swimmers",
+                        "event",
+                    ],
                 )
             )[0]
             return Response({"post_success": True, "data": new_relay_entry_JSON})
@@ -840,7 +857,7 @@ class Entry_view(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            
+
             try:
                 new_individual_entry = Individual_entry(
                     seed_time=request.data["seed_time"],
@@ -862,11 +879,17 @@ class Entry_view(APIView):
                 serialize(
                     "json",
                     [new_individual_entry],
-                    fields=["seed_time", "heat_number", "lane_number", "swimmer", "event"],
+                    fields=[
+                        "seed_time",
+                        "heat_number",
+                        "lane_number",
+                        "swimmer",
+                        "event",
+                    ],
                 )
             )[0]
             return Response({"post_success": True, "data": new_individual_entry_JSON})
-            
+
     def put(self, request):
         # ? not logged in
         if not request.user.is_authenticated:
@@ -882,7 +905,7 @@ class Entry_view(APIView):
                 {"put_success": False, "reason": "no entry id passed"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         entry_type = request.query_params.get("entry_type")
         # ? no entry type passed
         if entry_type is None:
@@ -890,7 +913,7 @@ class Entry_view(APIView):
                 {"get_success": False, "reason": "no entry type passed"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         match entry_type:
             case "individual":
                 try:
@@ -898,10 +921,13 @@ class Entry_view(APIView):
                 except:
                     # ? no entry with the given id exists
                     return Response(
-                        {"put_success": False, "reason": "no entry with the given id exists"},
+                        {
+                            "put_success": False,
+                            "reason": "no entry with the given id exists",
+                        },
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-                
+
                 entry_swimmer_meet_host_id = entry_of_id.swimmer.meet.host_id
                 # ? not logged into meet host account
                 if request.user.id != entry_swimmer_meet_host_id:
@@ -912,7 +938,7 @@ class Entry_view(APIView):
                         },
                         status=status.HTTP_403_FORBIDDEN,
                     )
-                
+
                 try:
                     edited_entry = Individual_entry.objects.get(id=entry_id)
 
@@ -932,7 +958,13 @@ class Entry_view(APIView):
                     serialize(
                         "json",
                         [edited_entry],
-                        fields=["seed_time", "heat_number", "lane_number", "swimmer", "event"],
+                        fields=[
+                            "seed_time",
+                            "heat_number",
+                            "lane_number",
+                            "swimmer",
+                            "event",
+                        ],
                     )
                 )[0]
                 return Response({"put_success": True, "data": edited_entry_JSON})
@@ -943,10 +975,13 @@ class Entry_view(APIView):
                 except:
                     # ? no entry with the given id exists
                     return Response(
-                        {"put_success": False, "reason": "no entry with the given id exists"},
+                        {
+                            "put_success": False,
+                            "reason": "no entry with the given id exists",
+                        },
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-                
+
                 entry_swimmer_meet_host_id = entry_of_id.swimmer.meet.host_id
                 # ? not logged into meet host account
                 if request.user.id != entry_swimmer_meet_host_id:
@@ -957,7 +992,7 @@ class Entry_view(APIView):
                         },
                         status=status.HTTP_403_FORBIDDEN,
                     )
-                
+
                 try:
                     edited_entry = Relay_entry.objects.get(id=entry_id)
 
@@ -977,7 +1012,13 @@ class Entry_view(APIView):
                     serialize(
                         "json",
                         [edited_entry],
-                        fields=["seed_time", "heat_number", "lane_number", "swimmers", "event"],
+                        fields=[
+                            "seed_time",
+                            "heat_number",
+                            "lane_number",
+                            "swimmers",
+                            "event",
+                        ],
                     )
                 )[0]
                 return Response({"put_success": True, "data": edited_entry_JSON})
@@ -1007,7 +1048,7 @@ class Entry_view(APIView):
                 {"delete_success": False, "reason": "no entry id passed"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         entry_type = request.query_params.get("entry_type")
         # ? no entry type passed
         if entry_type is None:

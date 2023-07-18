@@ -1,227 +1,123 @@
 from rest_framework.views import APIView, Response
 from rest_framework import status
 
-from django.core.serializers import serialize
-import json
-
-from ..models import Session, Meet
+from ..models import Session
+from .. import view_helpers as vh
 
 from django.core.exceptions import ValidationError
 
 
 class Session_view(APIView):
     def get(self, request):
-        specific_to = request.query_params.get("specific_to")
+        specific_to = vh.get_query_param(request, "specific_to")
+        # ? no "specific_to" param passed
+        if isinstance(specific_to, Response):
+            return specific_to
 
-        # set record range
-        upper_bound_str = request.query_params.get("upper_bound")
-        if upper_bound_str is not None:
+        upper_bound_str = vh.get_query_param(request, "upper_bound")
+        # ? no "upper_bound" param passed
+        if isinstance(upper_bound_str, Response):
+            upper_bound = None
+        else:
             upper_bound = int(upper_bound_str)
 
-        lower_bound_str = request.query_params.get("lower_bound")
-        if lower_bound_str is not None:
+        lower_bound_str = vh.get_query_param(request, "lower_bound")
+        # ? no "lower_bound" param passed
+        if isinstance(lower_bound_str, Response):
+            lower_bound = None
+        else:
             lower_bound = int(lower_bound_str)
 
-        # get all events for a specific...
+        # $ get session(s) specific too...
         match specific_to:
-            case "id":
-                session_id = request.query_params.get("session_id")
-                # ? no session id passed
-                if session_id is None:
-                    return Response(
-                        {"get_success": False, "reason": "no session id passed"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
 
-                try:
-                    session_of_id = Session.objects.get(id=session_id)
-                except:
-                    # ? no session with the given id exists
-                    return Response(
-                        {
-                            "get_success": False,
-                            "reason": "no session with the given id exists",
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+            # $ ...id
+            case "id":
+                session_id = vh.get_query_param(request, "session_id")
+                # ? no "session_id" param passed
+                if isinstance(session_id, Response):
+                    return session_id
+
+                session_of_id = vh.get_model_of_id("Session", session_id)
+                # ? no session of session_id exists
+                if isinstance(session_of_id, Response):
+                    return session_of_id
                 
-                # ? meet is private and not logged into host account
-                if not session_of_id.meet.is_public:
-                    if not request.user.is_authenticated:
-                        return Response(
-                            {
-                                "get_success": False,
-                                "reason": "meet is private and not logged into host account",
-                            },
-                            status=status.HTTP_401_UNAUTHORIZED,
-                        )
-                    elif session_of_id.meet.host_id != request.user.id:
-                        return Response(
-                            {
-                                "get_success": False,
-                                "reason": "meet is private and not logged into host account",
-                            },
-                            status=status.HTTP_403_FORBIDDEN,
-                        )
+                check_meet_access = vh.check_meet_access_allowed(request, session_of_id.meet)
+                # ? meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
 
                 # * get session JSON
-                session_of_id_JSON = json.loads(
-                    serialize(
-                        "json",
-                        [session_of_id],
-                        fields=[
-                            "name",
-                            "begin_time",
-                            "end_time",
-                            "meet",
-                        ],
-                    )
-                )[0]
-
-                # * get FK meet JSON
-                session_of_id__meet = Meet.objects.get(id=session_of_id.meet_id)
-                session_of_id__meet_JSON = json.loads(
-                    serialize(
-                        "json",
-                        [session_of_id__meet],
-                        fields=[
-                            "name",
-                            "begin_time",
-                            "end_time",
-                            "is_public",
-                            "lanes",
-                            "side_length",
-                            "measure_unit",
-                            "host",
-                        ],
-                    )
-                )[0]
-                session_of_id_JSON["fields"]["meet"] = session_of_id__meet_JSON
-
-                return Response({"get_success": True, "data": session_of_id_JSON})
-
-            case "meet":
-                meet_id = request.query_params.get("meet_id")
-                # ? no meet id passed
-                if meet_id is None:
+                session_JSON = vh.get_JSON_single("Session", session_of_id, True)
+                # ? internal error generating JSON
+                if isinstance(session_JSON, Response):
+                    return session_JSON
+                else:
                     return Response(
-                        {"get_success": False, "reason": "no meet id passed"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
-                try:
-                    meet_of_id = Meet.objects.get(id=meet_id)
-                except:
-                    # ? no meet with the given id exists
-                    return Response(
-                        {
-                            "post_success": False,
-                            "reason": "no meet with the given id exists",
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                
-                # ? meet is private and not logged into host account
-                if not meet_of_id.is_public:
-                    if not request.user.is_authenticated:
-                        return Response(
-                            {
-                                "get_success": False,
-                                "reason": "meet is private and not logged into host account",
-                            },
-                            status=status.HTTP_401_UNAUTHORIZED,
-                        )
-                    elif meet_of_id.host_id != request.user.id:
-                        return Response(
-                            {
-                                "get_success": False,
-                                "reason": "meet is private and not logged into host account",
-                            },
-                            status=status.HTTP_403_FORBIDDEN,
-                        )
-
-                # * get sessions JSON
-                sessions_of_meet = Session.objects.filter(meet_id=meet_id).order_by('begin_time', 'end_time')[
-                    lower_bound:upper_bound
-                ]
-                sessions_of_meet_JSON = json.loads(
-                    serialize(
-                        "json",
-                        sessions_of_meet,
-                        fields=[
-                            "name",
-                            "begin_time",
-                            "end_time",
-                            "meet",
-                        ],
-                    )
+                        session_JSON,
+                        status=status.HTTP_200_OK,
                 )
 
-                # * get FK meet JSON
-                sessions_of_meet__meet_JSON = json.loads(
-                    serialize(
-                        "json",
-                        [meet_of_id],
-                        fields=[
-                            "name",
-                            "begin_time",
-                            "end_time",
-                            "is_public",
-                            "lanes",
-                            "side_length",
-                            "measure_unit",
-                            "host",
-                        ],
-                    )
-                )[0]
-                for session_JSON in sessions_of_meet_JSON:
-                    session_JSON["fields"]["meet"] = sessions_of_meet__meet_JSON
+            # $ ...meet
+            case "meet":
+                meet_id = vh.get_query_param(request, "meet_id")
+                # ? no "meet_id" param passed
+                if isinstance(meet_id, Response):
+                    return meet_id
 
-                return Response({"get_success": True, "data": sessions_of_meet_JSON})
+                meet_of_id = vh.get_model_of_id("Meet", meet_id)
+                # ? no meet of meet_id exists
+                if isinstance(meet_of_id, Response):
+                    return meet_of_id
+                
+                check_meet_access = vh.check_meet_access_allowed(request, meet_of_id)
+                # ? meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+                
+                sessions_of_meet = Session.objects.filter(meet_id=meet_id)
 
-            # ? invalid 'specific_to' specification
+                # * get sessions JSON
+                sessions_JSON = vh.get_JSON_multiple("Session", sessions_of_meet, True)
+                # ? internal error generating JSON
+                if isinstance(sessions_JSON, Response):
+                    return sessions_JSON
+                else:
+                    return Response(
+                        sessions_JSON,
+                        status=status.HTTP_200_OK,
+                )
+
+            # ? invalid "specific_to" specification
             case _:
                 return Response(
-                    {
-                        "get_success": False,
-                        "reason": "invalid 'specific_to' specification",
-                    },
+                    "invalid 'specific_to' specification",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
     def post(self, request):
-        # ? not logged in
-        if not request.user.is_authenticated:
-            return Response(
-                {"post_success": False, "reason": "not logged in"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        check_logged_in = vh.check_user_logged_in(request)
+        # ? user is not logged in
+        if isinstance(check_logged_in, Response):
+            return check_logged_in
 
-        meet_id = request.query_params.get("meet_id")
-        # ? no meet id passed
-        if meet_id is None:
-            return Response(
-                {"post_success": False, "reason": "no meet id passed"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        meet_id = vh.get_query_param(request, "meet_id")
+        # ? no "meet_id" param passed
+        if isinstance(meet_id, Response):
+            return meet_id
 
-        try:
-            meet_of_id = Meet.objects.get(id=meet_id)
-        except:
-            # ? no meet with the given id exists
-            return Response(
-                {"post_success": False, "reason": "no meet with the given id exists"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        meet_of_id = vh.get_model_of_id("Meet", meet_id)
+        # ? no meet of meet_id exists
+        if isinstance(meet_of_id, Response):
+            return meet_of_id
 
-        meet_host_id = meet_of_id.host_id
-        # ? not logged into meet host account
-        if request.user.id != meet_host_id:
-            return Response(
-                {"post_success": False, "reason": "not logged into meet host account"},
-                status=status.HTTP_403_FORBIDDEN,
-            )
+        check_is_host = vh.check_user_is_host(request, meet_of_id.host_id)
+        # ? user is not meet host
+        if isinstance(check_is_host, Response):
+            return check_is_host
 
+        # * create new session
         try:
             new_session = Session(
                 name=request.data["name"],
@@ -229,18 +125,19 @@ class Session_view(APIView):
                 end_time=request.data["end_time"],
                 meet_id=meet_id,
             )
+
             new_session.full_clean()
             new_session.save()
         except ValidationError as err:
             # ? invalid creation data passed -> validators
             return Response(
-                {"post_success": False, "reason": "; ".join(err.messages)},
+                "; ".join(err.messages),
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as err:
             # ? invalid creation data passed -> general
             return Response(
-                {"post_success": False, "reason": str(err)},
+                str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
@@ -260,56 +157,39 @@ class Session_view(APIView):
                 meet_of_id.full_clean()
                 meet_of_id.save()
 
-        new_session_JSON = json.loads(
-            serialize(
-                "json",
-                [new_session],
-                fields=[
-                    "name",
-                    "begin_time",
-                    "end_time",
-                    "meet",
-                ],
+        # * get session JSON
+        session_JSON = vh.get_JSON_single("Session", new_session, True)
+        # ? internal error generating JSON
+        if isinstance(session_JSON, Response):
+            return session_JSON
+        else:
+            return Response(
+                session_JSON,
+                status=status.HTTP_201_CREATED,
             )
-        )[0]
-        return Response({"post_success": True, "data": new_session_JSON})
 
     def put(self, request):
-        # ? not logged in
-        if not request.user.is_authenticated:
-            return Response(
-                {"put_success": False, "reason": "not logged in"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        check_logged_in = vh.check_user_logged_in(request)
+        # ? user is not logged in
+        if isinstance(check_logged_in, Response):
+            return check_logged_in
 
-        session_id = request.query_params.get("session_id")
-        # ? no session id passed
-        if session_id is None:
-            return Response(
-                {"put_success": False, "reason": "no session id passed"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        session_id = vh.get_query_param(request, "session_id")
+        # ? no "session_id" param passed
+        if isinstance(session_id, Response):
+            return session_id
 
-        try:
-            session_of_id = Session.objects.get(id=session_id)
-        except:
-            # ? no session with the given id exists
-            return Response(
-                {"put_success": False, "reason": "no session with the given id exists"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        session_of_id = vh.get_model_of_id("Session", session_id)
+        # ? no session of session_id exists
+        if isinstance(session_of_id, Response):
+            return session_of_id
 
-        session_meet_host_id = session_of_id.meet.host_id
-        # ? not logged into meet host account
-        if request.user.id != session_meet_host_id:
-            return Response(
-                {
-                    "put_success": False,
-                    "reason": "not logged into meet host account",
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
+        check_is_host = vh.check_user_is_host(request, meet_of_id.host_id)
+        # ? user is not meet host
+        if isinstance(check_is_host, Response):
+            return check_is_host
 
+        # * update existing session
         try:
             edited_session = Session.objects.get(id=session_id)
 
@@ -323,19 +203,23 @@ class Session_view(APIView):
             edited_session.full_clean()
             edited_session.save()
         except ValidationError as err:
-            # ? invalid update data passed -> validators
+            # ? invalid creation data passed -> validators
             return Response(
-                {"put_success": False, "reason": "; ".join(err.messages)},
+                "; ".join(err.messages),
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as err:
-            # ? invalid update data passed -> general
+            # ? invalid creation data passed -> general
             return Response(
-                {"put_success": False, "reason": str(err)},
+                str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
-        meet_of_id = Meet.objects.get(id=edited_session.meet_id)
+        meet_of_id = vh.get_model_of_id("Meet", session_of_id.meet_id)
+        # ? no meet of meet_id exists
+        if isinstance(meet_of_id, Response):
+            return meet_of_id
+        
         # * update meet begin and end times
         if edited_session.begin_time < meet_of_id.begin_time:
             meet_of_id.begin_time = edited_session.begin_time
@@ -346,75 +230,67 @@ class Session_view(APIView):
             meet_of_id.full_clean()
             meet_of_id.save()
 
-        edited_session_JSON = json.loads(
-            serialize(
-                "json",
-                [edited_session],
-                fields=[
-                    "name",
-                    "begin_time",
-                    "end_time",
-                    "meet",
-                ],
+        # * get session JSON
+        session_JSON = vh.get_JSON_single("Session", edited_session, True)
+        # ? internal error generating JSON
+        if isinstance(session_JSON, Response):
+            return session_JSON
+        else:
+            return Response(
+                session_JSON,
+                status=status.HTTP_200_OK,
             )
-        )[0]
-        return Response({"put_success": True, "data": edited_session_JSON})
 
     def delete(self, request):
-        # ? not logged in
-        if not request.user.is_authenticated:
-            return Response(
-                {"put_success": False, "reason": "not logged in"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        check_logged_in = vh.check_user_logged_in(request)
+        # ? user is not logged in
+        if isinstance(check_logged_in, Response):
+            return check_logged_in
 
-        session_id = request.query_params.get("session_id")
-        # ? no session id passed
-        if session_id is None:
-            return Response(
-                {"put_success": False, "reason": "no session id passed"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        session_id = vh.get_query_param(request, "session_id")
+        # ? no "session_id" param passed
+        if isinstance(session_id, Response):
+            return session_id
 
-        try:
-            session_of_id = Session.objects.get(id=session_id)
-        except:
-            # ? no session with the given id exists
-            return Response(
-                {"put_success": False, "reason": "no session with the given id exists"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        session_of_id = vh.get_model_of_id("Session", session_id)
+        # ? no session of session_id exists
+        if isinstance(session_of_id, Response):
+            return session_of_id
 
-        session_meet_host_id = session_of_id.meet.host_id
-        # ? not logged into meet host account
-        if request.user.id != session_meet_host_id:
-            return Response(
-                {
-                    "put_success": False,
-                    "reason": "not logged into meet host account",
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
+        check_is_host = vh.check_user_is_host(request, meet_of_id.host_id)
+        # ? user is not meet host
+        if isinstance(check_is_host, Response):
+            return check_is_host
 
-        session_meet_id = session_of_id.meet_id
-        session_of_id.delete()
-
-        meet_of_id = Meet.objects.get(id=session_of_id.meet_id)
-        remaining_sessions_of_meet = Session.objects.filter(meet_id=session_meet_id)
+        meet_of_id = vh.get_model_of_id("Meet", session_of_id.meet_id)
+        # ? no meet of meet_id exists
+        if isinstance(meet_of_id, Response):
+            return meet_of_id
+        
         # * update meet begin and end times
-        if remaining_sessions_of_meet.count() == 0:
+        remaining_sessions = Session.objects.filter(meet_id=session_of_id.meet_id).exclude(id=session_of_id.id)
+        if remaining_sessions.count() == 0:
             meet_of_id.begin_time = None
             meet_of_id.end_time = None
 
             meet_of_id.full_clean()
             meet_of_id.save()
         else:
-            earliest_session = remaining_sessions_of_meet.order_by('begin_time')[:1][0]
+            earliest_session = remaining_sessions.order_by('begin_time')[:1][0]
             meet_of_id.begin_time = earliest_session.begin_time
-            latest_session = remaining_sessions_of_meet.order_by('-end_time')[:1][0]
+            latest_session = remaining_sessions.order_by('-end_time')[:1][0]
             meet_of_id.end_time = latest_session.end_time
 
             meet_of_id.full_clean()
             meet_of_id.save()
 
-        return Response({"delete_success": True})
+        # * delete existing session
+        try:
+            session_of_id.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        # ? internal error deleting model
+        except Exception as err:
+            return Response(
+                str(err),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

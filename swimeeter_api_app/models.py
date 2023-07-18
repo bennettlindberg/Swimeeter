@@ -111,7 +111,7 @@ class Swimmer(models.Model):
     # * association fields
     meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="swimmers")
 
-    # via association: individual_entries, relay_entries
+    # via association: individual_entries, relay_entries, relay_assignments
 
 
 class Individual_entry(models.Model):
@@ -147,6 +147,19 @@ class Relay_entry(models.Model):
 
     # * association fields
     swimmers = models.ManyToManyField(
-        Swimmer, blank=True, on_delete=models.CASCADE, related_name="relay_entries"
+        Swimmer, blank=True, on_delete=models.CASCADE, through="Relay_assignment", related_name="relay_entries"
     )
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="relay_entries")
+
+    # via association: relay_assignments
+
+# @ through table for swimmer <-> relay_entry many-to-many relationship
+class Relay_assignment(models.Model):
+    # * assignment info fields
+    order_in_relay = models.PositiveSmallIntegerField(
+        validators=[validators.MinValueValidator(1)]
+    )
+
+    # * association fields
+    swimmer = models.ForeignKey(Swimmer, on_delete=models.CASCADE, related_name="relay_assignments")
+    relay_entry = models.ForeignKey(Relay_entry, on_delete=models.CASCADE, related_name="relay_assignments")
