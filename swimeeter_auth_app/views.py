@@ -12,10 +12,10 @@ from .models import Host
 
 class Log_in(APIView):
     def post(self, request):
-        # ? already logged in
+        # ? user already logged in
         if request.user.is_authenticated:
             return Response(
-                {"log_in_success": False, "reason": "already logged in"},
+                "user already logged in",
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -23,17 +23,22 @@ class Log_in(APIView):
             username=request.data["email"], password=request.data["password"]
         )
 
-        # ? account does not exist
-        if user is None or not user.is_active:
+        # ? user account does not exist
+        if user is None:
             return Response(
-                {"log_in_success": False, "reason": "account does not exist"},
-                status=status.HTTP_403_FORBIDDEN,
+                "user account does not exist",
+                status=status.HTTP_401_UNAUTHORIZED,
             )
+
+        # ~ reactivating deactivated account
+        if not user.is_active:
+            user.is_active = True
+            user.save()
 
         login(request, user)
 
-        # * get host JSON
-        userJSON = json.loads(
+        # * get user JSON
+        user_JSON = json.loads(
             serialize(
                 "json",
                 [user],
@@ -46,15 +51,15 @@ class Log_in(APIView):
                 ],
             )
         )[0]
-        return Response({"log_in_success": True, "user": userJSON})
+        return Response(user_JSON, status=status.HTTP_200_OK)
 
 
 class Sign_up(APIView):
     def post(self, request):
-        # ? already logged in
+        # ? user already logged in
         if request.user.is_authenticated:
             return Response(
-                {"sign_up_success": False, "reason": "already logged in"},
+                "user already logged in",
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -62,56 +67,67 @@ class Sign_up(APIView):
             username=request.data["email"], password=request.data["password"]
         )
 
-        # ? account already exists
+        # ? user account already exists
         if user is not None and user.is_active:
             return Response(
-                {"sign_up_success": False, "reason": "account already exists"},
+                "user account already exists",
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        try:
-            formatted_mi = ""
-            if "middle_initials" in request.data and request.data["middle_initials"] is not None:
-                for initial in request.data["middle_initials"]:
-                    formatted_mi += initial + " "
-                formatted_mi = formatted_mi[:-1] # remove trailing space
+        # ~ reactivating deactivated account
+        if user is not None and not user.is_active:
+            user.is_active = True
+            user.save()
 
-            new_host = Host.objects.create_user(
-                username=request.data["email"],
-                email=request.data["email"],
-                password=request.data["password"],
-                first_name=request.data["first_name"],
-                last_name=request.data["last_name"],
-                prefix=request.data["prefix"],
-                suffix=request.data["suffix"],
-                middle_initials=formatted_mi,
-            )
+        # * create new user
+        else:
+            try:
+                # * format middle initials ("ABC" -> "A B C")
+                formatted_mi = ""
+                if (
+                    "middle_initials" in request.data
+                    and request.data["middle_initials"] is not None
+                ):
+                    for initial in request.data["middle_initials"]:
+                        formatted_mi += initial + " "
+                    formatted_mi = formatted_mi[:-1]  # remove trailing space
 
-            new_host.full_clean()
-        except ValidationError as err:
-            # ? invalid creation data passed -> validators
-            new_host.delete()
+                user = Host.objects.create_user(
+                    username=request.data["email"],
+                    email=request.data["email"],
+                    password=request.data["password"],
+                    first_name=request.data["first_name"],
+                    last_name=request.data["last_name"],
+                    prefix=request.data["prefix"],
+                    suffix=request.data["suffix"],
+                    middle_initials=formatted_mi,
+                )
 
-            return Response(
-                {"sign_up_success": False, "reason": "; ".join(err.messages)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        except Exception as err:
-            # ? invalid creation data passed -> general
-            new_host.delete()
+                user.full_clean()
+            except ValidationError as err:
+                # ? invalid creation data passed -> validators
+                user.delete()
 
-            return Response(
-                {"sign_up_success": False, "reason": str(err)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+                return Response(
+                    "; ".join(err.messages),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            except Exception as err:
+                # ? invalid creation data passed -> general
+                user.delete()
+
+                return Response(
+                    str(err),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         login(request, user)
 
         # * get host JSON
-        new_host_JSON = json.loads(
+        user_JSON = json.loads(
             serialize(
                 "json",
-                [new_host],
+                [user],
                 fields=[
                     "first_name",
                     "last_name",
@@ -121,82 +137,63 @@ class Sign_up(APIView):
                 ],
             )
         )[0]
-        return Response({"sign_up_success": True, "user": new_host_JSON})
+        return Response(user_JSON, status=status.HTTP_201_CREATED)
 
 
 class Log_out(APIView):
     def post(self, request):
-        # ? not logged in
+        # ? user not logged in
         if not request.user.is_authenticated:
             return Response(
-                {"log_out_success": False, "reason": "not logged in"},
+                "user not logged in",
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
         logout(request)
 
-        return Response({"log_out_success": True})
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class Update_account(APIView):
     def put(self, request):
-        host_id = request.query_params.get("host_id")
-        # ? no host id passed
-        if host_id is None:
-            return Response(
-                {"put_success": False, "reason": "no host id passed"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # ? not logged into account requested to be edited
+        # ? user not logged in
         if not request.user.is_authenticated:
             return Response(
-                {
-                    "delete_success": False,
-                    "reason": "not logged into account requested to be edited",
-                },
+                "user not logged in",
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-        elif request.user.id != host_id:
-            return Response(
-                {
-                    "delete_success": False,
-                    "reason": "not logged into account requested to be edited",
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
 
+        # * update existing user
         try:
-            edited_host = Host.objects.get(id=host_id)
-
             if "first_name" in request.data:
-                edited_host.first_name = request.data["first_name"]
+                request.user.first_name = request.data["first_name"]
             if "last_name" in request.data:
-                edited_host.last_name = request.data["last_name"]
+                request.user.last_name = request.data["last_name"]
             if "prefix" in request.data:
-                edited_host.prefix = request.data["prefix"]
+                request.user.prefix = request.data["prefix"]
             if "suffix" in request.data:
-                edited_host.suffix = request.data["suffix"]
+                request.user.suffix = request.data["suffix"]
             if "middle_initials" in request.data:
+                # * format middle initials ("ABC" -> "A B C")
                 formatted_mi = ""
                 if request.data["middle_initials"] is not None:
                     for initial in request.data["middle_initials"]:
                         formatted_mi += initial + " "
-                    formatted_mi = formatted_mi[:-1] # remove trailing space
-                edited_host.middle_initials = formatted_mi
+                    formatted_mi = formatted_mi[:-1]  # remove trailing space
+                request.user.middle_initials = formatted_mi
 
-            edited_host.full_clean()
-            edited_host.save()
+            request.user.full_clean()
+            request.user.save()
         except ValidationError as err:
             # ? invalid update data passed -> validators
             return Response(
-                {"put_success": False, "reason": "; ".join(err.messages)},
+                "; ".join(err.messages),
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as err:
             # ? invalid creation data passed -> general
             return Response(
-                {"put_success": False, "reason": str(err)},
+                str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -204,7 +201,7 @@ class Update_account(APIView):
         edited_host_JSON = json.loads(
             serialize(
                 "json",
-                [edited_host],
+                [request.user],
                 fields=[
                     "first_name",
                     "last_name",
@@ -214,59 +211,64 @@ class Update_account(APIView):
                 ],
             )
         )[0]
-        return Response({"put_success": True, "user": edited_host_JSON})
+        return Response(edited_host_JSON, status=status.HTTP_200_OK)
 
 
 class Delete_account(APIView):
     def delete(self, request):
-        host_id = request.query_params.get("host_id")
-        # ? no host id passed
-        if host_id is None:
-            return Response(
-                {"delete_success": False, "reason": "no host id passed"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # ? not logged into account requested to be edited
+        # ? user not logged in
         if not request.user.is_authenticated:
             return Response(
-                {
-                    "delete_success": False,
-                    "reason": "not logged into account requested to be deleted",
-                },
+                "user not logged in",
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-        elif request.user.id != host_id:
+
+        # * delete existing user
+        try:
+            request.user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        # ? internal error deleting user
+        except Exception as err:
             return Response(
-                {
-                    "delete_success": False,
-                    "reason": "not logged into account requested to be deleted",
-                },
+                str(err),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class Deactivate_account(APIView):
+    def put(self, request):
+        # ? user not logged in
+        if not request.user.is_authenticated:
+            return Response(
+                "user not logged in",
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # ? user account already deactivated
+        if not request.user.is_active:
+            return Response(
+                "user account already deactivated",
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+        # * deactivate existing user
         try:
-            host_of_id = Host.objects.get(id=host_id)
-        except:
-            # ? no host with the given id exists
+            request.user.is_active = False
+            request.user.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        # ? internal error deactivating user
+        except Exception as err:
             return Response(
-                {
-                    "delete_success": False,
-                    "reason": "no host with the given id exists",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
+                str(err),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-        host_of_id.delete()
-
-        return Response({"delete_success": True})
 
 
 class Init_check(APIView):
     def get(self, request):
         # ? back end not logged in
         if not request.user.is_authenticated:
-            return Response({"get_success": False, "reason": "back end not logged in"})
+            return Response("back end not logged in", status=status.HTTP_204_NO_CONTENT)
 
         # * get host JSON
         current_host_JSON = json.loads(
@@ -282,4 +284,4 @@ class Init_check(APIView):
                 ],
             )
         )[0]
-        return Response({"get_success": True, "user": current_host_JSON})
+        return Response(current_host_JSON, status=status.HTTP_200_OK)

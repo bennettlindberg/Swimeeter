@@ -1,172 +1,116 @@
 from rest_framework.views import APIView, Response
 from rest_framework import status
 
-from django.core.serializers import serialize
-import json
-
-from ..models import Event, Session, Meet
+from ..models import Event
+from .. import view_helpers as vh
 
 from django.core.exceptions import ValidationError
 
 
 class Event_view(APIView):
     def get(self, request):
-        specific_to = request.query_params.get("specific_to")
+        specific_to = vh.get_query_param(request, "specific_to")
+        # ? no "specific_to" param passed
+        if isinstance(specific_to, Response):
+            return specific_to
 
-        # set record range
-        upper_bound_str = request.query_params.get("upper_bound")
-        if upper_bound_str is not None:
+        upper_bound_str = vh.get_query_param(request, "upper_bound")
+        # ? no "upper_bound" param passed
+        if isinstance(upper_bound_str, Response):
+            upper_bound = None
+        else:
             upper_bound = int(upper_bound_str)
 
-        lower_bound_str = request.query_params.get("lower_bound")
-        if lower_bound_str is not None:
+        lower_bound_str = vh.get_query_param(request, "lower_bound")
+        # ? no "lower_bound" param passed
+        if isinstance(lower_bound_str, Response):
+            lower_bound = None
+        else:
             lower_bound = int(lower_bound_str)
 
-        # get all events for a specific...
+        # $ get event(s) specific too...
         match specific_to:
+            # $ ...id
             case "id":
-                event_id = request.query_params.get("event_id")
-                # ? no event id passed
-                if event_id is None:
-                    return Response(
-                        {"get_success": False, "reason": "no event id passed"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+                event_id = vh.get_query_param(request, "event_id")
+                # ? no "event_id" param passed
+                if isinstance(event_id, Response):
+                    return event_id
 
-                try:
-                    event_of_id = Event.objects.get(id=event_id)
-                except:
-                    # ? no event with the given id exists
-                    return Response(
-                        {
-                            "get_success": False,
-                            "reason": "no event with the given id exists",
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+                event_of_id = vh.get_model_of_id("Event", event_id)
+                # ? no event of event_id exists
+                if isinstance(event_of_id, Response):
+                    return event_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, event_of_id.session.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
 
                 # * get event JSON
-                event_of_id_JSON = json.loads(
-                    serialize(
-                        "json",
-                        [event_of_id],
-                        fields=[
-                            "stroke",
-                            "distance",
-                            "is_relay",
-                            "swimmers_per_entry",
-                            "competing_gender",
-                            "competing_max_age",
-                            "competing_min_age",
-                            "order_in_session",
-                            "total_heats",
-                            "session",
-                        ],
+                event_JSON = vh.get_JSON_single("Event", event_of_id, True)
+                # ? internal error generating JSON
+                if isinstance(event_JSON, Response):
+                    return event_JSON
+                else:
+                    return Response(
+                        event_JSON,
+                        status=status.HTTP_200_OK,
                     )
-                )[0]
 
-                # * get FK session JSON
-                event_of_id__session = Session.objects.get(id=event_of_id.session_id)
-                event_of_id__session_JSON = json.loads(
-                    serialize(
-                        "json",
-                        [event_of_id__session],
-                        fields=[
-                            "name",
-                            "begin_time",
-                            "end_time",
-                            "meet",
-                        ],
-                    )
-                )[0]
-                event_of_id_JSON["fields"]["session"] = event_of_id__session_JSON
-
-                return Response({"get_success": True, "data": event_of_id_JSON})
-
+            # $ ...session
             case "session":
-                session_id = request.query_params.get("session_id")
-                # ? no session id passed
-                if session_id is None:
-                    return Response(
-                        {"get_success": False, "reason": "no session id passed"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+                session_id = vh.get_query_param(request, "session_id")
+                # ? no "session_id" param passed
+                if isinstance(session_id, Response):
+                    return session_id
 
-                try:
-                    session_of_id = Session.objects.get(id=session_id)
-                except:
-                    # ? no session with the given id exists
-                    return Response(
-                        {
-                            "post_success": False,
-                            "reason": "no session with the given id exists",
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+                session_of_id = vh.get_model_of_id("Session", session_id)
+                # ? no session of session_id exists
+                if isinstance(session_of_id, Response):
+                    return session_of_id
 
-                # * get events JSON
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, session_of_id.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+
                 events_of_session = Event.objects.filter(
                     session_id=session_id
                 ).order_by("order_in_session")[lower_bound:upper_bound]
-                events_of_session_JSON = json.loads(
-                    serialize(
-                        "json",
-                        events_of_session,
-                        fields=[
-                            "stroke",
-                            "distance",
-                            "is_relay",
-                            "swimmers_per_entry",
-                            "competing_gender",
-                            "competing_max_age",
-                            "competing_min_age",
-                            "order_in_session",
-                            "total_heats",
-                            "session",
-                        ],
-                    )
-                )
-
-                # * get FK session JSON
-                events_of_session__session_JSON = json.loads(
-                    serialize(
-                        "json",
-                        [session_of_id],
-                        fields=[
-                            "name",
-                            "begin_time",
-                            "end_time",
-                            "meet",
-                        ],
-                    )
-                )[0]
-                for event_JSON in events_of_session_JSON:
-                    event_JSON["fields"]["session"] = events_of_session__session_JSON
-
-                return Response({"get_success": True, "data": events_of_session_JSON})
-
-            case "meet":
-                meet_id = request.query_params.get("meet_id")
-                # ? no meet id passed
-                if meet_id is None:
-                    return Response(
-                        {"get_success": False, "reason": "no meet id passed"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
-                try:
-                    meet_of_id = Meet.objects.get(id=meet_id)
-                except:
-                    # ? no meet with the given id exists
-                    return Response(
-                        {
-                            "post_success": False,
-                            "reason": "no meet with the given id exists",
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
 
                 # * get events JSON
+                events_JSON = vh.get_JSON_multiple("Event", events_of_session, True)
+                # ? internal error generating JSON
+                if isinstance(events_JSON, Response):
+                    return events_JSON
+                else:
+                    return Response(
+                        events_JSON,
+                        status=status.HTTP_200_OK,
+                    )
+
+            # $ ...meet
+            case "meet":
+                meet_id = vh.get_query_param(request, "meet_id")
+                # ? no "meet_id" param passed
+                if isinstance(meet_id, Response):
+                    return meet_id
+
+                meet_of_id = vh.get_model_of_id("Meet", meet_id)
+                # ? no meet of meet_id exists
+                if isinstance(meet_of_id, Response):
+                    return meet_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(request, meet_of_id)
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+
                 events_of_meet = Event.objects.filter(
                     session__meet_id=meet_id
                 ).order_by(
@@ -174,94 +118,44 @@ class Event_view(APIView):
                 )[
                     lower_bound:upper_bound
                 ]
-                events_of_meet_JSON = json.loads(
-                    serialize(
-                        "json",
-                        events_of_meet,
-                        fields=[
-                            "stroke",
-                            "distance",
-                            "is_relay",
-                            "swimmers_per_entry",
-                            "competing_gender",
-                            "competing_max_age",
-                            "competing_min_age",
-                            "order_in_session",
-                            "total_heats",
-                            "session",
-                        ],
+
+                # * get events JSON
+                events_JSON = vh.get_JSON_multiple("Event", events_of_meet, True)
+                # ? internal error generating JSON
+                if isinstance(events_JSON, Response):
+                    return events_JSON
+                else:
+                    return Response(
+                        events_JSON,
+                        status=status.HTTP_200_OK,
                     )
-                )
 
-                # * get FK sessions JSON
-                for event_JSON in events_of_meet_JSON:
-                    event_of_meet__session = Session.objects.get(
-                        id=event_JSON["fields"]["session"]
-                    )
-                    event_of_meet__session_JSON = json.loads(
-                        serialize(
-                            "json",
-                            [event_of_meet__session],
-                            fields=[
-                                "name",
-                                "begin_time",
-                                "end_time",
-                                "meet",
-                            ],
-                        )
-                    )[0]
-
-                    event_JSON["fields"]["session"] = event_of_meet__session_JSON
-
-                return Response({"get_success": True, "data": events_of_meet_JSON})
-
-            # ? invalid 'specific_to' specification
+            # ? invalid "specific_to" specification
             case _:
                 return Response(
-                    {
-                        "get_success": False,
-                        "reason": "invalid 'specific_to' specification",
-                    },
+                    "invalid 'specific_to' specification",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
     def post(self, request):
-        # ? not logged in
-        if not request.user.is_authenticated:
-            return Response(
-                {"post_success": False, "reason": "not logged in"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        session_id = vh.get_query_param(request, "session_id")
+        # ? no "session_id" param passed
+        if isinstance(session_id, Response):
+            return session_id
 
-        session_id = request.query_params.get("session_id")
-        # ? no session id passed
-        if session_id is None:
-            return Response(
-                {"post_success": False, "reason": "no session id passed"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        session_of_id = vh.get_model_of_id("Session", session_id)
+        # ? no session of session_id exists
+        if isinstance(session_of_id, Response):
+            return session_of_id
 
+        check_is_host = vh.check_user_is_host(request, session_of_id.meet.host_id)
+        # ? user is not meet host
+        if isinstance(check_is_host, Response):
+            return check_is_host
+
+        # * create new event
         try:
-            session_of_id = Session.objects.get(id=session_id)
-        except:
-            # ? no session with the given id exists
-            return Response(
-                {
-                    "post_success": False,
-                    "reason": "no session with the given id exists",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        meet_host_id = session_of_id.meet.host_id
-        # ? not logged into meet host account
-        if request.user.id != meet_host_id:
-            return Response(
-                {"post_success": False, "reason": "not logged into meet host account"},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        try:
+            # * generate order number for new event
             if "order_in_session" in request.data:
                 order_number = request.data["order_in_session"]
             else:
@@ -281,21 +175,22 @@ class Event_view(APIView):
                 competing_max_age=request.data["competing_max_age"],
                 competing_min_age=request.data["competing_min_age"],
                 order_in_session=order_number,
-                # total_heats => null
+                # total_heats => null,
                 session_id=session_id,
             )
+
             new_event.full_clean()
             new_event.save()
         except ValidationError as err:
             # ? invalid creation data passed -> validators
             return Response(
-                {"post_success": False, "reason": "; ".join(err.messages)},
+                "; ".join(err.messages),
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as err:
             # ? invalid creation data passed -> general
             return Response(
-                {"post_success": False, "reason": str(err)},
+                str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -309,63 +204,36 @@ class Event_view(APIView):
                 event.order_in_session += 1
                 event.save()
 
-        new_event_JSON = json.loads(
-            serialize(
-                "json",
-                [new_event],
-                fields=[
-                    "stroke",
-                    "distance",
-                    "is_relay",
-                    "swimmers_per_entry",
-                    "competing_gender",
-                    "competing_max_age",
-                    "competing_min_age",
-                    "order_in_session",
-                    "total_heats",
-                    "session",
-                ],
+        # * get event JSON
+        event_JSON = vh.get_JSON_single("Event", new_event, False)
+        # ? internal error generating JSON
+        if isinstance(event_JSON, Response):
+            return event_JSON
+        else:
+            return Response(
+                event_JSON,
+                status=status.HTTP_201_CREATED,
             )
-        )[0]
-        return Response({"post_success": True, "data": new_event_JSON})
 
     def put(self, request):
-        # ? not logged in
-        if not request.user.is_authenticated:
-            return Response(
-                {"put_success": False, "reason": "not logged in"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        event_id = vh.get_query_param(request, "event_id")
+        # ? no "event_id" param passed
+        if isinstance(event_id, Response):
+            return event_id
 
-        event_id = request.query_params.get("event_id")
-        # ? no event id passed
-        if event_id is None:
-            return Response(
-                {"put_success": False, "reason": "no event id passed"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        event_of_id = vh.get_model_of_id("Event", event_id)
+        # ? no event of event_id exists
+        if isinstance(event_of_id, Response):
+            return event_of_id
 
+        check_is_host = vh.check_user_is_host(request, event_of_id.session.meet.host_id)
+        # ? user is not meet host
+        if isinstance(check_is_host, Response):
+            return check_is_host
+
+        # * update existing event
         try:
-            event_of_id = Event.objects.get(id=event_id)
-        except:
-            # ? no event with the given id exists
-            return Response(
-                {"put_success": False, "reason": "no event with the given id exists"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        meet_host_id = event_of_id.session.meet.host_id
-        # ? not logged into meet host account
-        if request.user.id != meet_host_id:
-            return Response(
-                {
-                    "put_success": False,
-                    "reason": "not logged into meet host account",
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        try:
+            # ~ highest order number used later
             current_highest_order_number = (
                 Event.objects.filter(session_id=event_of_id.session_id)
                 .order_by("-order_in_session")[:1][0]
@@ -391,6 +259,7 @@ class Event_view(APIView):
             if "order_in_session" in request.data:
                 old_order_number = edited_event.order_in_session
 
+                # * calculate highest order number for edited event
                 if request.data["order_in_session"] == "start":
                     edited_event.order_in_session = 1
                 elif request.data["order_in_session"] == "end":
@@ -406,18 +275,21 @@ class Event_view(APIView):
         except ValidationError as err:
             # ? invalid creation data passed -> validators
             return Response(
-                {"put_success": False, "reason": "; ".join(err.messages)},
+                "; ".join(err.messages),
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as err:
             # ? invalid creation data passed -> general
             return Response(
-                {"put_success": False, "reason": str(err)},
+                str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         # * move event order numbers backward -> self moved forward
-        if "order_in_session" in request.data and old_order_number < edited_event.order_in_session:
+        if (
+            "order_in_session" in request.data
+            and old_order_number < edited_event.order_in_session
+        ):
             order_shifted_events = Event.objects.filter(
                 session_id=edited_event.session_id,
                 order_in_session__gt=old_order_number,
@@ -429,83 +301,63 @@ class Event_view(APIView):
                 event.save()
 
         # * move event order numbers forward -> self moved backward
-        elif "order_in_session" in request.data and old_order_number > edited_event.order_in_session:
+        elif (
+            "order_in_session" in request.data
+            and old_order_number > edited_event.order_in_session
+        ):
             order_shifted_events = Event.objects.filter(
                 session_id=edited_event.session_id,
                 order_in_session__lt=old_order_number,
                 order_in_session__gte=edited_event.order_in_session,
             ).exclude(id=edited_event.id)
-            
+
             for event in order_shifted_events:
                 event.order_in_session += 1
                 event.save()
 
-        edited_event_JSON = json.loads(
-            serialize(
-                "json",
-                [edited_event],
-                fields=[
-                    "stroke",
-                    "distance",
-                    "is_relay",
-                    "swimmers_per_entry",
-                    "competing_gender",
-                    "competing_max_age",
-                    "competing_min_age",
-                    "order_in_session",
-                    "total_heats",
-                    "session",
-                ],
+        # * get event JSON
+        event_JSON = vh.get_JSON_single("Event", edited_event, False)
+        # ? internal error generating JSON
+        if isinstance(event_JSON, Response):
+            return event_JSON
+        else:
+            return Response(
+                event_JSON,
+                status=status.HTTP_200_OK,
             )
-        )[0]
-        return Response({"put_success": True, "data": edited_event_JSON})
 
     def delete(self, request):
-        # ? not logged in
-        if not request.user.is_authenticated:
-            return Response(
-                {"delete_success": False, "reason": "not logged in"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        event_id = vh.get_query_param(request, "event_id")
+        # ? no "event_id" param passed
+        if isinstance(event_id, Response):
+            return event_id
 
-        event_id = request.query_params.get("event_id")
-        # ? no event id passed
-        if event_id is None:
-            return Response(
-                {"delete_success": False, "reason": "no event id passed"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        event_of_id = vh.get_model_of_id("Event", event_id)
+        # ? no event of event_id exists
+        if isinstance(event_of_id, Response):
+            return event_of_id
 
-        try:
-            event_of_id = Event.objects.get(id=event_id)
-        except:
-            # ? no event with the given id exists
-            return Response(
-                {
-                    "delete_success": False,
-                    "reason": "no event with the given id exists",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        meet_host_id = event_of_id.meet.host_id
-        # ? not logged into meet host account
-        if request.user.id != meet_host_id:
-            return Response(
-                {
-                    "delete_success": False,
-                    "reason": "not logged into meet host account",
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
+        check_is_host = vh.check_user_is_host(request, event_of_id.session.meet.host_id)
+        # ? user is not meet host
+        if isinstance(check_is_host, Response):
+            return check_is_host
 
         # * move event order numbers backward
-        order_shifted_events = Event.objects.filter(session_id=event_of_id.session_id,
-            order_in_session__gt=event_of_id.order_in_session
+        order_shifted_events = Event.objects.filter(
+            session_id=event_of_id.session_id,
+            order_in_session__gt=event_of_id.order_in_session,
         )
         for event in order_shifted_events:
             event.order_in_session -= 1
             event.save()
 
-        event_of_id.delete()
-        return Response({"delete_success": True})
+        # * delete existing event
+        try:
+            event_of_id.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        # ? internal error deleting model
+        except Exception as err:
+            return Response(
+                str(err),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

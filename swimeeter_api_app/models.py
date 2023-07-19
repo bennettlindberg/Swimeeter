@@ -62,7 +62,7 @@ class Event(models.Model):
     )
     total_heats = (
         models.PositiveSmallIntegerField(null=True)
-    )  # ! invalid assignments indicated by total_heats == null
+    )  # invalid assignments indicated by total_heats == null
 
     # * association fields
     session = models.ForeignKey(
@@ -121,10 +121,10 @@ class Individual_entry(models.Model):
     # * heat sheet fields
     heat_number = (
         models.PositiveSmallIntegerField(null=True)
-    )  # ! invalid assignment indicated by heat_number == null
+    )  # invalid assignment indicated by heat_number == null
     lane_number = (
         models.PositiveSmallIntegerField(null=True)
-    )  # ! invalid assignment indicated by lane_number == null
+    )  # invalid assignment indicated by lane_number == null
 
     # * association fields
     swimmer = models.ForeignKey(
@@ -135,15 +135,15 @@ class Individual_entry(models.Model):
 
 class Relay_entry(models.Model):
     # * entry info fields
-    seed_time = models.PositiveIntegerField()  # converted to a multiple of 0.01 seconds
+    seed_time = models.PositiveIntegerField()  # converted to a multiple of 0.01 seconds, sum of relay assignment splits
 
     # * heat sheet fields
     heat_number = (
         models.PositiveSmallIntegerField(null=True)
-    )  # ! invalid assignment indicated by heat_number == null
+    )  # invalid assignment indicated by heat_number == null
     lane_number = (
         models.PositiveSmallIntegerField(null=True)
-    )  # ! invalid assignment indicated by lane_number == null
+    )  # invalid assignment indicated by lane_number == null
 
     # * association fields
     swimmers = models.ManyToManyField(
@@ -159,6 +159,7 @@ class Relay_assignment(models.Model):
     order_in_relay = models.PositiveSmallIntegerField(
         validators=[validators.MinValueValidator(1)]
     )
+    seed_relay_split = models.PositiveIntegerField()  # converted to a multiple of 0.01 seconds
 
     # * association fields
     swimmer = models.ForeignKey(Swimmer, on_delete=models.CASCADE, related_name="relay_assignments")

@@ -44,7 +44,7 @@ class Meet_view(APIView):
                     return meet_of_id
                 
                 check_meet_access = vh.check_meet_access_allowed(request, meet_of_id)
-                # ? meet access not allowed
+                # ? private meet access not allowed
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
                 
@@ -151,7 +151,7 @@ class Meet_view(APIView):
             )
 
         # * get meet JSON
-        meet_JSON = vh.get_JSON_single("Meet", new_meet, True)
+        meet_JSON = vh.get_JSON_single("Meet", new_meet, False)
         # ? internal error generating JSON
         if isinstance(meet_JSON, Response):
             return meet_JSON
@@ -162,11 +162,6 @@ class Meet_view(APIView):
             )
 
     def put(self, request):
-        check_logged_in = vh.check_user_logged_in(request)
-        # ? user is not logged in
-        if isinstance(check_logged_in, Response):
-            return check_logged_in
-
         meet_id = vh.get_query_param(request, "meet_id")
         # ? no "meet_id" param passed
         if isinstance(meet_id, Response):
@@ -213,7 +208,7 @@ class Meet_view(APIView):
             )
 
         # * get meet JSON
-        meet_JSON = vh.get_JSON_single("Meet", edited_meet, True)
+        meet_JSON = vh.get_JSON_single("Meet", edited_meet, False)
         # ? internal error generating JSON
         if isinstance(meet_JSON, Response):
             return meet_JSON
@@ -224,11 +219,6 @@ class Meet_view(APIView):
             )
 
     def delete(self, request):
-        check_logged_in = vh.check_user_logged_in(request)
-        # ? user is not logged in
-        if isinstance(check_logged_in, Response):
-            return check_logged_in
-
         meet_id = vh.get_query_param(request, "meet_id")
         # ? no "meet_id" param passed
         if isinstance(meet_id, Response):

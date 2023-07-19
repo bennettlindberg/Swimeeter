@@ -80,9 +80,13 @@ def check_user_logged_in(request):
         return None
 
 
-# @ assumes user is logged in
 def check_user_is_host(request, host_id):
-    if request.user.id != host_id:
+    if not request.user.is_authenticated:
+        return Response(
+            "user is not logged in",
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+    elif request.user.id != host_id:
         return Response(
             "user is not logged into meet host account",
             status=status.HTTP_403_FORBIDDEN,
@@ -300,7 +304,7 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     individual_JSON["fields"]["relay_assignments"] = get_JSON_multiple(
                         "Relay_assignment",
                         Relay_assignment.objects.filter(
-                            id__in=individual_JSON["fields"]["relay_assignments"]
+                            relay_entry_id=individual_JSON["pk"]
                         ),
                         True,
                     )
@@ -319,6 +323,7 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     model_objects,
                     fields=[
                         "order_in_relay",
+                        "seed_relay_split",
                         "swimmer",
                         "relay_entry",
                     ],

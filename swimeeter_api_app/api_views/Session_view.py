@@ -30,7 +30,6 @@ class Session_view(APIView):
 
         # $ get session(s) specific too...
         match specific_to:
-
             # $ ...id
             case "id":
                 session_id = vh.get_query_param(request, "session_id")
@@ -42,9 +41,11 @@ class Session_view(APIView):
                 # ? no session of session_id exists
                 if isinstance(session_of_id, Response):
                     return session_of_id
-                
-                check_meet_access = vh.check_meet_access_allowed(request, session_of_id.meet)
-                # ? meet access not allowed
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, session_of_id.meet
+                )
+                # ? private meet access not allowed
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
 
@@ -57,7 +58,7 @@ class Session_view(APIView):
                     return Response(
                         session_JSON,
                         status=status.HTTP_200_OK,
-                )
+                    )
 
             # $ ...meet
             case "meet":
@@ -70,13 +71,15 @@ class Session_view(APIView):
                 # ? no meet of meet_id exists
                 if isinstance(meet_of_id, Response):
                     return meet_of_id
-                
+
                 check_meet_access = vh.check_meet_access_allowed(request, meet_of_id)
-                # ? meet access not allowed
+                # ? private meet access not allowed
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
-                
-                sessions_of_meet = Session.objects.filter(meet_id=meet_id)
+
+                sessions_of_meet = Session.objects.filter(meet_id=meet_id).order_by(
+                    "begin_time", "end_time"
+                )[lower_bound:upper_bound]
 
                 # * get sessions JSON
                 sessions_JSON = vh.get_JSON_multiple("Session", sessions_of_meet, True)
@@ -87,7 +90,7 @@ class Session_view(APIView):
                     return Response(
                         sessions_JSON,
                         status=status.HTTP_200_OK,
-                )
+                    )
 
             # ? invalid "specific_to" specification
             case _:
@@ -97,11 +100,6 @@ class Session_view(APIView):
                 )
 
     def post(self, request):
-        check_logged_in = vh.check_user_logged_in(request)
-        # ? user is not logged in
-        if isinstance(check_logged_in, Response):
-            return check_logged_in
-
         meet_id = vh.get_query_param(request, "meet_id")
         # ? no "meet_id" param passed
         if isinstance(meet_id, Response):
@@ -140,7 +138,7 @@ class Session_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         # * update meet begin and end times
         if meet_of_id.begin_time is None or meet_of_id.end_time is None:
             meet_of_id.begin_time = new_session.begin_time
@@ -158,7 +156,7 @@ class Session_view(APIView):
                 meet_of_id.save()
 
         # * get session JSON
-        session_JSON = vh.get_JSON_single("Session", new_session, True)
+        session_JSON = vh.get_JSON_single("Session", new_session, False)
         # ? internal error generating JSON
         if isinstance(session_JSON, Response):
             return session_JSON
@@ -169,11 +167,6 @@ class Session_view(APIView):
             )
 
     def put(self, request):
-        check_logged_in = vh.check_user_logged_in(request)
-        # ? user is not logged in
-        if isinstance(check_logged_in, Response):
-            return check_logged_in
-
         session_id = vh.get_query_param(request, "session_id")
         # ? no "session_id" param passed
         if isinstance(session_id, Response):
@@ -214,12 +207,12 @@ class Session_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         meet_of_id = vh.get_model_of_id("Meet", session_of_id.meet_id)
         # ? no meet of meet_id exists
         if isinstance(meet_of_id, Response):
             return meet_of_id
-        
+
         # * update meet begin and end times
         if edited_session.begin_time < meet_of_id.begin_time:
             meet_of_id.begin_time = edited_session.begin_time
@@ -231,7 +224,7 @@ class Session_view(APIView):
             meet_of_id.save()
 
         # * get session JSON
-        session_JSON = vh.get_JSON_single("Session", edited_session, True)
+        session_JSON = vh.get_JSON_single("Session", edited_session, False)
         # ? internal error generating JSON
         if isinstance(session_JSON, Response):
             return session_JSON
@@ -242,11 +235,6 @@ class Session_view(APIView):
             )
 
     def delete(self, request):
-        check_logged_in = vh.check_user_logged_in(request)
-        # ? user is not logged in
-        if isinstance(check_logged_in, Response):
-            return check_logged_in
-
         session_id = vh.get_query_param(request, "session_id")
         # ? no "session_id" param passed
         if isinstance(session_id, Response):
@@ -257,18 +245,22 @@ class Session_view(APIView):
         if isinstance(session_of_id, Response):
             return session_of_id
 
-        check_is_host = vh.check_user_is_host(request, meet_of_id.host_id)
+        check_is_host = vh.check_user_is_host(request, session_of_id.meet.host_id)
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
 
+        # ~ required for updating meet begin and end times
         meet_of_id = vh.get_model_of_id("Meet", session_of_id.meet_id)
         # ? no meet of meet_id exists
         if isinstance(meet_of_id, Response):
             return meet_of_id
-        
+
         # * update meet begin and end times
-        remaining_sessions = Session.objects.filter(meet_id=session_of_id.meet_id).exclude(id=session_of_id.id)
+        remaining_sessions = Session.objects.filter(
+            meet_id=session_of_id.meet_id
+        ).exclude(id=session_of_id.id)
+        
         if remaining_sessions.count() == 0:
             meet_of_id.begin_time = None
             meet_of_id.end_time = None
@@ -276,9 +268,9 @@ class Session_view(APIView):
             meet_of_id.full_clean()
             meet_of_id.save()
         else:
-            earliest_session = remaining_sessions.order_by('begin_time')[:1][0]
+            earliest_session = remaining_sessions.order_by("begin_time")[:1][0]
             meet_of_id.begin_time = earliest_session.begin_time
-            latest_session = remaining_sessions.order_by('-end_time')[:1][0]
+            latest_session = remaining_sessions.order_by("-end_time")[:1][0]
             meet_of_id.end_time = latest_session.end_time
 
             meet_of_id.full_clean()
