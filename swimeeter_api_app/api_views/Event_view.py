@@ -1,7 +1,7 @@
 from rest_framework.views import APIView, Response
 from rest_framework import status
 
-from ..models import Event
+from ..models import Event, Individual_entry, Relay_entry
 from .. import view_helpers as vh
 
 from django.core.exceptions import ValidationError
@@ -171,6 +171,7 @@ class Event_view(APIView):
                 distance=request.data["distance"],
                 is_relay=request.data["is_relay"],
                 swimmers_per_entry=request.data["swimmers_per_entry"],
+                stage=request.data["stage"],
                 competing_gender=request.data["competing_gender"],
                 competing_max_age=request.data["competing_max_age"],
                 competing_min_age=request.data["competing_min_age"],
@@ -178,6 +179,13 @@ class Event_view(APIView):
                 # total_heats => null,
                 session_id=session_id,
             )
+
+            # * handle any duplicates
+            duplicate_handling = vh.get_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Event", new_event)
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
 
             new_event.full_clean()
             new_event.save()
@@ -198,7 +206,7 @@ class Event_view(APIView):
         if "order_in_session" in request.data:
             order_shifted_events = Event.objects.filter(
                 session_id=session_id, order_in_session__gte=order_number
-            ).exclude(id=new_event.id)
+            ).exclude(id=new_event.pk)
 
             for event in order_shifted_events:
                 event.order_in_session += 1
@@ -250,6 +258,8 @@ class Event_view(APIView):
                 edited_event.is_relay = request.data["is_relay"]
             if "swimmers_per_entry" in request.data:
                 edited_event.swimmers_per_entry = request.data["swimmers_per_entry"]
+            if "stage" in request.data:
+                edited_event.stage = request.data["stage"]
             if "competing_gender" in request.data:
                 edited_event.competing_gender = request.data["competing_gender"]
             if "competing_max_age" in request.data:
@@ -270,6 +280,13 @@ class Event_view(APIView):
                         current_highest_order_number + 1,
                     )  # cap order number at end
 
+            # * handle any duplicates
+            duplicate_handling = vh.get_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Event", edited_event)
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
+
             edited_event.full_clean()
             edited_event.save()
         except ValidationError as err:
@@ -284,6 +301,35 @@ class Event_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        # * delete newly incompatible entries and invalidate event seeding
+        seeding_needs_invalidation = False
+
+        if edited_event.is_relay:
+            entries_of_event = Relay_entry.objects.filter(event_id=edited_event.pk)
+            for entry in entries_of_event:
+                for swimmer in entry.swimmers.all():
+                    check_compatibility = vh.validate_swimmer_against_event(swimmer, edited_event)
+                    # ? swimmer and event are not compatible
+                    if isinstance(check_compatibility, Response):
+                        entry.delete()
+                        seeding_needs_invalidation = True
+                        break
+        else:
+            entries_of_event = Individual_entry.objects.filter(event_id=edited_event.pk)
+            for entry in entries_of_event:
+                check_compatibility = vh.validate_swimmer_against_event(entry.swimmer, edited_event)
+                # ? swimmer and event are not compatible
+                if isinstance(check_compatibility, Response):
+                    entry.delete()
+                    seeding_needs_invalidation = True
+
+        if seeding_needs_invalidation:
+            # * invalidate event seeding
+            invalidate_hs_data = vh.invalidate_event_seeding(edited_event)
+            # ? internal error invalidating event seeding
+            if isinstance(invalidate_hs_data, Response):
+                return invalidate_hs_data
 
         # * move event order numbers backward -> self moved forward
         if (
@@ -294,7 +340,7 @@ class Event_view(APIView):
                 session_id=edited_event.session_id,
                 order_in_session__gt=old_order_number,
                 order_in_session__lte=edited_event.order_in_session,
-            ).exclude(id=edited_event.id)
+            ).exclude(id=edited_event.pk)
 
             for event in order_shifted_events:
                 event.order_in_session -= 1
@@ -309,7 +355,7 @@ class Event_view(APIView):
                 session_id=edited_event.session_id,
                 order_in_session__lt=old_order_number,
                 order_in_session__gte=edited_event.order_in_session,
-            ).exclude(id=edited_event.id)
+            ).exclude(id=edited_event.pk)
 
             for event in order_shifted_events:
                 event.order_in_session += 1

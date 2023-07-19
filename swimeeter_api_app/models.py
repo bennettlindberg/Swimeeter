@@ -9,8 +9,8 @@ class Meet(models.Model):
     name = models.CharField(
         max_length=255, validators=[validators.MinLengthValidator(1)]
     )
-    begin_time = models.DateTimeField(null=True) # handled programmatically
-    end_time = models.DateTimeField(null=True) # handled programmatically
+    begin_time = models.DateTimeField(null=True)  # handled programmatically
+    end_time = models.DateTimeField(null=True)  # handled programmatically
     is_public = models.BooleanField()
 
     # * pool info fields
@@ -47,21 +47,24 @@ class Event(models.Model):
     stroke = models.CharField(max_length=255)
     distance = models.PositiveSmallIntegerField()
     is_relay = models.BooleanField()
-    swimmers_per_entry = models.PositiveSmallIntegerField(validators=[validators.MinValueValidator(1)])
+    swimmers_per_entry = models.PositiveSmallIntegerField(
+        validators=[validators.MinValueValidator(1)]
+    )
+    stage = models.CharField(max_length=255)  # usually 'Prelim' or 'Final'
 
     # * competitor info fields
     competing_gender = models.CharField(max_length=255)
-    competing_max_age = (
-        models.PositiveSmallIntegerField()
+    competing_max_age = models.PositiveSmallIntegerField(
+        null=True
     )  # front-end check for max >= min
-    competing_min_age = models.PositiveSmallIntegerField()
+    competing_min_age = models.PositiveSmallIntegerField(null=True)
 
     # * heat sheet fields
     order_in_session = models.PositiveSmallIntegerField(
         validators=[validators.MinValueValidator(1)]
     )
-    total_heats = (
-        models.PositiveSmallIntegerField(null=True)
+    total_heats = models.PositiveSmallIntegerField(
+        null=True
     )  # invalid assignments indicated by total_heats == null
 
     # * association fields
@@ -119,39 +122,50 @@ class Individual_entry(models.Model):
     seed_time = models.PositiveIntegerField()  # converted to a multiple of 0.01 seconds
 
     # * heat sheet fields
-    heat_number = (
-        models.PositiveSmallIntegerField(null=True)
+    heat_number = models.PositiveSmallIntegerField(
+        null=True
     )  # invalid assignment indicated by heat_number == null
-    lane_number = (
-        models.PositiveSmallIntegerField(null=True)
+    lane_number = models.PositiveSmallIntegerField(
+        null=True
     )  # invalid assignment indicated by lane_number == null
 
     # * association fields
     swimmer = models.ForeignKey(
         Swimmer, on_delete=models.CASCADE, related_name="individual_entries"
     )
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="individual_entries")
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, related_name="individual_entries"
+    )
 
 
 class Relay_entry(models.Model):
     # * entry info fields
-    seed_time = models.PositiveIntegerField()  # converted to a multiple of 0.01 seconds, sum of relay assignment splits
+    seed_time = (
+        models.PositiveIntegerField()
+    )  # converted to a multiple of 0.01 seconds, sum of relay assignment splits
 
     # * heat sheet fields
-    heat_number = (
-        models.PositiveSmallIntegerField(null=True)
+    heat_number = models.PositiveSmallIntegerField(
+        null=True
     )  # invalid assignment indicated by heat_number == null
-    lane_number = (
-        models.PositiveSmallIntegerField(null=True)
+    lane_number = models.PositiveSmallIntegerField(
+        null=True
     )  # invalid assignment indicated by lane_number == null
 
     # * association fields
     swimmers = models.ManyToManyField(
-        Swimmer, blank=True, on_delete=models.CASCADE, through="Relay_assignment", related_name="relay_entries"
+        Swimmer,
+        blank=True,
+        on_delete=models.CASCADE,
+        through="Relay_assignment",
+        related_name="relay_entries",
     )
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="relay_entries")
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, related_name="relay_entries"
+    )
 
     # via association: relay_assignments
+
 
 # @ through table for swimmer <-> relay_entry many-to-many relationship
 class Relay_assignment(models.Model):
@@ -159,8 +173,14 @@ class Relay_assignment(models.Model):
     order_in_relay = models.PositiveSmallIntegerField(
         validators=[validators.MinValueValidator(1)]
     )
-    seed_relay_split = models.PositiveIntegerField()  # converted to a multiple of 0.01 seconds
+    seed_relay_split = (
+        models.PositiveIntegerField()
+    )  # converted to a multiple of 0.01 seconds
 
     # * association fields
-    swimmer = models.ForeignKey(Swimmer, on_delete=models.CASCADE, related_name="relay_assignments")
-    relay_entry = models.ForeignKey(Relay_entry, on_delete=models.CASCADE, related_name="relay_assignments")
+    swimmer = models.ForeignKey(
+        Swimmer, on_delete=models.CASCADE, related_name="relay_assignments"
+    )
+    relay_entry = models.ForeignKey(
+        Relay_entry, on_delete=models.CASCADE, related_name="relay_assignments"
+    )

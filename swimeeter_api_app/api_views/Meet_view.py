@@ -121,7 +121,7 @@ class Meet_view(APIView):
         # ? user is not logged in
         if isinstance(check_logged_in, Response):
             return check_logged_in
-
+        
         # * create new meet
         try:
             new_meet = Meet(
@@ -134,6 +134,13 @@ class Meet_view(APIView):
                 measure_unit=request.data["measure_unit"],
                 host_id=request.user.id,
             )
+
+            # * handle any duplicates
+            duplicate_handling = vh.get_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Meet", new_meet)
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
 
             new_meet.full_clean()
             new_meet.save()
@@ -191,6 +198,13 @@ class Meet_view(APIView):
                 edited_meet.lanes = request.data["side_length"]
             if "measure_unit" in request.data:
                 edited_meet.measure_unit = request.data["measure_unit"]
+
+            # * handle any duplicates
+            duplicate_handling = vh.get_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Meet", edited_meet)
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
 
             edited_meet.full_clean()
             edited_meet.save()

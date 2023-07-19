@@ -124,6 +124,13 @@ class Session_view(APIView):
                 meet_id=meet_id,
             )
 
+            # * handle any duplicates
+            duplicate_handling = vh.get_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Session", new_session)
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
+
             new_session.full_clean()
             new_session.save()
         except ValidationError as err:
@@ -193,6 +200,13 @@ class Session_view(APIView):
             if "end_time" in request.data:
                 edited_session.end_time = request.data["end_time"]
 
+            # * handle any duplicates
+            duplicate_handling = vh.get_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Session", edited_session)
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
+
             edited_session.full_clean()
             edited_session.save()
         except ValidationError as err:
@@ -259,7 +273,7 @@ class Session_view(APIView):
         # * update meet begin and end times
         remaining_sessions = Session.objects.filter(
             meet_id=session_of_id.meet_id
-        ).exclude(id=session_of_id.id)
+        ).exclude(id=session_of_id.pk)
         
         if remaining_sessions.count() == 0:
             meet_of_id.begin_time = None

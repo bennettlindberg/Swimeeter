@@ -1,7 +1,7 @@
 from rest_framework.views import APIView, Response
 from rest_framework import status
 
-from ..models import Swimmer
+from ..models import Swimmer, Individual_entry, Relay_entry
 from .. import view_helpers as vh
 
 from django.core.exceptions import ValidationError
@@ -137,6 +137,13 @@ class Swimmer_view(APIView):
                 meet_id=meet_id,
             )
 
+            # * handle any duplicates
+            duplicate_handling = vh.get_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Swimmer", new_swimmer)
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
+
             new_swimmer.full_clean()
             new_swimmer.save()
         except ValidationError as err:
@@ -210,6 +217,13 @@ class Swimmer_view(APIView):
             if "team_acronym" in request.data:
                 edited_swimmer.team_acronym = request.data["team_acronym"]
 
+            # * handle any duplicates
+            duplicate_handling = vh.get_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Swimmer", edited_swimmer)
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
+
             edited_swimmer.full_clean()
             edited_swimmer.save()
         except ValidationError as err:
@@ -224,6 +238,33 @@ class Swimmer_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        # * delete newly incompatible entries and invalidate event seeding
+        relay_entries_of_swimmer = Relay_entry.objects.filter(swimmers__in=[edited_swimmer.pk])
+        for entry in relay_entries_of_swimmer:
+            check_compatibility = vh.validate_swimmer_against_event(edited_swimmer, entry.event)
+            # ? swimmer and event are not compatible
+            if isinstance(check_compatibility, Response):
+                # * invalidate event seeding
+                invalidate_hs_data = vh.invalidate_event_seeding(entry.event)
+                # ? internal error invalidating event seeding
+                if isinstance(invalidate_hs_data, Response):
+                    return invalidate_hs_data
+                
+                entry.delete()
+
+        individual_entries_of_swimmer = Individual_entry.objects.filter(swimmer_id=edited_swimmer.pk)
+        for entry in individual_entries_of_swimmer:
+            check_compatibility = vh.validate_swimmer_against_event(edited_swimmer, entry.event)
+            # ? swimmer and event are not compatible
+            if isinstance(check_compatibility, Response):
+                # * invalidate event seeding
+                invalidate_hs_data = vh.invalidate_event_seeding(entry.event)
+                # ? internal error invalidating event seeding
+                if isinstance(invalidate_hs_data, Response):
+                    return invalidate_hs_data
+                
+                entry.delete()
 
         # * get swimmer JSON
         swimmer_JSON = vh.get_JSON_single("Swimmer", edited_swimmer, False)

@@ -182,6 +182,11 @@ class Individual_entry_view(APIView):
                 "swimmer and event meets do not match",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        check_compatibility = vh.validate_swimmer_against_event(swimmer_of_id, event_of_id)
+        # ? swimmer and event are not compatible
+        if isinstance(check_compatibility, Response):
+            return check_compatibility
 
         # * create new individual_entry
         try:
@@ -192,6 +197,13 @@ class Individual_entry_view(APIView):
                 swimmer_id=swimmer_id,
                 event_id=event_id,
             )
+
+            # * handle any duplicates
+            duplicate_handling = vh.get_entry_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Individual_entry", new_individual_entry)
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
 
             new_individual_entry.full_clean()
             new_individual_entry.save()
@@ -207,6 +219,12 @@ class Individual_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        # * invalidate event seeding
+        invalidate_hs_data = vh.invalidate_event_seeding(new_individual_entry.event)
+        # ? internal error invalidating event seeding
+        if isinstance(invalidate_hs_data, Response):
+            return invalidate_hs_data
 
         # * get individual_entry JSON
         new_individual_entry_JSON = vh.get_JSON_single(
@@ -236,6 +254,8 @@ class Individual_entry_view(APIView):
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
+        
+        seeding_needs_invalidation = False
 
         # * update existing individual_entry
         try:
@@ -243,6 +263,11 @@ class Individual_entry_view(APIView):
 
             if "seed_time" in request.data:
                 edited_individual_entry.seed_time = request.data["seed_time"]
+                seeding_needs_invalidation = True
+
+            # ! if FK changes are added, validate new swimmer against meet here
+
+            # ! if FK changes are added, check for duplicates here
 
             edited_individual_entry.full_clean()
             edited_individual_entry.save()
@@ -258,6 +283,13 @@ class Individual_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        # * invalidate event seeding
+        if seeding_needs_invalidation:
+            invalidate_hs_data = vh.invalidate_event_seeding(edited_individual_entry.event)
+            # ? internal error invalidating event seeding
+            if isinstance(invalidate_hs_data, Response):
+                return invalidate_hs_data
 
         # * get individual_entry JSON
         edited_individual_entry_JSON = vh.get_JSON_single(
@@ -290,7 +322,16 @@ class Individual_entry_view(APIView):
 
         # * delete existing individual_entry
         try:
+            event = individual_entry_of_id.event
+
             individual_entry_of_id.delete()
+
+            # * invalidate event seeding
+            invalidate_hs_data = vh.invalidate_event_seeding(event)
+            # ? internal error invalidating event seeding
+            if isinstance(invalidate_hs_data, Response):
+                return invalidate_hs_data
+
             return Response(status=status.HTTP_204_NO_CONTENT)
         # ? internal error deleting model
         except Exception as err:
