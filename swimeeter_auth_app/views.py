@@ -48,6 +48,9 @@ class Log_in(APIView):
                     "prefix",
                     "suffix",
                     "middle_initials",
+                    "screen_mode",
+                    "data_entry_warnings",
+                    "destructive_action_confirms",
                 ],
             )
         )[0]
@@ -101,6 +104,9 @@ class Sign_up(APIView):
                     prefix=request.data["prefix"],
                     suffix=request.data["suffix"],
                     middle_initials=formatted_mi,
+                    screen_mode="system",
+                    data_entry_warnings=True,
+                    destructive_action_confirms=True,
                 )
 
                 user.full_clean()
@@ -134,6 +140,9 @@ class Sign_up(APIView):
                     "prefix",
                     "suffix",
                     "middle_initials",
+                    "screen_mode",
+                    "data_entry_warnings",
+                    "destructive_action_confirms",
                 ],
             )
         )[0]
@@ -173,6 +182,7 @@ class Update_account(APIView):
                 request.user.prefix = request.data["prefix"]
             if "suffix" in request.data:
                 request.user.suffix = request.data["suffix"]
+
             if "middle_initials" in request.data:
                 # * format middle initials ("ABC" -> "A B C")
                 formatted_mi = ""
@@ -181,6 +191,36 @@ class Update_account(APIView):
                         formatted_mi += initial + " "
                     formatted_mi = formatted_mi[:-1]  # remove trailing space
                 request.user.middle_initials = formatted_mi
+
+            # ~ handle password reset
+            if "new_password" in request.data:
+                # ? original password not provided
+                if "old_password" not in request.data:
+                    return Response(
+                        "must pass original password to update password",
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
+
+                user = authenticate(
+                    username=request.data["email"],
+                    password=request.data["old_password"],
+                )
+
+                # ? log in credentials invalid
+                if user is None:
+                    return Response(
+                        "log in credentials invalid",
+                        status=status.HTTP_401_UNAUTHORIZED,
+                    )
+
+                # ? log in credentials for wrong account
+                if user != request.user:
+                    return Response(
+                        "log in credentials invalid (wrong account)",
+                        status=status.HTTP_401_UNAUTHORIZED,
+                    )
+
+                request.user.set_password(request.data["new_password"])
 
             request.user.full_clean()
             request.user.save()
@@ -268,7 +308,18 @@ class Init_check(APIView):
     def get(self, request):
         # ? back end not logged in
         if not request.user.is_authenticated:
-            return Response("back end not logged in", status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {
+                    "screen_mode": request.session.get("screen_mode", "system"),
+                    "data_entry_warnings": request.session.get(
+                        "data_entry_warnings", True
+                    ),
+                    "destructive_action_confirms": request.session.get(
+                        "destructive_action_confirms", True
+                    ),
+                },
+                status=status.HTTP_200_OK,
+            )
 
         # * get host JSON
         current_host_JSON = json.loads(
@@ -281,7 +332,55 @@ class Init_check(APIView):
                     "prefix",
                     "suffix",
                     "middle_initials",
+                    "screen_mode",
+                    "data_entry_warnings",
+                    "destructive_action_confirms",
                 ],
             )
         )[0]
         return Response(current_host_JSON, status=status.HTTP_200_OK)
+
+
+class Update_settings(APIView):
+    def put(self, request):
+        # $ always update session data
+        if "screen_mode" in request.data:
+            request.session["screen_mode"] = request.data["screen_mode"]
+        if "data_entry_warnings" in request.data:
+            request.session["data_entry_warnings"] = request.data["data_entry_warnings"]
+        if "destructive_action_confirms" in request.data:
+            request.session["destructive_action_confirms"] = request.data[
+                "destructive_action_confirms"
+            ]
+
+        # $ logged in -> also change user
+        if request.user.is_authenticated:
+            # * update existing user
+            try:
+                if "screen_mode" in request.data:
+                    request.user.screen_mode = request.data["screen_mode"]
+                if "data_entry_warnings" in request.data:
+                    request.user.data_entry_warnings = request.data[
+                        "data_entry_warnings"
+                    ]
+                if "destructive_action_confirms" in request.data:
+                    request.user.destructive_action_confirms = request.data[
+                        "destructive_action_confirms"
+                    ]
+
+                request.user.full_clean()
+                request.user.save()
+            except ValidationError as err:
+                # ? invalid update data passed -> validators
+                return Response(
+                    "; ".join(err.messages),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            except Exception as err:
+                # ? invalid creation data passed -> general
+                return Response(
+                    str(err),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        return Response(status=status.HTTP_200_OK)

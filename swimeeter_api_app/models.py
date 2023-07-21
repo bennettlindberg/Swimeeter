@@ -13,7 +13,36 @@ class Meet(models.Model):
     end_time = models.DateTimeField(null=True)  # handled programmatically
     is_public = models.BooleanField()
 
-    # * pool info fields
+    # * association fields
+    host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="meets")
+
+    # via association: swimmers, sessions, pools
+
+
+class Pool(models.Model):
+    # * general info fields
+    name = models.CharField(
+        max_length=255, validators=[validators.MinLengthValidator(1)]
+    )
+
+    # * address info fields
+    street_address = models.CharField(
+        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+    )
+    city = models.CharField(
+        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+    )
+    state = models.CharField(
+        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+    )
+    country = models.CharField(
+        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+    )
+    zipcode = models.CharField(
+        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+    )
+
+    # * pool specification fields
     lanes = models.PositiveSmallIntegerField(
         validators=[validators.MinValueValidator(3)]
     )
@@ -23,9 +52,9 @@ class Meet(models.Model):
     measure_unit = models.CharField(max_length=255)
 
     # * association fields
-    host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="meets")
+    meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="pools")
 
-    # via association: swimmers, sessions
+    # via association: sessions
 
 
 class Session(models.Model):
@@ -38,6 +67,7 @@ class Session(models.Model):
 
     # * association fields
     meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="sessions")
+    pool = models.ForeignKey(Pool, on_delete=models.RESTRICT, related_name="sessions")
 
     # via association: events
 
@@ -79,22 +109,22 @@ class Swimmer(models.Model):
     # * standard name fields
     first_name = models.CharField(
         max_length=255,
-        validators=[v.swimmer_fl_name_validator(), validators.MinLengthValidator(1)],
+        validators=[v.swimmer_fl_name_validator, validators.MinLengthValidator(1)],
     )
     last_name = models.CharField(
         max_length=255,
-        validators=[v.swimmer_fl_name_validator(), validators.MinLengthValidator(1)],
+        validators=[v.swimmer_fl_name_validator, validators.MinLengthValidator(1)],
     )
 
     # * special name fields
     prefix = models.CharField(
-        max_length=255, default="", validators=[v.swimmer_ps_fix_validator()]
+        max_length=255, default="", validators=[v.swimmer_ps_fix_validator]
     )
     suffix = models.CharField(
-        max_length=255, default="", validators=[v.swimmer_ps_fix_validator()]
+        max_length=255, default="", validators=[v.swimmer_ps_fix_validator]
     )
     middle_initials = models.CharField(
-        max_length=255, default="", validators=[v.swimmer_mi_validator()]
+        max_length=255, default="", validators=[v.swimmer_mi_validator]
     )
 
     # * other info fields
@@ -106,7 +136,7 @@ class Swimmer(models.Model):
     team_acronym = models.CharField(
         max_length=255,
         validators=[
-            v.swimmer_team_acronym_validator(),
+            v.swimmer_team_acronym_validator,
             validators.MinLengthValidator(1),
         ],
     )
@@ -156,7 +186,6 @@ class Relay_entry(models.Model):
     swimmers = models.ManyToManyField(
         Swimmer,
         blank=True,
-        on_delete=models.CASCADE,
         through="Relay_assignment",
         related_name="relay_entries",
     )

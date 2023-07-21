@@ -129,9 +129,6 @@ class Meet_view(APIView):
                 # begin_time => null,
                 # end_time => null,
                 is_public=request.data["is_public"],
-                lanes=request.data["lanes"],
-                side_length=request.data["side_length"],
-                measure_unit=request.data["measure_unit"],
                 host_id=request.user.id,
             )
 
@@ -192,12 +189,6 @@ class Meet_view(APIView):
                 edited_meet.name = request.data["name"]
             if "is_public" in request.data:
                 edited_meet.is_public = request.data["is_public"]
-            if "lanes" in request.data:
-                edited_meet.lanes = request.data["lanes"]
-            if "side_length" in request.data:
-                edited_meet.lanes = request.data["side_length"]
-            if "measure_unit" in request.data:
-                edited_meet.measure_unit = request.data["measure_unit"]
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)

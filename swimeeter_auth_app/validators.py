@@ -12,3 +12,7 @@ def host_ps_fix_validator(fix):
 def host_mi_validator(initials):
     if not re.match(r'^[A-Z ]*$', initials):
         raise ValidationError("Middle initials may only have characters matching '^[A-Z ]*$'")
+    
+def host_screen_validator(mode):
+    if mode not in ["light", "dark", "system"]:
+        raise ValidationError("Screen modes must be one of ['light', 'dark', 'system']")

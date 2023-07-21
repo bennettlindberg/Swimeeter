@@ -269,7 +269,7 @@ class Relay_entry_view(APIView):
             
         # ~ begin handling duplicates
         duplicate_handling = vh.get_entry_duplicate_handling(request)
-        original_duplicates = Relay_entry.objects.filter(event_id=event_id, swimmers__in=swimmer_ids)
+        original_duplicates = Relay_entry.objects.filter(event_id=event_id, swimmers__id__in=swimmer_ids)
         if original_duplicates.count() > 0:
             if duplicate_handling == "unhandled":
                 return Response(
@@ -452,7 +452,7 @@ class Relay_entry_view(APIView):
             
         # ~ begin handling duplicates
         duplicate_handling = vh.get_entry_duplicate_handling(request)
-        original_duplicates = Relay_entry.objects.filter(event_id=relay_entry_of_id.event, swimmers__in=swimmer_ids).exclude(id=relay_entry_id)
+        original_duplicates = Relay_entry.objects.filter(event_id=relay_entry_of_id.event, swimmers__id__in=swimmer_ids).exclude(id=relay_entry_id)
         if original_duplicates.count() > 0:
             if duplicate_handling == "unhandled":
                 return Response(

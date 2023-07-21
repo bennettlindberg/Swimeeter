@@ -114,6 +114,16 @@ class Session_view(APIView):
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
+        
+        pool_id = vh.get_query_param(request, "pool_id")
+        # ? no "pool_id" param passed
+        if isinstance(pool_id, Response):
+            return pool_id
+
+        pool_of_id = vh.get_model_of_id("Pool", pool_id)
+        # ? no pool of pool_id exists
+        if isinstance(pool_of_id, Response):
+            return pool_of_id
 
         # * create new session
         try:
@@ -122,6 +132,7 @@ class Session_view(APIView):
                 begin_time=request.data["begin_time"],
                 end_time=request.data["end_time"],
                 meet_id=meet_id,
+                pool_id=pool_id,
             )
 
             # * handle any duplicates

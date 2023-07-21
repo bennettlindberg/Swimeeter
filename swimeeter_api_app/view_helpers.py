@@ -6,6 +6,7 @@ import json
 
 from .models import (
     Meet,
+    Pool,
     Session,
     Event,
     Swimmer,
@@ -13,7 +14,7 @@ from .models import (
     Relay_entry,
     Relay_assignment,
 )
-from ..swimeeter_auth_app.models import Host
+from swimeeter_auth_app.models import Host
 
 
 # ! GENERAL
@@ -36,6 +37,9 @@ def get_model_of_id(model_type, model_id):
         match model_type:
             case "Host":
                 return Host.objects.get(id=model_id)
+            
+            case "Pool":
+                return Pool.objects.get(id=model_id)
 
             case "Meet":
                 return Meet.objects.get(id=model_id)
@@ -81,19 +85,34 @@ def get_all_duplicates(model_type, model_object):
                     f"{model_type} is not supported for duplicate checking",
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
+            
+            case "Pool":
+                return Pool.objects.filter(
+                    meet_id=model_object.meet_id,
+                    name=model_object.name,
+                    street_address=model_object.street_address,
+                    city=model_object.city,
+                    state=model_object.state,
+                    country=model_object.country,
+                    zipcode=model_object.zipcode,
+                    lanes=model_object.lanes,
+                    side_length=model_object.side_length,
+                    measure_unit=model_object.measure_unit,
+                ).exclude(id=model_object.pk)
 
             case "Meet":
                 return Meet.objects.filter(
+                    host_id=model_object.host_id,
                     name=model_object.name,
                     lanes=model_object.lanes,
                     side_length=model_object.side_length,
                     measure_unit=model_object.measure_unit,
-                    host_id=model_object.host_id,
                 ).exclude(id=model_object.pk)
 
             case "Session":
                 return Session.objects.filter(
                     meet_id=model_object.meet_id,
+                    pool_id=model_object.pool_id,
                     name=model_object.name,
                 ).exclude(id=model_object.pk)
 
@@ -357,9 +376,6 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                         "begin_time",
                         "end_time",
                         "is_public",
-                        "lanes",
-                        "side_length",
-                        "measure_unit",
                         "host",
                     ],
                 )
@@ -370,6 +386,36 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     individual_JSON["fields"]["host"] = get_JSON_single(
                         "Host",
                         Host.objects.get(id=individual_JSON["fields"]["host"]),
+                        False,
+                    )
+
+            return collective_JSON
+        
+        case "Pool":
+            collective_JSON = json.loads(
+                serialize(
+                    "json",
+                    model_objects,
+                    fields=[
+                        "name",
+                        "street_address",
+                        "city",
+                        "state",
+                        "country",
+                        "zipcode",
+                        "lanes",
+                        "side_length",
+                        "measure_unit",
+                        "meet",
+                    ],
+                )
+            )
+
+            if get_inner_JSON:
+                for individual_JSON in collective_JSON:
+                    individual_JSON["fields"]["meet"] = get_JSON_single(
+                        "Meet",
+                        Meet.objects.get(id=individual_JSON["fields"]["meet"]),
                         False,
                     )
 
@@ -385,6 +431,7 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                         "begin_time",
                         "end_time",
                         "meet",
+                        "pool",
                     ],
                 )
             )
@@ -394,6 +441,11 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     individual_JSON["fields"]["meet"] = get_JSON_single(
                         "Meet",
                         Meet.objects.get(id=individual_JSON["fields"]["meet"]),
+                        False,
+                    )
+                    individual_JSON["fields"]["pool"] = get_JSON_single(
+                        "Pool",
+                        Pool.objects.get(id=individual_JSON["fields"]["pool"]),
                         False,
                     )
 
