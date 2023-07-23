@@ -1,10 +1,8 @@
-import './App.css'
-import NavSelection from './components/misc_pages/NavSelection.tsx'
-import { useState, useEffect, createContext } from 'react';
+import { useReducer, useEffect, createContext } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
 
-// CSRF token
+// ! CSRF token
 function setCSRFHeader(): void {
     const getCSRFToken = (): string => {
         let csrfToken: string = 'not found';
@@ -21,90 +19,214 @@ function setCSRFHeader(): void {
     axios.defaults.headers.common['X-CSRFToken'] = getCSRFToken();
 }
 
-// types
-export type User = {
+// * helper types
+type Profile = {
     id: number,
+    email: string,
     first_name: string,
     last_name: string,
-    email: string
+    prefix: string,
+    suffix: string,
+    middle_initials: string
 }
 
-export type navItem = {
-    text: string,
+type Preferences = {
+    screen_mode: "light" | "dark" | "system",
+    data_entry_information: boolean,
+    data_entry_warnings: boolean,
+    destructive_action_confirms: boolean,
+    motion_safe: boolean
+}
+
+// * user reducer
+type UserState = {
+    logged_in: boolean,
+    profile?: Profile,
+    preferences: Preferences
+}
+
+type UserAction = {
+    type: "LOG_IN" | "SIGN_UP"
+    profile: Profile,
+    preferences: Preferences
+} | {
+    type: "UPDATE_PROFILE",
+    profile: Profile
+} | {
+    type: "LOG_OUT" | "DELETE_ACCOUNT" | "DEACTIVATE_ACCOUNT" | "UPDATE_PREFERENCES",
+    preferences: Preferences
+}
+
+function userReducer(state: UserState, action: UserAction) {
+    switch (action.type) {
+        case "LOG_IN":
+        case "SIGN_UP":
+            return {
+                logged_in: true,
+                profile: { ...action.profile },
+                preferences: { ...action.preferences }
+            }
+
+        case "DELETE_ACCOUNT":
+        case "DEACTIVATE_ACCOUNT":
+        case "LOG_OUT":
+            return {
+                logged_in: false,
+                profile: undefined,
+                preferences: { ...action.preferences }
+            }
+
+        case "UPDATE_PROFILE":
+            return {
+                ...state,
+                profile: { ...action.profile }
+            }
+
+        case "UPDATE_PREFERENCES":
+            return {
+                ...state,
+                preferences: { ...action.preferences }
+            }
+
+        default:
+            return state;
+    }
+}
+
+// * nav tree reducer
+type NavTreeItem = {
+    title: string,
     route: string
 }
 
-// contexts
-export const UserContext = createContext<User | null>(null);
-export const SetUserContext = createContext<React.Dispatch<React.SetStateAction<User | null>> | null>(null);
-export const SetNavContext = createContext<React.Dispatch<React.SetStateAction<navItem[]>> | null>(null);
+type NavTreeAction = {
+    type: string,
+    data: NavTreeItem[]
+}
 
-// component
+function navTreeReducer(state: NavTreeItem[], action: NavTreeAction) {
+    switch (action.type) {
+        case "UPDATE_TREE":
+            return action.data;
+
+        default:
+            return state;
+    }
+}
+
+// * App.tsx context
+type AppContextType = {
+    userState: UserState,
+    userDispatch: React.Dispatch<UserAction>,
+    navTreeState: NavTreeItem[],
+    navTreeDispatch: React.Dispatch<NavTreeAction>
+}
+
+const AppContext = createContext<AppContextType>({
+    userState: {
+        logged_in: false,
+        preferences: {
+            screen_mode: "system",
+            data_entry_information: true,
+            data_entry_warnings: true,
+            destructive_action_confirms: true,
+            motion_safe: true
+        }
+    },
+    userDispatch: () => { },
+    navTreeState: [],
+    navTreeDispatch: () => { }
+});
+
+// ~ component
 export function App() {
+    // ! CSRF token
     setCSRFHeader();
 
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
-    const [navItems, setNavItems] = useState<navItem[]>([{ text: 'Home', route: '/' }]);
-    const [headerSelected, setHeaderSelected] = useState<boolean>(false);
+    // * initialize state variables
+    const [userState, userDispatch] = useReducer(userReducer, {
+        logged_in: false,
+        profile: undefined,
+        preferences: {
+            screen_mode: "system",
+            data_entry_information: true,
+            data_entry_warnings: true,
+            destructive_action_confirms: true,
+            motion_safe: true
+        }
+    });
+    const [navTreeState, navTreeDispatch] = useReducer(navTreeReducer, [
+        { title: "home", route: "/" }
+    ])
 
+    // * initialize navigation
     const navigate = useNavigate();
 
-    // log in the user on the front-end if session data maintained the user's log in on the back-end
+    // ! initialize user state
     useEffect(() => {
-        axios.get('/auth/init-check/')
+        axios.get('/auth/init_check/')
             .then((response: AxiosResponse) => {
-                if (response.data.get_success) {
-                    // logged in on the back-end
-                    setCurrentUser({
-                        id: response.data.user.pk,
-                        first_name: response.data.user.fields.first_name,
-                        last_name: response.data.user.fields.last_name,
-                        email: response.data.user.fields.email
+                // * logged in (use user data)
+                if (response.data.logged_in) {
+                    userDispatch({
+                        type: "LOG_IN",
+                        profile: response.data.profile,
+                        preferences: response.data.preferences
+                    })
+                    // * logged out (use session data)
+                } else {
+                    userDispatch({
+                        type: "UPDATE_PREFERENCES",
+                        preferences: response.data.preferences
                     })
                 }
-                // ? not logged in on the back-end: silently fail
             })
+            .catch((error) => {
+                // ? init check failed on the back-end
+                if (axios.isAxiosError(error)) {
+                    console.error(error.response?.data.reason);
+                } else {
+                    console.error(error);
+                }
+            });
     }, []);
 
     return (
         <>
-            <UserContext.Provider value={currentUser}>
-                <SetUserContext.Provider value={setCurrentUser}>
-                    <SetNavContext.Provider value={setNavItems}>
-                        <header>
-                            <h1>Swimeeter</h1>
-                            <button onClick={() => setHeaderSelected(!headerSelected)}>
-                                {currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Guest User'}
+            <AppContext.Provider value={{
+                userState: userState,
+                userDispatch: userDispatch,
+                navTreeState: navTreeState,
+                navTreeDispatch: navTreeDispatch
+            }}>
+                <header>
+                    <h1>Swimeeter</h1>
+                    <button onClick={() => setHeaderSelected(!headerSelected)}>
+                        {currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Guest User'}
+                    </button>
+                    {headerSelected && <NavSelection setHeaderSelect={setHeaderSelected} />}
+                </header>
+                <nav>
+                    {navItems.map((item, index) => {
+                        // ? omit '>' for last nav item
+                        if (index == navItems.length - 1) {
+                            return <button onClick={() => navigate(item.route)}>
+                                {item.text}
                             </button>
-                            {headerSelected && <NavSelection setHeaderSelect={setHeaderSelected} />}
-                        </header>
-                        <nav>
-                            {navItems.map((item, index) => {
-                                // ? omit '>' for last nav item
-                                if (index == navItems.length - 1) {
-                                    return <button onClick={() => navigate(item.route)}>
-                                        {item.text}
-                                    </button>
-                                }
-                                return <>
-                                    <button onClick={() => navigate(item.route)}>
-                                        {item.text}
-                                    </button>
-                                    <p>&gt;</p>
-                                </>
-                            })}
-                            <p>--------</p>
-                        </nav>
-                        <main>
-                            <Outlet />
-                        </main>
-                        <footer>
-                            <p>--------</p>
-                            <p>footer here</p>
-                        </footer>
-                    </SetNavContext.Provider>
-                </SetUserContext.Provider>
-            </UserContext.Provider>
+                        }
+                        return <>
+                            <button onClick={() => navigate(item.route)}>
+                                {item.text}
+                            </button>
+                            <p>&gt;</p>
+                        </>
+                    })}
+                    <p>--------</p>
+                </nav>
+                <main>
+                    <Outlet />
+                </main>
+            </AppContext.Provider>
         </>
     )
 }

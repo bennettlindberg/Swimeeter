@@ -31,8 +31,10 @@ class Host(AbstractUser):
     screen_mode = models.CharField(
         max_length=255, validators=[v.host_screen_validator]
     )
+    data_entry_information = models.BooleanField()
     data_entry_warnings = models.BooleanField()
     destructive_action_confirms = models.BooleanField()
+    motion_safe = models.BooleanField()
 
     # ~ special
     USERNAME_FIELD = "email"

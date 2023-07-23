@@ -9,6 +9,8 @@ from django.contrib.auth import login, logout, authenticate
 
 from .models import Host
 
+from . import view_helpers as vh
+
 
 class Log_in(APIView):
     def post(self, request):
@@ -30,31 +32,26 @@ class Log_in(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        # ~ reactivating deactivated account
+        # ~ reactivate deactivated account
         if not user.is_active:
             user.is_active = True
             user.save()
 
         login(request, user)
 
+        # * copy user preferences to session data (login associates session with user)
+        request.session["screen_mode"] = user.screen_mode
+        request.session["data_entry_information"] = user.data_entry_information
+        request.session["data_entry_warnings"] = user.data_entry_warnings
+        request.session[
+            "destructive_action_confirms"
+        ] = user.destructive_action_confirms
+        request.session["motion_safe"] = user.motion_safe
+
         # * get user JSON
-        user_JSON = json.loads(
-            serialize(
-                "json",
-                [user],
-                fields=[
-                    "first_name",
-                    "last_name",
-                    "prefix",
-                    "suffix",
-                    "middle_initials",
-                    "screen_mode",
-                    "data_entry_warnings",
-                    "destructive_action_confirms",
-                ],
-            )
-        )[0]
-        return Response(user_JSON, status=status.HTTP_200_OK)
+        user_profile_JSON = vh.get_user_profile(user)
+        user_preferences_JSON = vh.get_user_preferences(user)
+        return vh.make_full_user_response(user_preferences_JSON, user_profile_JSON)
 
 
 class Sign_up(APIView):
@@ -77,7 +74,7 @@ class Sign_up(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # ~ reactivating deactivated account
+        # ~ reactivate deactivated account
         if user is not None and not user.is_active:
             user.is_active = True
             user.save()
@@ -96,17 +93,28 @@ class Sign_up(APIView):
                     formatted_mi = formatted_mi[:-1]  # remove trailing space
 
                 user = Host.objects.create_user(
+                    # * credentials
                     username=request.data["email"],
                     email=request.data["email"],
                     password=request.data["password"],
+                    # * name
                     first_name=request.data["first_name"],
                     last_name=request.data["last_name"],
                     prefix=request.data["prefix"],
                     suffix=request.data["suffix"],
                     middle_initials=formatted_mi,
-                    screen_mode="system",
-                    data_entry_warnings=True,
-                    destructive_action_confirms=True,
+                    # * preferences
+                    screen_mode=request.session.get("screen_mode", "system"),
+                    data_entry_information=request.session.get(
+                        "data_entry_information", True
+                    ),
+                    data_entry_warnings=request.session.get(
+                        "data_entry_warnings", True
+                    ),
+                    destructive_action_confirms=request.session.get(
+                        "destructive_action_confirms", True
+                    ),
+                    motion_safe=request.session.get("motion_safe", True),
                 )
 
                 user.full_clean()
@@ -129,24 +137,10 @@ class Sign_up(APIView):
 
         login(request, user)
 
-        # * get host JSON
-        user_JSON = json.loads(
-            serialize(
-                "json",
-                [user],
-                fields=[
-                    "first_name",
-                    "last_name",
-                    "prefix",
-                    "suffix",
-                    "middle_initials",
-                    "screen_mode",
-                    "data_entry_warnings",
-                    "destructive_action_confirms",
-                ],
-            )
-        )[0]
-        return Response(user_JSON, status=status.HTTP_201_CREATED)
+        # * get user JSON
+        user_profile_JSON = vh.get_user_profile(user)
+        user_preferences_JSON = vh.get_user_preferences(user)
+        return vh.make_full_user_response(user_preferences_JSON, user_profile_JSON)
 
 
 class Log_out(APIView):
@@ -160,10 +154,12 @@ class Log_out(APIView):
 
         logout(request)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        # * get preferences JSON (session resets after logout)
+        session_preferences_JSON = vh.get_session_preferences(request)
+        return vh.make_session_preferences_response(session_preferences_JSON)
 
 
-class Update_account(APIView):
+class Update_profile(APIView):
     def put(self, request):
         # ? user not logged in
         if not request.user.is_authenticated:
@@ -237,12 +233,13 @@ class Update_account(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # * get host JSON
-        edited_host_JSON = json.loads(
+        # * get profile JSON
+        edited_host_profile_JSON = json.loads(
             serialize(
                 "json",
                 [request.user],
                 fields=[
+                    "email",
                     "first_name",
                     "last_name",
                     "prefix",
@@ -251,7 +248,86 @@ class Update_account(APIView):
                 ],
             )
         )[0]
-        return Response(edited_host_JSON, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "profile": {
+                    **edited_host_profile_JSON["fields"],
+                    "id": edited_host_profile_JSON["pk"],
+                }
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class Update_preferences(APIView):
+    def put(self, request):
+        # $ always update session data
+        if "screen_mode" in request.data:
+            request.session["screen_mode"] = request.data["screen_mode"]
+        if "data_entry_information" in request.data:
+            request.session["data_entry_information"] = request.data[
+                "data_entry_information"
+            ]
+        if "data_entry_warnings" in request.data:
+            request.session["data_entry_warnings"] = request.data["data_entry_warnings"]
+        if "destructive_action_confirms" in request.data:
+            request.session["destructive_action_confirms"] = request.data[
+                "destructive_action_confirms"
+            ]
+        if "motion_safe" in request.data:
+            request.session["motion_safe"] = request.data["motion_safe"]
+
+        # $ logged in -> also change user
+        if request.user.is_authenticated:
+            # * update existing user
+            try:
+                if "screen_mode" in request.data:
+                    request.user.screen_mode = request.data["screen_mode"]
+                if "data_entry_information" in request.data:
+                    request.user.data_entry_information = request.data[
+                        "data_entry_information"
+                    ]
+                if "data_entry_warnings" in request.data:
+                    request.user.data_entry_warnings = request.data[
+                        "data_entry_warnings"
+                    ]
+                if "destructive_action_confirms" in request.data:
+                    request.user.destructive_action_confirms = request.data[
+                        "destructive_action_confirms"
+                    ]
+                if "motion_safe" in request.data:
+                    request.user.motion_safe = request.data["motion_safe"]
+
+                request.user.full_clean()
+                request.user.save()
+            except ValidationError as err:
+                # ? invalid update data passed -> validators
+                return Response(
+                    "; ".join(err.messages),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            except Exception as err:
+                # ? invalid creation data passed -> general
+                return Response(
+                    str(err),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        # * get preferences JSON
+        session_preferences_JSON = {
+            "screen_mode": request.session.get("screen_mode", "system"),
+            "data_entry_information": request.session.get(
+                "data_entry_information", True
+            ),
+            "data_entry_warnings": request.session.get("data_entry_warnings", True),
+            "destructive_action_confirms": request.session.get(
+                "destructive_action_confirms", True
+            ),
+            "motion_safe": request.session.get("motion_safe", True),
+        }
+        return Response(
+            {"preferences": session_preferences_JSON}, status=status.HTTP_200_OK
+        )
 
 
 class Delete_account(APIView):
@@ -262,11 +338,18 @@ class Delete_account(APIView):
                 "user not logged in",
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+        
+        deleted_user = request.user
+
+        logout(request)
 
         # * delete existing user
         try:
-            request.user.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            deleted_user.delete()
+
+            # * get preferences JSON (session resets after logout)
+            session_preferences_JSON = vh.get_session_preferences(request)
+            return vh.make_session_preferences_response(session_preferences_JSON)
         # ? internal error deleting user
         except Exception as err:
             return Response(
@@ -290,12 +373,19 @@ class Deactivate_account(APIView):
                 "user account already deactivated",
                 status=status.HTTP_403_FORBIDDEN,
             )
+        
+        deactivated_user = request.user
+
+        logout(request)
 
         # * deactivate existing user
         try:
-            request.user.is_active = False
-            request.user.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            deactivated_user.is_active = False
+            deactivated_user.save()
+
+            # * get preferences JSON (session resets after logout)
+            session_preferences_JSON = vh.get_session_preferences(request)
+            return vh.make_session_preferences_response(session_preferences_JSON)
         # ? internal error deactivating user
         except Exception as err:
             return Response(
@@ -306,81 +396,29 @@ class Deactivate_account(APIView):
 
 class Init_check(APIView):
     def get(self, request):
-        # ? back end not logged in
+        # $ back end not logged in
         if not request.user.is_authenticated:
             return Response(
                 {
-                    "screen_mode": request.session.get("screen_mode", "system"),
-                    "data_entry_warnings": request.session.get(
-                        "data_entry_warnings", True
-                    ),
-                    "destructive_action_confirms": request.session.get(
-                        "destructive_action_confirms", True
-                    ),
+                    "logged_in": False,
+                    "preferences": vh.get_session_preferences(request)
                 },
                 status=status.HTTP_200_OK,
             )
 
-        # * get host JSON
-        current_host_JSON = json.loads(
-            serialize(
-                "json",
-                [request.user],
-                fields=[
-                    "first_name",
-                    "last_name",
-                    "prefix",
-                    "suffix",
-                    "middle_initials",
-                    "screen_mode",
-                    "data_entry_warnings",
-                    "destructive_action_confirms",
-                ],
+        # $ back end logged in
+        else:
+            # * get user JSON
+            user_profile_JSON = vh.get_user_profile(request.user)
+            user_preferences_JSON = vh.get_user_preferences(request.user)
+            return Response(
+                {
+                    "logged_in": True,
+                    "profile": {
+                        **user_profile_JSON["fields"],
+                        "id": user_profile_JSON["pk"],
+                    },
+                    "preferences": user_preferences_JSON["fields"],
+                },
+                status=status.HTTP_200_OK,
             )
-        )[0]
-        return Response(current_host_JSON, status=status.HTTP_200_OK)
-
-
-class Update_settings(APIView):
-    def put(self, request):
-        # $ always update session data
-        if "screen_mode" in request.data:
-            request.session["screen_mode"] = request.data["screen_mode"]
-        if "data_entry_warnings" in request.data:
-            request.session["data_entry_warnings"] = request.data["data_entry_warnings"]
-        if "destructive_action_confirms" in request.data:
-            request.session["destructive_action_confirms"] = request.data[
-                "destructive_action_confirms"
-            ]
-
-        # $ logged in -> also change user
-        if request.user.is_authenticated:
-            # * update existing user
-            try:
-                if "screen_mode" in request.data:
-                    request.user.screen_mode = request.data["screen_mode"]
-                if "data_entry_warnings" in request.data:
-                    request.user.data_entry_warnings = request.data[
-                        "data_entry_warnings"
-                    ]
-                if "destructive_action_confirms" in request.data:
-                    request.user.destructive_action_confirms = request.data[
-                        "destructive_action_confirms"
-                    ]
-
-                request.user.full_clean()
-                request.user.save()
-            except ValidationError as err:
-                # ? invalid update data passed -> validators
-                return Response(
-                    "; ".join(err.messages),
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            except Exception as err:
-                # ? invalid creation data passed -> general
-                return Response(
-                    str(err),
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-        return Response(status=status.HTTP_200_OK)

@@ -1,132 +1,165 @@
 import { createBrowserRouter } from "react-router-dom";
 import { App } from "./App.tsx";
 
-import HomePage from "./components/misc_pages/HomePage.tsx";
-import EntryEditPage from "./components/misc_pages/EntryEditPage.tsx";
+// * GENERAL
+import { HomePage } from "";
+import { AboutPage } from "";
+import { LogInPage } from "";
+import { SignUpPage } from "";
+import { SettingsPage } from "";
 
-import MeetsListPage from "./components/meet_pages/MeetsListPage.tsx";
-import MeetPage from "./components/meet_pages/MeetPage.tsx";
-import MeetEditPage from "./components/meet_pages/MeetEditPage.tsx";
-import MeetCreationPage from "./components/meet_pages/MeetCreationPage.tsx";
+// * MEETS
+import { MeetsListPage } from "";
+import { MeetCreationPage } from "";
+import { MeetPage } from "";
 
-import EventsListPage from "./components/event_pages/EventsListPage.tsx";
-import EventPage from "./components/event_pages/EventPage.tsx";
-import EventEditPage from "./components/event_pages/EventEditPage.tsx";
-import EventCreationPage from "./components/event_pages/EventCreationPage.tsx";
+// * POOLS
+import { PoolPage } from "";
+import { PoolCreationPage } from "";
 
-import SwimmersListPage from "./components/swimmer_pages/SwimmersListPage.tsx";
-import SwimmerPage from "./components/swimmer_pages/SwimmerPage.tsx";
-import SwimmerEditPage from "./components/swimmer_pages/SwimmerEditPage.tsx";
-import SwimmerCreationPage from "./components/swimmer_pages/SwimmerCreationPage.tsx";
+// * SESSIONS
+import { SessionPage } from "";
+import { SessionCreationPage } from "";
+// * EVENTS
+import { EventPage } from "";
+import { EventCreationPage } from "";
 
-import HeatSheetPage from "./components/heat_sheet_pages/HeatSheetPage.tsx";
-import HeatSheetEventPage from "./components/heat_sheet_pages/HeatSheetEventPage.tsx";
-import HeatSheetHeatPage from "./components/heat_sheet_pages/HeatSheetHeatPage.tsx";
-import HeatSheetCreationPage from "./components/heat_sheet_pages/HeatSheetCreationPage.tsx";
+// * SWIMMERS
+import { SwimmerPage } from "";
+import { SwimmerCreationPage } from "";
 
-import HostLogInPage from "./components/host_pages/HostLogInPage.tsx";
-import HostSignUpPage from "./components/host_pages/HostSignUpPage.tsx";
-import HostEditPage from "./components/host_pages/HostEditPage.tsx";
-import HostViewPage from "./components/host_pages/HostViewPage.tsx";
+// * INDIVIDUAL ENTRIES
+import { IndividualEntryPage } from "";
+import { IndividualEntryCreationPage } from "";
+
+// * RELAY ENTRIES
+import { RelayEntryPage } from "";
+import { RelayEntryCreationPage } from "";
+
+// * HEAT SHEETS
+import { HeatSheetPage } from "";
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
         children: [
+            // * GENERAL
             {
                 index: true,
                 element: <HomePage />,
             },
-            // ! MEETS
+            {
+                path: "about",
+                element: <AboutPage />,
+            },
+            {
+                path: "log_in",
+                element: <LogInPage />,
+            },
+            {
+                path: "sign_up",
+                element: <SignUpPage />,
+            },
+            {
+                path: "settings",
+                element: <SettingsPage />,
+            },
+
+            // * MEETS
             {
                 path: "meets",
                 element: <MeetsListPage />,
             },
             {
-                path: "meets/:meet_id",
-                element: <MeetPage />,
-            },
-            {
-                path: "meets/:meet_id/edit",
-                element: <MeetEditPage />,
-            },
-            {
                 path: "meets/create",
                 element: <MeetCreationPage />,
             },
-            // * MEET ENTRIES
             {
-                path: "meets/:meet_id/entries/:entry_id/edit",
-                element: <EntryEditPage />,
+                path: "meets/:meet_id",
+                element: <MeetPage />,
             },
-            // * MEET EVENTS
+
+            // * POOLS
             {
-                path: "meets/:meet_id/events",
-                element: <EventsListPage />,
+                path: "meets/:meet_id/pools/:pool_id",
+                element: <PoolPage />,
             },
             {
-                path: "meets/:meet_id/events/:event_id",
+                path: "meets/:meet_id/pools/create",
+                element: <PoolCreationPage />,
+            },
+
+            // * SESSIONS
+            {
+                path: "meets/:meet_id/sessions/:session_id",
+                element: <SessionPage />,
+            },
+            {
+                path: "meets/:meet_id/sessions/create",
+                element: <SessionCreationPage />,
+            },
+
+            // * EVENTS
+            {
+                path: "meets/:meet_id/sessions/:session_id/events/:event_id",
                 element: <EventPage />,
             },
             {
-                path: "meets/:meet_id/events/:event_id/edit",
-                element: <EventEditPage />,
-            },
-            {
-                path: "meets/:meet_id/events/create",
+                path: "meets/:meet_id/sessions/:session_id/events/create",
                 element: <EventCreationPage />,
             },
-            // * MEET SWIMMERS
-            {
-                path: "meets/:meet_id/swimmers",
-                element: <SwimmersListPage />,
-            },
+
+            // * SWIMMERS
             {
                 path: "meets/:meet_id/swimmers/:swimmer_id",
                 element: <SwimmerPage />,
             },
             {
-                path: "meets/:meet_id/swimmers/:swimmer_id/edit",
-                element: <SwimmerEditPage />,
-            },
-            {
                 path: "meets/:meet_id/swimmers/create",
                 element: <SwimmerCreationPage />,
             },
-            // * MEET HEAT SHEET
+
+            // * INDIVIDUAL ENTRIES
+            {
+                path: "meets/:meet_id/swimmers/:swimmer_id/individual_entries/:individual_entry_id",
+                element: <IndividualEntryPage />,
+            },
+            {
+                path: "meets/:meet_id/swimmers/:swimmer_id/individual_entries/create",
+                element: <IndividualEntryCreationPage />,
+            },
+            {
+                path: "meets/:meet_id/sessions/:session_id/events/:event_id/individual_entries/:individual_entry_id",
+                element: <IndividualEntryPage />,
+            },
+            {
+                path: "meets/:meet_id/sessions/:session_id/events/:event_id/individual_entries/create",
+                element: <IndividualEntryCreationPage />,
+            },
+            
+            // * RELAY ENTRIES
+            {
+                path: "meets/:meet_id/swimmers/:swimmer_id/relay_entries/:relay_entry_id",
+                element: <RelayEntryPage />,
+            },
+            {
+                path: "meets/:meet_id/swimmers/:swimmer_id/relay_entries/create",
+                element: <RelayEntryCreationPage />,
+            },
+            {
+                path: "meets/:meet_id/sessions/:session_id/events/:event_id/relay_entries/:relay_entry_id",
+                element: <RelayEntryPage />,
+            },
+            {
+                path: "meets/:meet_id/sessions/:session_id/events/:event_id/relay_entries/create",
+                element: <RelayEntryCreationPage />,
+            },
+
+            // * HEAT SHEETS
             {
                 path: "meets/:meet_id/heat_sheet",
                 element: <HeatSheetPage />,
-            },
-            {
-                path: "meets/:meet_id/heat_sheet/:event_id",
-                element: <HeatSheetEventPage />,
-            },
-            {
-                path: "meets/:meet_id/heat_sheet/:event_id/:heat_id",
-                element: <HeatSheetHeatPage />,
-            },
-            {
-                path: "meets/:meet_id/heat_sheet/generate",
-                element: <HeatSheetCreationPage />,
-            },
-            // ! HOSTS 
-            {
-                path: "host/log_in",
-                element: <HostLogInPage />,
-            },
-            {
-                path: "host/sign_up",
-                element: <HostSignUpPage />,
-            },
-            {
-                path: "host/edit",
-                element: <HostEditPage />,
-            },
-            {
-                path: "host/view",
-                element: <HostViewPage />,
             },
         ],
     },
@@ -135,26 +168,34 @@ const router = createBrowserRouter([
 export default router;
 
 /*
+
 ! URL ROUTING
-/
-/meets
-    /:meet_id
-        /events
-            /:event_id
-                /edit [EVENT] --login only
-        /swimmers
-            /:swimmer_id
-                /edit [SWIMMER] --login only
-        /heat_sheet
-            /:event_id
-                /:heat_id
-            /generate --login only
-        /entries/:entry_id/edit [ENTRY] --login only
-        /edit [MEET] --login only
-    /create --login only
-/host <-- doesn't exist as a page
-    /log_in
-    /sign_up
-    /view --login only
-    /edit [HOST] --login only
+
+/ (home)
+/about
+/log_in
+/sign_up
+/settings -> profile, preferences, logout button
+
+/meets -> public, my meets, create button
+/meets/create
+/meets/:meet_id -> info, pools, sessions, events, swimmers (CREATE BUTTONS!)
+
+(from meets)
+.../pools/:pool_id -> info, sessions, create button
+.../pools/create
+.../sessions/:session_id -> info (with pool), events, swimmers, heat sheet, create button
+.../sessions/create
+.../events/:event_id -> info (with session), entries, heat sheet, create button
+.../events/create
+.../swimmers/:swimmer_id -> info, individual entries, relay entries, heat sheet, create button
+.../swimmers/create
+.../heat_sheet -> info, each session's heat sheet
+
+(from swimmers or events)
+.../relay_entries/:relay_entry_id -> info, heat from HS, create button
+.../relay_entries/create
+.../individual_entries/:individual_entry_id -> info, heat from HS, create button
+.../individual_entries/create
+
 */
