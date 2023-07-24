@@ -1,6 +1,8 @@
 import { useReducer, useEffect, createContext } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
+
+import { NavTree } from './components/navigation/NavTree.tsx';
 
 // ! CSRF token
 function setCSRFHeader(): void {
@@ -39,13 +41,13 @@ type Preferences = {
 }
 
 // * user reducer
-type UserState = {
+export type UserState = {
     logged_in: boolean,
     profile?: Profile,
     preferences: Preferences
 }
 
-type UserAction = {
+export type UserAction = {
     type: "LOG_IN" | "SIGN_UP"
     profile: Profile,
     preferences: Preferences
@@ -94,12 +96,12 @@ function userReducer(state: UserState, action: UserAction) {
 }
 
 // * nav tree reducer
-type NavTreeItem = {
+export type NavTreeItem = {
     title: string,
     route: string
 }
 
-type NavTreeAction = {
+export type NavTreeAction = {
     type: string,
     data: NavTreeItem[]
 }
@@ -122,7 +124,7 @@ type AppContextType = {
     navTreeDispatch: React.Dispatch<NavTreeAction>
 }
 
-const AppContext = createContext<AppContextType>({
+export const AppContext = createContext<AppContextType>({
     userState: {
         logged_in: false,
         preferences: {
@@ -156,11 +158,8 @@ export function App() {
         }
     });
     const [navTreeState, navTreeDispatch] = useReducer(navTreeReducer, [
-        { title: "home", route: "/" }
+        { title: "HOME", route: "/" }, {title: "TEST", route: "/"}
     ])
-
-    // * initialize navigation
-    const navigate = useNavigate();
 
     // ! initialize user state
     useEffect(() => {
@@ -200,28 +199,10 @@ export function App() {
                 navTreeDispatch: navTreeDispatch
             }}>
                 <header>
-                    <h1>Swimeeter</h1>
-                    <button onClick={() => setHeaderSelected(!headerSelected)}>
-                        {currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : 'Guest User'}
-                    </button>
-                    {headerSelected && <NavSelection setHeaderSelect={setHeaderSelected} />}
+                    
                 </header>
                 <nav>
-                    {navItems.map((item, index) => {
-                        // ? omit '>' for last nav item
-                        if (index == navItems.length - 1) {
-                            return <button onClick={() => navigate(item.route)}>
-                                {item.text}
-                            </button>
-                        }
-                        return <>
-                            <button onClick={() => navigate(item.route)}>
-                                {item.text}
-                            </button>
-                            <p>&gt;</p>
-                        </>
-                    })}
-                    <p>--------</p>
+                    <NavTree />
                 </nav>
                 <main>
                     <Outlet />

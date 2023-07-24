@@ -2,42 +2,42 @@ import { createBrowserRouter } from "react-router-dom";
 import { App } from "./App.tsx";
 
 // * GENERAL
-import { HomePage } from "";
-import { AboutPage } from "";
-import { LogInPage } from "";
-import { SignUpPage } from "";
-import { SettingsPage } from "";
+import { HomePage } from "./components/general/HomePage.tsx";
+import { AboutPage } from "./components/general/AboutPage.tsx";
+import { LogInPage } from "./components/general/LogInPage.tsx";
+import { SignUpPage } from "./components/general/SignUpPage.tsx";
+import { SettingsPage } from "./components/general/SettingsPage.tsx";
 
 // * MEETS
-import { MeetsListPage } from "";
-import { MeetCreationPage } from "";
-import { MeetPage } from "";
+import { MeetsListPage } from "./components/meets/MeetsListPage.tsx";
+import { MeetCreationPage } from "./components/meets/MeetCreationPage.tsx";
+import { MeetPage } from "./components/meets/MeetPage.tsx";
 
 // * POOLS
-import { PoolPage } from "";
-import { PoolCreationPage } from "";
+import { PoolPage } from "./components/pools/PoolPage.tsx";
+import { PoolCreationPage } from "./components/pools/PoolCreationPage.tsx";
 
 // * SESSIONS
-import { SessionPage } from "";
-import { SessionCreationPage } from "";
+import { SessionPage } from "./components/sessions/SessionPage.tsx";
+import { SessionCreationPage } from "./components/sessions/SessionCreationPage.tsx";
 // * EVENTS
-import { EventPage } from "";
-import { EventCreationPage } from "";
+import { EventPage } from "./components/events/EventPage.tsx";
+import { EventCreationPage } from "./components/events/EventCreationPage.tsx";
 
 // * SWIMMERS
-import { SwimmerPage } from "";
-import { SwimmerCreationPage } from "";
+import { SwimmerPage } from "./components/swimmers/SwimmerPage.tsx";
+import { SwimmerCreationPage } from "./components/swimmers/SwimmerCreationPage.tsx";
 
 // * INDIVIDUAL ENTRIES
-import { IndividualEntryPage } from "";
-import { IndividualEntryCreationPage } from "";
+import { IndividualEntryPage } from "./components/individual_entries/IndividualEntryPage.tsx";
+import { IndividualEntryCreationPage } from "./components/individual_entries/IndividualEntryCreationPage.tsx";
 
 // * RELAY ENTRIES
-import { RelayEntryPage } from "";
-import { RelayEntryCreationPage } from "";
+import { RelayEntryPage } from "./components/relay_entries/RelayEntryPage.tsx";
+import { RelayEntryCreationPage } from "./components/relay_entries/RelayEntryCreationPage.tsx";
 
 // * HEAT SHEETS
-import { HeatSheetPage } from "";
+import { HeatSheetPage } from "./components/heat_sheets/HeatSheetPage.tsx";
 
 const router = createBrowserRouter([
     {

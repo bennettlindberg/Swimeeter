@@ -1,4 +1,4 @@
-export function NavBar() {
+export function IndividualEntryPage() {
     return (
         <>
         </>
