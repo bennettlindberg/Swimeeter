@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
 
 import { NavTree } from './components/navigation/NavTree.tsx';
+import { NavBar } from './components/navigation/NavBar.tsx';
 
 // ! CSRF token
 function setCSRFHeader(): void {
@@ -127,6 +128,7 @@ type AppContextType = {
 export const AppContext = createContext<AppContextType>({
     userState: {
         logged_in: false,
+        profile: undefined,
         preferences: {
             screen_mode: "system",
             data_entry_information: true,
@@ -199,7 +201,7 @@ export function App() {
                 navTreeDispatch: navTreeDispatch
             }}>
                 <header>
-                    
+                    <NavBar />
                 </header>
                 <nav>
                     <NavTree />

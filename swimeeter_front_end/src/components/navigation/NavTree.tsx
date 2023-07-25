@@ -21,7 +21,7 @@ export function NavTree() {
         )
         // * add arrow
         formattedNavTreeItems.push(
-            <IconSVG icon="ARROW_RIGHT" color="fill-cyan-500" width="w-[50px]" height="h-[50px]" />
+            <IconSVG icon="ARROW_RIGHT" color="fill-cyan-500" width="w-[50px]" height="h-[50px]"/>
         )
     }
     formattedNavTreeItems.pop() // remove extra end arrow

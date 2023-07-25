@@ -117,19 +117,12 @@ class Swimmer_view(APIView):
 
         # * create new swimmer
         try:
-            # * format middle initials ("ABC" -> "A B C")
-            formatted_mi = ""
-            if "middle_initials" in request.data and request.data["middle_initials"] is not None:
-                for initial in request.data["middle_initials"]:
-                    formatted_mi += initial + " "
-                formatted_mi = formatted_mi[:-1] # remove trailing space
-
             new_swimmer = Swimmer(
                 first_name=request.data["first_name"],
                 last_name=request.data["last_name"],
                 prefix=request.data["prefix"],
                 suffix=request.data["suffix"],
-                middle_initials=formatted_mi,
+                middle_initials=request.data["middle_initials"],
                 age=request.data["age"],
                 gender=request.data["gender"],
                 team_name=request.data["team_name"],
@@ -198,16 +191,8 @@ class Swimmer_view(APIView):
                 edited_swimmer.prefix = request.data["prefix"]
             if "suffix" in request.data:
                 edited_swimmer.suffix = request.data["suffix"]
-
             if "middle_initials" in request.data:
-                # * format middle initials ("ABC" -> "A B C")
-                formatted_mi = ""
-                if request.data["middle_initials"] is not None:
-                    for initial in request.data["middle_initials"]:
-                        formatted_mi += initial + " "
-                    formatted_mi = formatted_mi[:-1] # remove trailing space
-                edited_swimmer.middle_initials = formatted_mi
-
+                edited_swimmer.middle_initials = request.data["middle_initials"]
             if "age" in request.data:
                 edited_swimmer.age = request.data["age"]
             if "gender" in request.data:

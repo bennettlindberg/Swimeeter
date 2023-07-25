@@ -67,31 +67,30 @@ class Sign_up(APIView):
             username=request.data["email"], password=request.data["password"]
         )
 
-        # ? user account already exists
-        if user is not None and user.is_active:
+        # ? email already associated with an account
+        users_of_email = Host.objects.filter(email=request.data["email"])
+        if users_of_email.count() > 0:
             return Response(
-                "user account already exists",
-                status=status.HTTP_403_FORBIDDEN,
-            )
+                    "user with email already exists",
+                    status=status.HTTP_403_FORBIDDEN,
+                )
 
-        # ~ reactivate deactivated account
-        if user is not None and not user.is_active:
-            user.is_active = True
-            user.save()
+        if user is not None:
+            # ? user account already exists
+            if user.is_active:
+                return Response(
+                    "user account already exists",
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            # ~ reactivate deactivated account
+            elif user is not None and not user.is_active:
+                user.is_active = True
+                user.save()
 
         # * create new user
         else:
             try:
-                # * format middle initials ("ABC" -> "A B C")
-                formatted_mi = ""
-                if (
-                    "middle_initials" in request.data
-                    and request.data["middle_initials"] is not None
-                ):
-                    for initial in request.data["middle_initials"]:
-                        formatted_mi += initial + " "
-                    formatted_mi = formatted_mi[:-1]  # remove trailing space
-
                 user = Host.objects.create_user(
                     # * credentials
                     username=request.data["email"],
@@ -102,7 +101,7 @@ class Sign_up(APIView):
                     last_name=request.data["last_name"],
                     prefix=request.data["prefix"],
                     suffix=request.data["suffix"],
-                    middle_initials=formatted_mi,
+                    middle_initials=request.data["middle_initials"],
                     # * preferences
                     screen_mode=request.session.get("screen_mode", "system"),
                     data_entry_information=request.session.get(
@@ -178,15 +177,8 @@ class Update_profile(APIView):
                 request.user.prefix = request.data["prefix"]
             if "suffix" in request.data:
                 request.user.suffix = request.data["suffix"]
-
             if "middle_initials" in request.data:
-                # * format middle initials ("ABC" -> "A B C")
-                formatted_mi = ""
-                if request.data["middle_initials"] is not None:
-                    for initial in request.data["middle_initials"]:
-                        formatted_mi += initial + " "
-                    formatted_mi = formatted_mi[:-1]  # remove trailing space
-                request.user.middle_initials = formatted_mi
+                request.user.middle_initials = request.data["middle_initials"]
 
             # ~ handle password reset
             if "new_password" in request.data:
