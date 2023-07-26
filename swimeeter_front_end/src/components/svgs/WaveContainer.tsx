@@ -22,7 +22,7 @@ export function WaveContainer({ size }: { size: "SMALL" | "MEDIUM" | "LARGE" }) 
 
     // * create wave array
     const waveArray = []
-    for (let i = 0; i < (window.innerWidth / waveWidth) + 2; ++i) {
+    for (let i = 0; i < Math.ceil((window.innerWidth + 300) / waveWidth); ++i) {
         waveArray.push(waveItem);
     }
 

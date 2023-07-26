@@ -1,4 +1,4 @@
-import { useReducer, useEffect, createContext } from 'react';
+import { useState, useReducer, useEffect, createContext } from 'react';
 import { Outlet } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
 
@@ -122,7 +122,8 @@ type AppContextType = {
     userState: UserState,
     userDispatch: React.Dispatch<UserAction>,
     navTreeState: NavTreeItem[],
-    navTreeDispatch: React.Dispatch<NavTreeAction>
+    navTreeDispatch: React.Dispatch<NavTreeAction>,
+    interpretedScreenMode: "light" | "dark"
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -139,7 +140,8 @@ export const AppContext = createContext<AppContextType>({
     },
     userDispatch: () => { },
     navTreeState: [],
-    navTreeDispatch: () => { }
+    navTreeDispatch: () => { },
+    interpretedScreenMode: "light"
 });
 
 // ~ component
@@ -159,9 +161,8 @@ export function App() {
             motion_safe: true
         }
     });
-    const [navTreeState, navTreeDispatch] = useReducer(navTreeReducer, [
-        { title: "HOME", route: "/" }, {title: "TEST", route: "/"}
-    ])
+    const [navTreeState, navTreeDispatch] = useReducer(navTreeReducer, []);
+    const [interpretedScreenMode, setInterpretedScreenMode] = useState<"light" | "dark">("light");
 
     // ! initialize user state
     useEffect(() => {
@@ -192,13 +193,45 @@ export function App() {
             });
     }, []);
 
+    // * interpret screen mode preference
+    useEffect(() => {
+        switch (userState.preferences.screen_mode) {
+            case "light":
+                setInterpretedScreenMode("light");
+                break;
+
+            case "dark":
+                setInterpretedScreenMode("dark");
+                break;
+            
+            case "system":
+                if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                    setInterpretedScreenMode("dark");
+                    break;
+                } else {
+                    setInterpretedScreenMode("light");
+                    break;
+                }
+        }
+    }, [userState.preferences.screen_mode]);
+
+    // * set dark on <html> and <body> elements
+    if (interpretedScreenMode === "dark") {
+        document.getElementsByTagName("html")[0].setAttribute("class", "dark")
+        document.getElementsByTagName("body")[0].setAttribute("style", "background-color:black;")
+    } else {
+        document.getElementsByTagName("html")[0].setAttribute("class", "light")
+        document.getElementsByTagName("body")[0].setAttribute("style", "background-color:white;")
+    }
+
     return (
         <>
             <AppContext.Provider value={{
                 userState: userState,
                 userDispatch: userDispatch,
                 navTreeState: navTreeState,
-                navTreeDispatch: navTreeDispatch
+                navTreeDispatch: navTreeDispatch,
+                interpretedScreenMode: interpretedScreenMode
             }}>
                 <header>
                     <NavBar />
