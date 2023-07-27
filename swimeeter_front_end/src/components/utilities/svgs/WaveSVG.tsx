@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { AppContext, UserState } from "../../App";
+import { AppContext, UserState } from "../../../App";
 
 export function WaveSVG({ size }: { size: "SMALL" | "MEDIUM" | "LARGE" }) {
     // * initialize context

@@ -2,8 +2,8 @@ import { useState, useReducer, useEffect, createContext } from 'react';
 import { Outlet } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
 
-import { NavTree } from './components/navigation/NavTree.tsx';
-import { NavBar } from './components/navigation/NavBar.tsx';
+import { NavTree } from './components/utilities/navigation/NavTree.tsx';
+import { NavBar } from './components/utilities/navigation/NavBar.tsx';
 
 // ! CSRF token
 function setCSRFHeader(): void {
@@ -239,7 +239,7 @@ export function App() {
                 <nav>
                     <NavTree />
                 </nav>
-                <main>
+                <main className="text-black dark:text-white">
                     <Outlet />
                 </main>
             </AppContext.Provider>
