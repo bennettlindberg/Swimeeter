@@ -5,7 +5,7 @@ export function NavDropMenu({ selectedNavItem, nameForSelection, children }: {
 }) {
     return (
         <div className="relative">
-            <div className={`${selectedNavItem === nameForSelection ? "visible" : "invisible"} bg-white dark:bg-black border-2 border-slate-200 dark:border-slate-700 flex flex-col items-start rounded-md absolute right-[-5px] top-[20px] p-2 z-10`}>
+            <div id={nameForSelection} className={`${selectedNavItem === nameForSelection ? "visible" : "invisible"} bg-white dark:bg-black border-2 border-slate-200 dark:border-slate-700 flex flex-col items-start rounded-md absolute right-[-5px] top-[20px] p-2 z-10`}>
                 {children}
             </div>
         </div>

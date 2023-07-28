@@ -3,7 +3,7 @@ import { IconSVG } from "../svgs/IconSVG.tsx";
 // ~ component
 export function PageButton({ color, handleClick, text, icon }: {
     color: "red" | "orange" | "yellow" | "green" | "purple" | "slate" | "primary",
-    handleClick: () => void,
+    handleClick: (event?: any) => void,
     text?: string,
     icon?: string
 }) {

@@ -47,6 +47,15 @@ export function NavBar() {
         }
     }
 
+    // * define blur handler
+    function handleLostFocus(event: any, nameForSelection: string) {
+        if (event.relatedTarget && event.relatedTarget.parentElement.id === nameForSelection) {
+            return;
+        }
+
+        setSelectedNavItem("none");
+    }
+
     return (
         <>
             <div className="fixed top-0 left-0 w-full">
@@ -74,7 +83,7 @@ export function NavBar() {
                         selectedNavItem === "screen_mode"
                             ? setSelectedNavItem("none")
                             : setSelectedNavItem("screen_mode");
-                    }}>
+                    }} handleBlur={(event: any) => handleLostFocus(event, "screen_mode")}>
                         <div className="flex flex-row items-center gap-x-1">
                             <IconSVG icon={`${interpretedScreenMode == "dark" ? "MOON_STARS" : "SUN_SHINE"}`} color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[30px]" height="h-[30px]" />
                             <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />
@@ -117,7 +126,7 @@ export function NavBar() {
                         selectedNavItem === "miscellaneous"
                             ? setSelectedNavItem("none")
                             : setSelectedNavItem("miscellaneous");
-                    }}>
+                    }} handleBlur={(event: any) => handleLostFocus(event, "screen_mode")}>
                         <div className="flex flex-row items-center gap-x-1">
                             <h2 className="text-2xl">{accountName}</h2>
                             <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />
