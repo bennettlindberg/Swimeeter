@@ -123,7 +123,8 @@ type AppContextType = {
     userDispatch: React.Dispatch<UserAction>,
     navTreeState: NavTreeItem[],
     navTreeDispatch: React.Dispatch<NavTreeAction>,
-    interpretedScreenMode: "light" | "dark"
+    interpretedScreenMode: "light" | "dark",
+    setTabTitle: (title: string) => void
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -141,7 +142,8 @@ export const AppContext = createContext<AppContextType>({
     userDispatch: () => { },
     navTreeState: [],
     navTreeDispatch: () => { },
-    interpretedScreenMode: "light"
+    interpretedScreenMode: "light",
+    setTabTitle: () => { }
 });
 
 // ~ component
@@ -231,7 +233,11 @@ export function App() {
                 userDispatch: userDispatch,
                 navTreeState: navTreeState,
                 navTreeDispatch: navTreeDispatch,
-                interpretedScreenMode: interpretedScreenMode
+                interpretedScreenMode: interpretedScreenMode,
+                setTabTitle: (title: string) => {
+                    const titleElement = document.getElementsByTagName("title")[0];
+                    titleElement.innerHTML = title;
+                }
             }}>
                 <header>
                     <NavBar />

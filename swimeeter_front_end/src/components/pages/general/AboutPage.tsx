@@ -1,7 +1,7 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useRef, useState } from "react";
 
 import { AppContext, NavTreeAction } from "../../../App.tsx";
-import { ContentPage } from "./ContentPage.tsx";
+import { ContentPage } from "./ContentPageOLD.tsx";
 import { PageButton } from "../../utilities/general/PageButton.tsx";
 
 import { MainContent } from "../../utilities/main_content/MainContent.tsx";
@@ -56,14 +56,46 @@ export function AboutPage() {
         console.log({month: MonthValue, day: DayValue, email: EmailValue})
     }
 
+    // * initialize state variables
+    const [selectedSection, setSelectedSection] = useState<string>("overview");
+
+    // * create scroll refs
+    const overviewRef = useRef<HTMLHeadingElement>(null);
+    const documentationRef = useRef<HTMLHeadingElement>(null);
+    const creditsRef = useRef<HTMLHeadingElement>(null);
+
+    const refArray = [
+        {name: "overview", ref: overviewRef}, 
+        {name: "documentation", ref: documentationRef},
+        {name: "credits", ref: creditsRef}
+    ];
+
+    // * define main content scroll handler
+    function handleScroll(event: any) {
+        const scrollLocation = event.target.scrollTop;
+
+        let minDistanceFromTop: number = Infinity;
+        let minDistanceSection: string = "";
+
+        for (const refObj of refArray) {
+            const distanceFromTop = Math.abs(scrollLocation - (refObj.ref.current?.offsetTop || 0));
+            if  (distanceFromTop < minDistanceFromTop) {
+                minDistanceFromTop = distanceFromTop;
+                minDistanceSection = refObj.name;
+            }
+        }
+
+        setSelectedSection(minDistanceSection === "" ? "overview" : minDistanceSection);
+    }
+
     return (
         <>
             <ContentPage title="About">
                 <SideBar>
                     <SideBarSection>
-                        <SideBarItem icon="EARTH_GLOBE" heading="Overview" isSelected={true} handleClick={() => { }} />
-                        <SideBarItem icon="DOC_BOOK" heading="Documentation" isSelected={false} handleClick={() => { }} />
-                        <SideBarItem icon="TWO_USERS" heading="Credits" isSelected={false} handleClick={() => { }} />
+                        <SideBarItem icon="EARTH_GLOBE" heading="Overview" isSelected={selectedSection === "overview"} handleClick={() => {overviewRef.current?.scrollIntoView({behavior: "smooth"})}} />
+                        <SideBarItem icon="DOC_BOOK" heading="Documentation" isSelected={selectedSection === "documentation"} handleClick={() => {documentationRef.current?.scrollIntoView({behavior: "smooth"})}} />
+                        <SideBarItem icon="TWO_USERS" heading="Credits" isSelected={selectedSection === "credits"} handleClick={() => {creditsRef.current?.scrollIntoView({behavior: "smooth"})}} />
                     </SideBarSection>
                     <SideBarSection>
                         <SideBarText>
@@ -72,8 +104,8 @@ export function AboutPage() {
                         <PageButton icon="EARTH_GLOBE" color="primary" text="GitHub Repository" handleClick={() => { }} />
                     </SideBarSection>
                 </SideBar>
-                <MainContent>
-                    <MainContentSection icon="EARTH_GLOBE" heading="Overview">
+                <MainContent handleScroll={handleScroll}>
+                    <MainContentSection icon="EARTH_GLOBE" heading="Overview" ref={overviewRef}>
                         Hello
                         <TableGrid>
                             <colgroup>
@@ -118,9 +150,9 @@ export function AboutPage() {
                             </TableRow>
                         </TableGrid>
                     </MainContentSection>
-                    <MainContentSection icon="DOC_BOOK" heading="Documentation">
+                    <MainContentSection icon="DOC_BOOK" heading="Documentation" ref={documentationRef}>
                     </MainContentSection>
-                    <MainContentSection icon="TWO_USERS" heading="Credits">
+                    <MainContentSection icon="TWO_USERS" heading="Credits" ref={creditsRef}>
                         <form>
                             <p>Email</p>
                             <TextInput regex={/[A-Za-z]*/} placeholderText="Email" pixelWidth={300} idPrefix="abc-email" />

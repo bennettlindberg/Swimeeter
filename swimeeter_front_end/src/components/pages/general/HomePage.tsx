@@ -5,9 +5,10 @@ import { IconSVG } from "../../utilities/svgs/IconSVG.tsx";
 
 export function HomePage() {
     // * initialize context
-    const { navTreeDispatch, interpretedScreenMode }: { 
+    const { navTreeDispatch, interpretedScreenMode, setTabTitle }: { 
         interpretedScreenMode: "light" | "dark",
-        navTreeDispatch: React.Dispatch<NavTreeAction>
+        navTreeDispatch: React.Dispatch<NavTreeAction>,
+        setTabTitle: (title: string) => void
     } = useContext(AppContext);
 
     // * update nav tree
@@ -16,7 +17,10 @@ export function HomePage() {
             type: "UPDATE_TREE",
             data: []
         })
-    });
+    }, []);
+
+    // * update tab title
+    useEffect(() => setTabTitle("Home | Swimeeter"), []);
 
     // * calculate window height without navbar
     const windowHeight = window.innerHeight - 90;
