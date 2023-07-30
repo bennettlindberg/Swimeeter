@@ -8,9 +8,8 @@ export function SearchSelect({
     defaultText, 
     pixelWidth, 
     options, 
-    idPrefix 
+    idPrefix
 }: {
-    //status: string, 
     regex: RegExp,
     otherEnabled: boolean,
     placeholderText?: string,

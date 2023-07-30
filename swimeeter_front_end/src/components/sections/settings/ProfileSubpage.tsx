@@ -3,7 +3,7 @@ import { useContext, useReducer } from "react";
 import { AppContext, UserState } from "../../../App.tsx";
 import { PageButton } from "../../utilities/general/PageButton.tsx";
 import { MainContentText } from "../../utilities/main_content/MainContentText.tsx";
-import { ProfileForm } from "../../utilities/forms/ProfileForm.tsx";
+import { ProfileForm } from "./ProfileForm.tsx";
 
 // * define types
 type PageState = {

@@ -3,8 +3,8 @@ import { useContext, useEffect, useRef } from "react";
 import { AppContext, NavTreeAction, UserState } from "../../../App.tsx";
 import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { PageButton } from "../../utilities/general/PageButton.tsx";
-import { ProfileSubpage } from "../../subpages/settings/ProfileSubpage.tsx";
-import { PreferencesSubpage } from "../../subpages/settings/PreferencesSubpage.tsx";
+import { ProfileSubpage } from "../../sections/settings/ProfileSubpage.tsx";
+import { PreferencesForm } from "../../sections/settings/PreferencesForm.tsx";
 
 // ~ component
 export function SettingsPage() {
@@ -54,7 +54,7 @@ export function SettingsPage() {
                         ref: preferencesRef,
                         content: (
                             <>
-                                <PreferencesSubpage />
+                                <PreferencesForm />
                             </>
                         )
                     }
@@ -64,10 +64,10 @@ export function SettingsPage() {
                         {
                             userState.logged_in
                                 ? <PageButton color="red" text="Log out" icon="USER_MINUS" handleClick={() => { }} />
-                                : <>
+                                : <div className="flex flex-row flex-wrap gap-x-2">
                                     <PageButton color="green" text="Log in" icon="USER_CHECK" handleClick={() => { }} />
                                     <PageButton color="green" text="Sign up" icon="USER_PLUS" handleClick={() => { }} />
-                                </>
+                                </div>
                         }
                     </>
                 ]}

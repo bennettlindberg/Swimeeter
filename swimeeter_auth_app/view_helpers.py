@@ -10,7 +10,6 @@ def get_session_preferences(request):
         "data_entry_information": request.session.get(
             "data_entry_information", True
         ),
-        "data_entry_warnings": request.session.get("data_entry_warnings", True),
         "destructive_action_confirms": request.session.get(
             "destructive_action_confirms", True
         ),
@@ -41,7 +40,6 @@ def get_user_preferences(host_object):
             fields=[
                 "screen_mode",
                 "data_entry_information",
-                "data_entry_warnings",
                 "destructive_action_confirms",
                 "motion_safe",
             ],

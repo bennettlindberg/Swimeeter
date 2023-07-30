@@ -36,7 +36,6 @@ type Profile = {
 type Preferences = {
     screen_mode: "light" | "dark" | "system",
     data_entry_information: boolean,
-    data_entry_warnings: boolean,
     destructive_action_confirms: boolean,
     motion_safe: boolean
 }
@@ -134,7 +133,6 @@ export const AppContext = createContext<AppContextType>({
         preferences: {
             screen_mode: "system",
             data_entry_information: true,
-            data_entry_warnings: true,
             destructive_action_confirms: true,
             motion_safe: true
         }
@@ -158,13 +156,13 @@ export function App() {
         preferences: {
             screen_mode: "system",
             data_entry_information: true,
-            data_entry_warnings: true,
             destructive_action_confirms: true,
             motion_safe: true
         }
     });
     const [navTreeState, navTreeDispatch] = useReducer(navTreeReducer, []);
     const [interpretedScreenMode, setInterpretedScreenMode] = useState<"light" | "dark">("light");
+    const [initCheckComplete, setInitCheckComplete] = useState<boolean>(false);
 
     // ! initialize user state
     useEffect(() => {
@@ -184,6 +182,8 @@ export function App() {
                         preferences: response.data.preferences
                     })
                 }
+
+                setInitCheckComplete(true);
             })
             .catch((error) => {
                 // ? init check failed on the back-end
@@ -246,7 +246,7 @@ export function App() {
                     <NavTree />
                 </nav>
                 <main className="text-black dark:text-white">
-                    <Outlet />
+                    {initCheckComplete && <Outlet />}
                 </main>
             </AppContext.Provider>
         </>

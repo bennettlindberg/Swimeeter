@@ -9,20 +9,17 @@ import { NavDropItem } from "./NavDropItem.tsx";
 
 import { AppContext, UserState } from "../../../App.tsx";
 import { UserAction } from "../../../App.tsx";
+import axios from "axios";
 
 // ~ component
 export function NavBar() {
-    // * initialize context
+    // * initialize context, navigation, an state
     const { userState, userDispatch, interpretedScreenMode }: {
         userState: UserState,
         userDispatch: React.Dispatch<UserAction>,
         interpretedScreenMode: "light" | "dark"
     } = useContext(AppContext);
-
-    // * initialize navigation
     const navigate = useNavigate();
-
-    //* initialize drop down state
     const [selectedNavItem, setSelectedNavItem] = useState<"none" | "screen_mode" | "miscellaneous">("none");
 
     // * determine account name
@@ -54,6 +51,27 @@ export function NavBar() {
         }
 
         setSelectedNavItem("none");
+    }
+
+    // * define screen mode change handler
+    async function handleScreenModeChange(mode: "system" | "light" | "dark") {
+        // @ send preferences data to the back-end
+        try {
+            const response = await axios.put('/auth/update_preferences/', {
+                screen_mode: mode
+            });
+
+            userDispatch({
+                type: "UPDATE_PREFERENCES",
+                preferences: {
+                    ...userState.preferences,
+                    screen_mode: mode
+                }
+            })
+        } catch (error) {
+            // ? update screen mode failed on the back-end
+            // ! unhandled
+        }
     }
 
     return (
@@ -88,33 +106,15 @@ export function NavBar() {
                             <IconSVG icon={`${interpretedScreenMode == "dark" ? "MOON_STARS" : "SUN_SHINE"}`} color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[30px]" height="h-[30px]" />
                             <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />
                             <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="screen_mode">
-                                <NavDropItem isSelected={userState.preferences.screen_mode === "system"} handleClick={() => userDispatch({
-                                    type: "UPDATE_PREFERENCES",
-                                    preferences: {
-                                        ...userState.preferences,
-                                        screen_mode: "system"
-                                    }
-                                })}>
+                                <NavDropItem isSelected={userState.preferences.screen_mode === "system"} handleClick={() => handleScreenModeChange("system")}>
                                     <IconSVG icon="COMPUTER" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     System
                                 </NavDropItem>
-                                <NavDropItem isSelected={userState.preferences.screen_mode === "light"} handleClick={() => userDispatch({
-                                    type: "UPDATE_PREFERENCES",
-                                    preferences: {
-                                        ...userState.preferences,
-                                        screen_mode: "light"
-                                    }
-                                })}>
+                                <NavDropItem isSelected={userState.preferences.screen_mode === "light"} handleClick={() => handleScreenModeChange("light")}>
                                     <IconSVG icon="SUN_SHINE" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     Light
                                 </NavDropItem>
-                                <NavDropItem isSelected={userState.preferences.screen_mode === "dark"} handleClick={() => userDispatch({
-                                    type: "UPDATE_PREFERENCES",
-                                    preferences: {
-                                        ...userState.preferences,
-                                        screen_mode: "dark"
-                                    }
-                                })}>
+                                <NavDropItem isSelected={userState.preferences.screen_mode === "dark"} handleClick={() => handleScreenModeChange("dark")}>
                                     <IconSVG icon="MOON_STARS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     Dark
                                 </NavDropItem>
@@ -126,7 +126,7 @@ export function NavBar() {
                         selectedNavItem === "miscellaneous"
                             ? setSelectedNavItem("none")
                             : setSelectedNavItem("miscellaneous");
-                    }} handleBlur={(event: any) => handleLostFocus(event, "screen_mode")}>
+                    }} handleBlur={(event: any) => handleLostFocus(event, "miscellaneous")}>
                         <div className="flex flex-row items-center gap-x-1">
                             <h2 className="text-2xl">{accountName}</h2>
                             <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />

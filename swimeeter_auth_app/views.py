@@ -42,7 +42,6 @@ class Log_in(APIView):
         # * copy user preferences to session data (login associates session with user)
         request.session["screen_mode"] = user.screen_mode
         request.session["data_entry_information"] = user.data_entry_information
-        request.session["data_entry_warnings"] = user.data_entry_warnings
         request.session[
             "destructive_action_confirms"
         ] = user.destructive_action_confirms
@@ -106,9 +105,6 @@ class Sign_up(APIView):
                     screen_mode=request.session.get("screen_mode", "system"),
                     data_entry_information=request.session.get(
                         "data_entry_information", True
-                    ),
-                    data_entry_warnings=request.session.get(
-                        "data_entry_warnings", True
                     ),
                     destructive_action_confirms=request.session.get(
                         "destructive_action_confirms", True
@@ -260,8 +256,6 @@ class Update_preferences(APIView):
             request.session["data_entry_information"] = request.data[
                 "data_entry_information"
             ]
-        if "data_entry_warnings" in request.data:
-            request.session["data_entry_warnings"] = request.data["data_entry_warnings"]
         if "destructive_action_confirms" in request.data:
             request.session["destructive_action_confirms"] = request.data[
                 "destructive_action_confirms"
@@ -278,10 +272,6 @@ class Update_preferences(APIView):
                 if "data_entry_information" in request.data:
                     request.user.data_entry_information = request.data[
                         "data_entry_information"
-                    ]
-                if "data_entry_warnings" in request.data:
-                    request.user.data_entry_warnings = request.data[
-                        "data_entry_warnings"
                     ]
                 if "destructive_action_confirms" in request.data:
                     request.user.destructive_action_confirms = request.data[
@@ -311,7 +301,6 @@ class Update_preferences(APIView):
             "data_entry_information": request.session.get(
                 "data_entry_information", True
             ),
-            "data_entry_warnings": request.session.get("data_entry_warnings", True),
             "destructive_action_confirms": request.session.get(
                 "destructive_action_confirms", True
             ),

@@ -1,10 +1,10 @@
 import { useContext, useEffect, useId } from "react";
 
-import { TextInput } from "../inputs/TextInput.tsx";
+import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { AppContext, UserState } from "../../../App.tsx";
-import { InputLabel } from "./InputLabel.tsx";
-import { SubmitButton } from "../inputs/SubmitButton.tsx";
-import { PageButton } from "../general/PageButton.tsx";
+import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
+import { InputButton } from "../../utilities/inputs/InputButton.tsx";
+import { PageButton } from "../../utilities/general/PageButton.tsx";
 
 // ~ component
 export function ProfileForm({ editAllowed, dispatch }: {
@@ -83,10 +83,10 @@ export function ProfileForm({ editAllowed, dispatch }: {
 
             {editAllowed
                 ? <>
-                    <SubmitButton idPrefix={idPrefix} color="green" text="Save changes" handleClick={formSubmit} />
-                    <SubmitButton idPrefix={idPrefix} color="red" text="Cancel" handleClick={formCancel} />
+                    <InputButton idPrefix={idPrefix} color="green" text="Save changes" type="submit" handleClick={formSubmit} />
+                    <InputButton idPrefix={idPrefix} color="red" text="Cancel" type="button" handleClick={formCancel} />
                 </>
-                : userState.logged_in && <PageButton color="purple" text="Edit profile" handleClick={formEdit}/>
+                : userState.logged_in && <InputButton idPrefix={idPrefix} color="purple" text="Edit profile" type="button" handleClick={formEdit}/>
             }
         </form>
     )
