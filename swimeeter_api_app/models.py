@@ -27,19 +27,19 @@ class Pool(models.Model):
 
     # * address info fields
     street_address = models.CharField(
-        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
     )
     city = models.CharField(
-        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
     )
     state = models.CharField(
-        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
     )
     country = models.CharField(
-        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
     )
     zipcode = models.CharField(
-        max_length=255, default="", validators=[validators.MinLengthValidator(1)]
+        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
     )
 
     # * pool specification fields
@@ -118,13 +118,13 @@ class Swimmer(models.Model):
 
     # * special name fields
     prefix = models.CharField(
-        max_length=255, default="", validators=[v.swimmer_ps_fix_validator]
+        max_length=255, default="", blank=True, validators=[v.swimmer_ps_fix_validator]
     )
     suffix = models.CharField(
-        max_length=255, default="", validators=[v.swimmer_ps_fix_validator]
+        max_length=255, default="", blank=True, validators=[v.swimmer_ps_fix_validator]
     )
     middle_initials = models.CharField(
-        max_length=255, default="", validators=[v.swimmer_mi_validator]
+        max_length=255, default="", blank=True, validators=[v.swimmer_mi_validator]
     )
 
     # * other info fields

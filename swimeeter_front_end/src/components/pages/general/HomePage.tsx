@@ -23,7 +23,7 @@ export function HomePage() {
     useEffect(() => setTabTitle("Home | Swimeeter"), []);
 
     // * calculate window height without navbar
-    const windowHeight = window.innerHeight - 90;
+    const windowHeight = window.innerHeight - 80;
 
     return (
         <>

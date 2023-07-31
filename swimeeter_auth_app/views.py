@@ -32,11 +32,6 @@ class Log_in(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        # ~ reactivate deactivated account
-        if not user.is_active:
-            user.is_active = True
-            user.save()
-
         login(request, user)
 
         # * copy user preferences to session data (login associates session with user)
@@ -70,22 +65,16 @@ class Sign_up(APIView):
         users_of_email = Host.objects.filter(email=request.data["email"])
         if users_of_email.count() > 0:
             return Response(
-                    "user with email already exists",
-                    status=status.HTTP_403_FORBIDDEN,
-                )
+                "user with email already exists",
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
-        if user is not None:
-            # ? user account already exists
-            if user.is_active:
-                return Response(
-                    "user account already exists",
-                    status=status.HTTP_403_FORBIDDEN,
-                )
-
-            # ~ reactivate deactivated account
-            elif user is not None and not user.is_active:
-                user.is_active = True
-                user.save()
+        # ? user account already exists
+        if user is not None and user.is_active:
+            return Response(
+                "user account already exists",
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         # * create new user
         else:
@@ -98,9 +87,9 @@ class Sign_up(APIView):
                     # * name
                     first_name=request.data["first_name"],
                     last_name=request.data["last_name"],
-                    prefix=request.data["prefix"],
-                    suffix=request.data["suffix"],
-                    middle_initials=request.data["middle_initials"],
+                    prefix=request.data.get("prefix", ""),
+                    suffix=request.data.get("suffix", ""),
+                    middle_initials=request.data.get("middle_initials", ""),
                     # * preferences
                     screen_mode=request.session.get("screen_mode", "system"),
                     data_entry_information=request.session.get(
@@ -319,7 +308,7 @@ class Delete_account(APIView):
                 "user not logged in",
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-        
+
         deleted_user = request.user
 
         logout(request)
@@ -339,42 +328,6 @@ class Delete_account(APIView):
             )
 
 
-class Deactivate_account(APIView):
-    def put(self, request):
-        # ? user not logged in
-        if not request.user.is_authenticated:
-            return Response(
-                "user not logged in",
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
-        # ? user account already deactivated
-        if not request.user.is_active:
-            return Response(
-                "user account already deactivated",
-                status=status.HTTP_403_FORBIDDEN,
-            )
-        
-        deactivated_user = request.user
-
-        logout(request)
-
-        # * deactivate existing user
-        try:
-            deactivated_user.is_active = False
-            deactivated_user.save()
-
-            # * get preferences JSON (session resets after logout)
-            session_preferences_JSON = vh.get_session_preferences(request)
-            return vh.make_session_preferences_response(session_preferences_JSON)
-        # ? internal error deactivating user
-        except Exception as err:
-            return Response(
-                str(err),
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-
 class Init_check(APIView):
     def get(self, request):
         # $ back end not logged in
@@ -382,7 +335,7 @@ class Init_check(APIView):
             return Response(
                 {
                     "logged_in": False,
-                    "preferences": vh.get_session_preferences(request)
+                    "preferences": vh.get_session_preferences(request),
                 },
                 status=status.HTTP_200_OK,
             )

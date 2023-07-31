@@ -1,6 +1,8 @@
 import { useContext, useEffect, useId, useReducer } from "react";
 import axios from "axios";
 
+import { convertRawData } from "../../utilities/forms/formHelpers.ts";
+
 import { AppContext, UserAction, UserState } from "../../../App.tsx";
 import { ErrorType } from "../../utilities/forms/FormTypes.tsx"
 
@@ -93,15 +95,46 @@ export function PreferencesForm() {
 
     // * define form handlers
     async function handleSubmit() {
-        const rawData = {
-            screen_mode: (document.getElementById(idPrefix + "-screen_mode-select-field") as HTMLInputElement).value,
-            data_entry_information: (document.getElementById(idPrefix + "-data_entry_information-select-field") as HTMLInputElement).value,
-            destructive_action_confirms: (document.getElementById(idPrefix + "-destructive_action_confirms-select-field") as HTMLInputElement).value,
-            motion_safe: (document.getElementById(idPrefix + "-motion_safe-select-field") as HTMLInputElement).value
+        // * retrieve raw data
+        let rawData: {
+            screen_mode: string
+            data_entry_information: string,
+            destructive_action_confirms: string,
+            motion_safe: string
+        } = {
+            screen_mode: "System",
+            data_entry_information: "Yes",
+            destructive_action_confirms: "Yes",
+            motion_safe: "Yes"
         }
 
-        console.log(rawData)
+        try {
+            const screenModeField = document.getElementById(idPrefix + "-screen_mode-select-field") as HTMLInputElement;
+            rawData.screen_mode = screenModeField.value;
 
+            const dataEntryInformationField = document.getElementById(idPrefix + "-data_entry_information-select-field") as HTMLInputElement;
+            rawData.data_entry_information = dataEntryInformationField.value;
+
+            const destructiveActionConfirmsField = document.getElementById(idPrefix + "-destructive_action_confirms-select-field") as HTMLInputElement;
+            rawData.destructive_action_confirms = destructiveActionConfirmsField.value;
+
+            const motionSafeField = document.getElementById(idPrefix + "-motion_safe-select-field") as HTMLInputElement;
+            rawData.motion_safe = motionSafeField.value;
+        } catch (error) {
+            // ? data retrieval error
+            console.error(error);
+
+            formDispatch({
+                type: "SAVE_FAILURE",
+                error: {
+                    title: "UNKNOWN ERROR",
+                    description: "An unknown error ocurred while attempting to submit the form."
+                }
+            });
+            return;
+        }
+
+        // * format raw data
         const formattedData: {
             screen_mode: "light" | "dark" | "system",
             data_entry_information: boolean,
@@ -114,47 +147,134 @@ export function PreferencesForm() {
             motion_safe: rawData.motion_safe === "Yes"
         }
 
-        console.log(formattedData)
+        const formattedScreenMode = convertRawData<string, "system" | "light" | "dark">(
+            rawData.screen_mode,
+            [
+                { raw: "System", formatted: "system" },
+                { raw: "Light", formatted: "light" },
+                { raw: "Dark", formatted: "dark" }
+            ]
+        );
+        if (formattedScreenMode === undefined) {
+            // ? incorrect input error
+            formDispatch({
+                type: "SAVE_FAILURE",
+                error: {
+                    title: "SCREEN MODE ENTRY ERROR",
+                    description: "An unexpected value was entered for the screen mode field.",
+                    fields: "Screen mode",
+                    recommendation: "Choose \"System\", \"Light\", or \"Dark\" as the entered value for the screen mode field."
+                }
+            });
+            return;
+        } else {
+            formattedData.screen_mode = formattedScreenMode;
+        }
+
+        const formattedDataEntryInformation = convertRawData<string, boolean>(
+            rawData.data_entry_information,
+            [
+                { raw: "Yes", formatted: true },
+                { raw: "No", formatted: false }
+            ]
+        );
+        if (formattedDataEntryInformation === undefined) {
+            // ? incorrect input error
+            formDispatch({
+                type: "SAVE_FAILURE",
+                error: {
+                    title: "DATA ENTRY INFORMATION ENTRY ERROR",
+                    description: "An unexpected value was entered for the display data entry information field.",
+                    fields: "Display data entry information",
+                    recommendation: "Choose \"Yes\" or \"No\" as the entered value for the display data entry information field."
+                }
+            });
+            return;
+        } else {
+            formattedData.data_entry_information = formattedDataEntryInformation;
+        }
+
+        const formattedDestructiveActionConfirms = convertRawData<string, boolean>(
+            rawData.destructive_action_confirms,
+            [
+                { raw: "Yes", formatted: true },
+                { raw: "No", formatted: false }
+            ]
+        );
+        if (formattedDestructiveActionConfirms === undefined) {
+            // ? incorrect input error
+            formDispatch({
+                type: "SAVE_FAILURE",
+                error: {
+                    title: "DESTRUCTIVE ACTION CONFIRMATIONS ENTRY ERROR",
+                    description: "An unexpected value was entered for the display destructive action confirmations field.",
+                    fields: "Display destructive action confirmations",
+                    recommendation: "Choose \"Yes\" or \"No\" as the entered value for the display destructive action confirmations field."
+                }
+            });
+            return;
+        } else {
+            formattedData.destructive_action_confirms = formattedDestructiveActionConfirms;
+        }
+
+        const formattedMotionSafe = convertRawData<string, boolean>(
+            rawData.motion_safe,
+            [
+                { raw: "Yes", formatted: true },
+                { raw: "No", formatted: false }
+            ]
+        );
+        if (formattedMotionSafe === undefined) {
+            // ? incorrect input error
+            formDispatch({
+                type: "SAVE_FAILURE",
+                error: {
+                    title: "MOTION EFFECTS ENTRY ERROR",
+                    description: "An unexpected value was entered for the use motion effects field.",
+                    fields: "Use motion effects",
+                    recommendation: "Choose \"Yes\" or \"No\" as the entered value for the use motion effects field."
+                }
+            });
+            return;
+        } else {
+            formattedData.motion_safe = formattedMotionSafe;
+        }
 
         // @ send preferences data to the back-end
         try {
             const response = await axios.put('/auth/update_preferences/', formattedData);
 
-            if (response.status !== 200) {
+            // * update user state
+            userDispatch({
+                type: "UPDATE_PREFERENCES",
+                preferences: formattedData
+            })
+
+            formDispatch({
+                type: "SAVE_SUCCESS"
+            })
+        } catch (error) {
+            // ? back-end error
+            if (axios.isAxiosError(error)) {
                 formDispatch({
                     type: "SAVE_FAILURE",
                     error: {
                         title: "UNKNOWN ERROR",
                         description: "An unknown error ocurred while attempting to submit the form."
                     }
-                })
-            }
-        } catch (error) {
-            // ? update preferences failed on the back-end
-            if (axios.isAxiosError(error)) {
-                console.error(error.response?.data.reason);
+                });
+                return;
             } else {
-                console.error(error);
+                formDispatch({
+                    type: "SAVE_FAILURE",
+                    error: {
+                        title: "UNKNOWN ERROR",
+                        description: "An unknown error ocurred while attempting to submit the form."
+                    }
+                });
+                return;
             }
-
-            formDispatch({
-                type: "SAVE_FAILURE",
-                error: {
-                    title: "UNKNOWN ERROR",
-                    description: "An unknown error ocurred while attempting to submit the form."
-                }
-            })
         }
-
-        // * update user state
-        userDispatch({
-            type: "UPDATE_PREFERENCES",
-            preferences: formattedData
-        })
-
-        formDispatch({
-            type: "SAVE_SUCCESS"
-        })
     }
 
     function handleCancel() {

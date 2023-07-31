@@ -18,13 +18,13 @@ class Host(AbstractUser):
 
     # * special name fields
     prefix = models.CharField(
-        max_length=255, default="", validators=[v.host_ps_fix_validator]
+        max_length=255, default="", blank=True, validators=[v.host_ps_fix_validator]
     )
     suffix = models.CharField(
-        max_length=255, default="", validators=[v.host_ps_fix_validator]
+        max_length=255, default="", blank=True, validators=[v.host_ps_fix_validator]
     )
     middle_initials = models.CharField(
-        max_length=255, default="", validators=[v.host_mi_validator]
+        max_length=255, default="", blank=True, validators=[v.host_mi_validator]
     )
 
     # * settings fields
@@ -37,6 +37,6 @@ class Host(AbstractUser):
 
     # ~ special
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = [first_name, last_name]  # automatically: username and password
+    REQUIRED_FIELDS = []  # automatically: username and password
 
     # via association: meets

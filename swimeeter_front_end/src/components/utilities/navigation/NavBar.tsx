@@ -44,7 +44,7 @@ export function NavBar() {
         }
     }
 
-    // * define blur handler
+    // * define nav bar handlers
     function handleLostFocus(event: any, nameForSelection: string) {
         if (event.relatedTarget && event.relatedTarget.parentElement.id === nameForSelection) {
             return;
@@ -53,7 +53,6 @@ export function NavBar() {
         setSelectedNavItem("none");
     }
 
-    // * define screen mode change handler
     async function handleScreenModeChange(mode: "system" | "light" | "dark") {
         // @ send preferences data to the back-end
         try {
@@ -70,6 +69,23 @@ export function NavBar() {
             })
         } catch (error) {
             // ? update screen mode failed on the back-end
+            // ! unhandled
+        }
+    }
+
+    async function handleLogOut() {
+        // @ send log out request to the back-end
+        try {
+            const response = await axios.post('/auth/log_out/');
+
+            userDispatch({
+                type: "LOG_OUT",
+                preferences: response.data.preferences
+            })
+
+            navigate("/");
+        } catch (error) {
+            // ? log out failed on the back-end
             // ! unhandled
         }
     }
@@ -134,7 +150,7 @@ export function NavBar() {
                                 {
                                     userState.logged_in
                                         ? <>
-                                            <NavDropItem isSelected={false} handleClick={() => { }}>
+                                            <NavDropItem isSelected={false} handleClick={handleLogOut}>
                                                 <IconSVG icon="USER_MINUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                                 Log out
                                             </NavDropItem>

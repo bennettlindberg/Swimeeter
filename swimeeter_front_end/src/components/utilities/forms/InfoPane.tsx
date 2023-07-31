@@ -13,7 +13,7 @@ export function InfoPane({ info, handleXClick }: {
     return (
         <>
             <div className="flex flex-row gap-x-1 mt-3 items-start">
-                <div className={`flex flex-col gap-y-1 text-lg p-2 border-2 rounded-md ${textColor} ${bgColor}`}>
+                <div className={`flex flex-col gap-y-1 text-lg p-2 border-2 rounded-md w-full ${textColor} ${bgColor}`}>
                     <div className="flex flex-row gap-x-2 items-center">
                         <IconSVG icon="CIRCLE_INFO" color={fillColor} width="w-[35px]" height="h-[35px]" />
                         <h3 className="font-extrabold text-xl">{info.title}</h3>
