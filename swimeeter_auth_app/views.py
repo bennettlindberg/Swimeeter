@@ -167,29 +167,26 @@ class Update_profile(APIView):
 
             # ~ handle password reset
             if "new_password" in request.data:
-                # ? original password not provided
+                # ? current password not provided
                 if "old_password" not in request.data:
                     return Response(
-                        "must pass original password to update password",
+                        "must pass current password to update password",
                         status=status.HTTP_403_FORBIDDEN,
                     )
+                
+                print(request.data["email"])
+                print(request.data["old_password"])
+                print(request.data["new_password"])
 
                 user = authenticate(
                     username=request.data["email"],
                     password=request.data["old_password"],
                 )
 
-                # ? log in credentials invalid
-                if user is None:
+                # ? log in credentials invalid or for wrong account
+                if user is None or user != request.user:
                     return Response(
                         "log in credentials invalid",
-                        status=status.HTTP_401_UNAUTHORIZED,
-                    )
-
-                # ? log in credentials for wrong account
-                if user != request.user:
-                    return Response(
-                        "log in credentials invalid (wrong account)",
                         status=status.HTTP_401_UNAUTHORIZED,
                     )
 

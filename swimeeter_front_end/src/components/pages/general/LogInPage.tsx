@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { AppContext, NavTreeAction, UserState } from "../../../App.tsx";
 
@@ -18,9 +18,18 @@ export function LogInPage() {
     } = useContext(AppContext);
     const navigate = useNavigate();
 
+    // * initialize location
+    const location = useLocation();
+    let forwardTo: string | undefined = undefined;
+    try {
+        forwardTo = location.state.forwardTo;
+    } catch {
+        forwardTo = undefined;
+    }
+
     // ? already logged in
     if (userState.logged_in) {
-        navigate("/")
+        navigate(forwardTo || "/", { replace: true });
     }
 
     // * update nav tree
@@ -51,7 +60,7 @@ export function LogInPage() {
                         ref: signUpRef,
                         content: (
                             <>
-                                <LogInForm />
+                                <LogInForm forwardTo={forwardTo} />
                             </>
                         )
                     }
@@ -61,7 +70,7 @@ export function LogInPage() {
                         <SideBarText>
                             Don't have an account yet?
                         </SideBarText>
-                        <PageButton color="green" text="Sign up" icon="USER_PLUS" handleClick={() => navigate("/sign_up")} />
+                        <PageButton color="green" text="Sign up" icon="USER_PLUS" handleClick={() => forwardTo ? navigate("/sign_up", { state: { forwardTo: forwardTo } }) : navigate("/sign_up")} />
                     </>
                 ]}
             />

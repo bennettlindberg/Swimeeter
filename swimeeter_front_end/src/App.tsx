@@ -55,7 +55,7 @@ export type UserAction = {
     type: "UPDATE_PROFILE",
     profile: Profile
 } | {
-    type: "LOG_OUT" | "DELETE_ACCOUNT" | "DEACTIVATE_ACCOUNT" | "UPDATE_PREFERENCES",
+    type: "LOG_OUT" | "DELETE_ACCOUNT" | "UPDATE_PREFERENCES",
     preferences: Preferences
 }
 
@@ -70,7 +70,6 @@ function userReducer(state: UserState, action: UserAction) {
             }
 
         case "DELETE_ACCOUNT":
-        case "DEACTIVATE_ACCOUNT":
         case "LOG_OUT":
             return {
                 logged_in: false,

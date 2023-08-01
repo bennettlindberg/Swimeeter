@@ -122,8 +122,6 @@ export function PreferencesForm() {
             rawData.motion_safe = motionSafeField.value;
         } catch (error) {
             // ? data retrieval error
-            console.error(error);
-
             formDispatch({
                 type: "SAVE_FAILURE",
                 error: {
@@ -363,13 +361,13 @@ export function PreferencesForm() {
 
             {formState.mode === "edit"
                 ? <div className="flex flex-row flex-wrap gap-x-2">
-                    <InputButton idPrefix={idPrefix} color="green" icon="CIRCLE_CHECK" text="Save changes" type="submit" handleClick={(event: any) => {
+                    <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Save changes" type="submit" handleClick={(event: any) => {
                         event.preventDefault();
                         handleSubmit();
                     }} />
-                    <InputButton idPrefix={idPrefix} color="red" icon="CIRCLE_CROSS" text="Cancel" type="button" handleClick={handleCancel} />
+                    <InputButton idPrefix={idPrefix + "-cancel"} color="red" icon="CIRCLE_CROSS" text="Cancel" type="button" handleClick={handleCancel} />
                 </div>
-                : <InputButton idPrefix={idPrefix} color="purple" icon="RULER_PEN" text="Edit preferences" type="button" handleClick={handleEdit} />
+                : <InputButton idPrefix={idPrefix + "-edit"} color="purple" icon="CIRCLE_BOLT" text="Edit preferences" type="button" handleClick={handleEdit} />
             }
         </DataForm>
     )

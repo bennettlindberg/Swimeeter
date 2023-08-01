@@ -1,4 +1,5 @@
 import { useContext, useId, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { AppContext, UserAction } from "../../../App.tsx";
@@ -46,11 +47,12 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function SignUpForm() {
+export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
     // * initialize context, state, and id
     const { userDispatch }: { userDispatch: React.Dispatch<UserAction> } = useContext(AppContext);
     const [formState, formDispatch] = useReducer(formReducer, { error: null });
     const idPrefix = useId();
+    const navigate = useNavigate();
 
     // * define form handlers
     async function handleSubmit() {
@@ -73,12 +75,16 @@ export function SignUpForm() {
             suffix: ""
         }
 
+        let repeatPassword = "";
         try {
             const emailField = document.getElementById(idPrefix + "-email-text-field") as HTMLInputElement;
             rawData.email = emailField.value;
 
             const passwordField = document.getElementById(idPrefix + "-password-text-field") as HTMLInputElement;
             rawData.password = passwordField.value;
+
+            const repeatPasswordField = document.getElementById(idPrefix + "-repeat_password-text-field") as HTMLInputElement;
+            repeatPassword = repeatPasswordField.value;
 
             const firstNameField = document.getElementById(idPrefix + "-first_name-text-field") as HTMLInputElement;
             rawData.first_name = firstNameField.value;
@@ -96,8 +102,6 @@ export function SignUpForm() {
             rawData.suffix = suffixField.value;
         } catch (error) {
             // ? data retrieval error
-            console.error(error);
-
             formDispatch({
                 type: "SAVE_FAILURE",
                 error: {
@@ -136,6 +140,19 @@ export function SignUpForm() {
                     description: "The entered password violates the constraints set on the password field. Passwords must be at least 8 characters long and contain at least one uppercase character (A-Z), one lowercase character (a-z), one number (0-9), and one special character (~`! @#$%^&*()_-+={[}]|\\:;\"\'<,>.?/).",
                     fields: "Password",
                     recommendation: "Alter the entered password to conform to the requirements of the field."
+                }
+            });
+            return;
+        }
+        // $ confirm repeat password is identical
+        if (rawData.password !== repeatPassword) {
+            formDispatch({
+                type: "SAVE_FAILURE",
+                error: {
+                    title: "PASSWORD FIELD ERROR",
+                    description: "The passwords entered in the password and repeat password fields do not match.",
+                    fields: "Password, Repeat Password",
+                    recommendation: "Alter the entered passwords to match each other."
                 }
             });
             return;
@@ -218,7 +235,6 @@ export function SignUpForm() {
 
         // @ send sign up data to the back-end
         try {
-            console.log(rawData)
             const response = await axios.post('/auth/sign_up/', rawData);
 
             // * update user state
@@ -226,11 +242,13 @@ export function SignUpForm() {
                 type: "SIGN_UP",
                 profile: response.data.profile,
                 preferences: response.data.preferences
-            })
+            });
 
             formDispatch({
                 type: "SAVE_SUCCESS"
-            })
+            });
+
+            navigate(forwardTo || "/", { replace: true });
         } catch (error) {
             // ? back-end error
             if (axios.isAxiosError(error)) {
@@ -320,6 +338,22 @@ export function SignUpForm() {
                 }}
             />
 
+            <FormGroup
+                label={<InputLabel inputId={idPrefix + "-repeat_password-text-field"} text="Repeat Password" />}
+                field={<TextInput
+                    regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
+                    placeholderText="Password"
+                    pixelWidth={300}
+                    idPrefix={idPrefix + "-repeat_password"}
+                    isPassword={true}
+                />}
+                info={{
+                    title: "REPEAT PASSWORD",
+                    description: "The repeat password field should contain the same password as provided above. The purpose of the repeat password field is to ensure that the user has entered their password as they intend.",
+                    permitted_values: "The same string as provided in the password field above."
+                }}
+            />
+
             <MainContentSubheading subheading="Name (required)" />
 
             <FormGroup
@@ -401,7 +435,7 @@ export function SignUpForm() {
                 }}
             />
 
-            <InputButton idPrefix={idPrefix} color="green" icon="CIRCLE_CHECK" text="Sign up" type="submit" handleClick={(event: any) => {
+            <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Sign up" type="submit" handleClick={(event: any) => {
                 event.preventDefault();
                 handleSubmit();
             }} />

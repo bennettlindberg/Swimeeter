@@ -1,4 +1,5 @@
 import { useContext, useId, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { AppContext, UserAction } from "../../../App.tsx";
@@ -44,11 +45,12 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function LogInForm() {
-    // * initialize context, state, and id
+export function LogInForm({ forwardTo }: { forwardTo?: string }) {
+    // * initialize context, state, id, and navigation
     const { userDispatch }: { userDispatch: React.Dispatch<UserAction> } = useContext(AppContext);
     const [formState, formDispatch] = useReducer(formReducer, { error: null });
     const idPrefix = useId();
+    const navigate = useNavigate();
 
     // * define form handlers
     async function handleSubmit() {
@@ -69,8 +71,6 @@ export function LogInForm() {
             rawData.password = passwordField.value;
         } catch (error) {
             // ? data retrieval error
-            console.error(error);
-
             formDispatch({
                 type: "SAVE_FAILURE",
                 error: {
@@ -123,11 +123,13 @@ export function LogInForm() {
                 type: "LOG_IN",
                 profile: response.data.profile,
                 preferences: response.data.preferences
-            })
+            });
 
             formDispatch({
                 type: "SAVE_SUCCESS"
-            })
+            });
+
+            navigate(forwardTo || "/", { replace: true });
         } catch (error) {
             // ? back-end error
             if (axios.isAxiosError(error)) {
@@ -214,7 +216,7 @@ export function LogInForm() {
                 }}
             />
 
-            <InputButton idPrefix={idPrefix} color="green" icon="CIRCLE_CHECK" text="Log in" type="submit" handleClick={(event: any) => {
+            <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Log in" type="submit" handleClick={(event: any) => {
                 event.preventDefault();
                 handleSubmit();
             }} />
