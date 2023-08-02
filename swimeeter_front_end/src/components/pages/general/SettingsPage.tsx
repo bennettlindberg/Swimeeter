@@ -8,9 +8,9 @@ import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { PageButton } from "../../utilities/general/PageButton.tsx";
 import { MainContentSubheading } from "../../utilities/main_content/MainContentSubheading.tsx";
 
-import { PreferencesForm } from "../../sections/settings/PreferencesForm.tsx";
-import { ProfileForm } from "../../sections/settings/ProfileForm.tsx";
-import { AccountForm } from "../../sections/settings/AccountForm.tsx";
+import { PreferencesForm } from "../../sections/settings_page/PreferencesForm.tsx";
+import { ProfileForm } from "../../sections/settings_page/ProfileForm.tsx";
+import { AccountForm } from "../../sections/settings_page/AccountForm.tsx";
 import { MainContentText } from "../../utilities/main_content/MainContentText.tsx";
 
 // ~ component

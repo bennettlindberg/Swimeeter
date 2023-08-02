@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { AppContext, UserAction } from "../../../App.tsx";
-import { ErrorType } from "../../utilities/forms/FormTypes.tsx"
+import { ErrorType } from "../../utilities/forms/formTypes.ts"
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";

@@ -1,6 +1,6 @@
 import { IconButton } from "../general/IconButton";
 import { IconSVG } from "../svgs/IconSVG";
-import { InfoType } from "./FormTypes";
+import { InfoType } from "./formTypes";
 
 export function InfoPane({ info, handleXClick }: { 
     info: InfoType, 

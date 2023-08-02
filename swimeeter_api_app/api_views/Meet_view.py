@@ -82,7 +82,7 @@ class Meet_view(APIView):
                     ).order_by("-begin_time", "-end_time")[lower_bound:upper_bound]
 
                 # * get meets JSON
-                meets_JSON = vh.get_JSON_single("Meet", meets_of_host, True)
+                meets_JSON = vh.get_JSON_multiple("Meet", meets_of_host, True)
                 # ? internal error generating JSON
                 if isinstance(meets_JSON, Response):
                     return meets_JSON
@@ -95,11 +95,11 @@ class Meet_view(APIView):
             # $ ...all
             case "all":
                 meets_of_all = Meet.objects.filter(is_public=True).order_by(
-                    "-begin_time", "-end_time"
+                    "-begin_time", "-end_time", "name"
                 )[lower_bound:upper_bound]
                 
                 # * get meets JSON
-                meets_JSON = vh.get_JSON_single("Meet", meets_of_all, True)
+                meets_JSON = vh.get_JSON_multiple("Meet", meets_of_all, True)
                 # ? internal error generating JSON
                 if isinstance(meets_JSON, Response):
                     return meets_JSON

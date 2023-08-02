@@ -6,7 +6,7 @@ import { AppContext, NavTreeAction, UserState } from "../../../App.tsx";
 import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { PageButton } from "../../utilities/general/PageButton.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
-import { LogInForm } from "../../sections/auth/LogInForm.tsx";
+import { LogInForm } from "../../sections/auth_pages/LogInForm.tsx";
 
 // ~ component
 export function LogInPage() {

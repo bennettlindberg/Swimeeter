@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { AppContext, UserState } from "../../../App.tsx";
 
 import { InfoPane } from "./InfoPane.tsx";
-import { InfoType } from "./FormTypes.tsx";
+import { InfoType } from "./formTypes.ts";
 import { IconButton } from "../general/IconButton.tsx";
 
 export function FormGroup({ label, field, info }: {

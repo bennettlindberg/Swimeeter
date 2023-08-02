@@ -1,13 +1,14 @@
 import { IconSVG } from "../svgs/IconSVG.tsx";
+import { TableHeaderEntry } from "./TableHeaderEntry.tsx";
 
-export function TableHeader({ isOpen, children, handleClick }: {
+export function TableHeader({ isOpen, entries, handleClick }: {
     isOpen: boolean,
-    children: React.ReactNode,
+    entries: string[],
     handleClick: () => void
 }) {
     return (
         <thead className="group bg-sky-100 dark:bg-blue-900 py-1 font-semibold text-xl text-sky-400 dark:text-blue-500" onClick={handleClick}>
-            {children}
+            {entries.map(entry => <TableHeaderEntry>{entry}</TableHeaderEntry>)}
             <td className="first-of-type:rounded-l-md last-of-type:rounded-r-md border-t-2 border-b-2 first-of-type:border-l-2 last-of-type:border-r-2 border-sky-200 dark:border-blue-800 group-hover:bg-sky-200 group-hover:dark:bg-blue-800">
                 {
                     isOpen

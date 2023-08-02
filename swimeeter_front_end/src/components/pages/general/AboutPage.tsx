@@ -112,42 +112,18 @@ export function AboutPage() {
                                 <col span={1} className="w-auto" />
                                 <col span={1} className="w-auto" />
                                 <col span={1} className="w-auto" />
-                                <col span={1} className="w-[30px]" />
+                                <col span={1} className="w-7" />
                             </colgroup>
 
-                            <TableHeader isOpen={true} handleClick={() => console.log("clicked Header")}>
-                                <TableHeaderEntry>
-                                    First Name
-                                </TableHeaderEntry>
-                                <TableHeaderEntry>
-                                    Last Name
-                                </TableHeaderEntry>
-                                <TableHeaderEntry>
-                                    Age
-                                </TableHeaderEntry>
-                            </TableHeader>
-                            <TableRow handleClick={() => console.log("clicked Jane")}>
-                                <TableRowEntry>
-                                    Jane
-                                </TableRowEntry>
-                                <TableRowEntry>
-                                    Doe
-                                </TableRowEntry>
-                                <TableRowEntry>
-                                    32
-                                </TableRowEntry>
-                            </TableRow>
-                            <TableRow handleClick={() => console.log("clicked John")}>
-                                <TableRowEntry>
-                                    John
-                                </TableRowEntry>
-                                <TableRowEntry>
-                                    Smith
-                                </TableRowEntry>
-                                <TableRowEntry>
-                                    43
-                                </TableRowEntry>
-                            </TableRow>
+                            <TableHeader isOpen={true} handleClick={() => console.log("clicked Header")} entries={[
+                                "First Name", "Last Name", "Age"
+                            ]} />
+                            <TableRow handleClick={() => console.log("clicked Jane")} entries={[
+                                "Jane", "Doe", "32"
+                            ]} />
+                            <TableRow handleClick={() => console.log("clicked Jane")} entries={[
+                                "John", "Smith", "43"
+                            ]} />
                         </TableGrid>
                     </MainContentSection>
                     <MainContentSection icon="DOC_BOOK" heading="Documentation" ref={documentationRef}>

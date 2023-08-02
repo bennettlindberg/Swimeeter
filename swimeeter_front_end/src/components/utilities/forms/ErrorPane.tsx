@@ -1,6 +1,6 @@
 import { IconButton } from "../general/IconButton";
 import { IconSVG } from "../svgs/IconSVG";
-import { ErrorType } from "./FormTypes";
+import { ErrorType } from "./formTypes";
 
 export function ErrorPane({ error, handleXClick }: { 
     error: ErrorType, 

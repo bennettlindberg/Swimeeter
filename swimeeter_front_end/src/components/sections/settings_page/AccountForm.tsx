@@ -2,7 +2,7 @@ import { useContext, useEffect, useId, useReducer } from "react";
 import axios from "axios";
 
 import { AppContext, UserAction, UserState } from "../../../App.tsx";
-import { ErrorType } from "../../utilities/forms/FormTypes.tsx"
+import { ErrorType } from "../../utilities/forms/formTypes.ts"
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
