@@ -19,7 +19,7 @@ export function MeetCreationPage() {
 
     // ? redirect to log in if logged out
     if (!userState.logged_in) {
-        navigate("/log_in", { state: { forwardTo: "/meets/create" } });
+        navigate("/log_in", { state: { forwardTo: "/meets/create" }, replace: true });
     }
 
     // * update nav tree

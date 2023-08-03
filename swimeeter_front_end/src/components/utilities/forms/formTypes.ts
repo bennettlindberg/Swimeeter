@@ -12,3 +12,10 @@ export type InfoType = {
     permitted_values?: string,
     warning?: string
 }
+
+export type DuplicateType = {
+    title: string,
+    description: string,
+    keep_both: boolean,
+    keep_new: boolean,
+}

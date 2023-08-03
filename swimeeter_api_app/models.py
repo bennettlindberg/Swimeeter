@@ -9,8 +9,8 @@ class Meet(models.Model):
     name = models.CharField(
         max_length=255, validators=[validators.MinLengthValidator(1)]
     )
-    begin_time = models.DateTimeField(null=True)  # handled programmatically
-    end_time = models.DateTimeField(null=True)  # handled programmatically
+    begin_time = models.DateTimeField(null=True, blank=True)  # handled programmatically
+    end_time = models.DateTimeField(null=True, blank=True)  # handled programmatically
     is_public = models.BooleanField()
 
     # * association fields
@@ -85,16 +85,16 @@ class Event(models.Model):
     # * competitor info fields
     competing_gender = models.CharField(max_length=255)
     competing_max_age = models.PositiveSmallIntegerField(
-        null=True
+        null=True, blank=True
     )  # front-end check for max >= min
-    competing_min_age = models.PositiveSmallIntegerField(null=True)
+    competing_min_age = models.PositiveSmallIntegerField(null=True, blank=True)
 
     # * heat sheet fields
     order_in_session = models.PositiveSmallIntegerField(
         validators=[validators.MinValueValidator(1)]
     )
     total_heats = models.PositiveSmallIntegerField(
-        null=True
+        null=True, blank=True
     )  # invalid assignments indicated by total_heats == null
 
     # * association fields
@@ -103,6 +103,25 @@ class Event(models.Model):
     )
 
     # via association: individual_entries, relay_entries
+
+
+class Team(models.Model):
+    # * team info fields
+    name = models.CharField(
+        max_length=255, validators=[validators.MinLengthValidator(1)]
+    )
+    acronym = models.CharField(
+        max_length=255,
+        validators=[
+            v.team_acronym_validator,
+            validators.MinLengthValidator(1),
+        ],
+    )
+
+    # * association fields
+    meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="teams")
+
+    # via association: swimmers
 
 
 class Swimmer(models.Model):
@@ -127,22 +146,13 @@ class Swimmer(models.Model):
         max_length=255, default="", blank=True, validators=[v.swimmer_mi_validator]
     )
 
-    # * other info fields
+    # * demographic fields
     age = models.PositiveSmallIntegerField()
     gender = models.CharField(max_length=255)
-    team_name = models.CharField(
-        max_length=255, validators=[validators.MinLengthValidator(1)]
-    )
-    team_acronym = models.CharField(
-        max_length=255,
-        validators=[
-            v.swimmer_team_acronym_validator,
-            validators.MinLengthValidator(1),
-        ],
-    )
 
     # * association fields
     meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="swimmers")
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="swimmers")
 
     # via association: individual_entries, relay_entries, relay_assignments
 
@@ -153,10 +163,10 @@ class Individual_entry(models.Model):
 
     # * heat sheet fields
     heat_number = models.PositiveSmallIntegerField(
-        null=True
+        null=True, blank=True
     )  # invalid assignment indicated by heat_number == null
     lane_number = models.PositiveSmallIntegerField(
-        null=True
+        null=True, blank=True
     )  # invalid assignment indicated by lane_number == null
 
     # * association fields
@@ -176,10 +186,10 @@ class Relay_entry(models.Model):
 
     # * heat sheet fields
     heat_number = models.PositiveSmallIntegerField(
-        null=True
+        null=True, blank=True
     )  # invalid assignment indicated by heat_number == null
     lane_number = models.PositiveSmallIntegerField(
-        null=True
+        null=True, blank=True
     )  # invalid assignment indicated by lane_number == null
 
     # * association fields

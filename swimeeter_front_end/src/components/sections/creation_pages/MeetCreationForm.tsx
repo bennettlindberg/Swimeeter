@@ -1,8 +1,7 @@
-import { useContext, useId, useReducer } from "react";
+import { useId, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { AppContext, UserAction } from "../../../App.tsx";
 import { ErrorType } from "../../utilities/forms/formTypes.ts"
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
@@ -13,14 +12,16 @@ import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 import { DataForm } from "../../utilities/forms/DataForm.tsx";
 import { FormGroup } from "../../utilities/forms/FormGroup.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
+import { DuplicatePane } from "../../utilities/forms/DuplicatePane.tsx";
 
 // * define form types
 type FormState = {
-    error: ErrorType | null
+    error: ErrorType | null,
+    duplicate_displayed: boolean
 }
 
 type FormAction = {
-    type: "SAVE_SUCCESS" | "DISMISS_ERROR"
+    type: "SAVE_SUCCESS" | "DISMISS_ERROR" | "TRIGGER_DUPLICATE_PANE" | "DISMISS_DUPLICATE_PANE"
 } | {
     type: "SAVE_FAILURE",
     error: ErrorType
@@ -32,12 +33,26 @@ function formReducer(state: FormState, action: FormAction) {
         case "SAVE_SUCCESS":
         case "DISMISS_ERROR":
             return {
+                ...state,
                 error: null,
             } as FormState;
 
         case "SAVE_FAILURE":
             return {
+                ...state,
                 error: action.error,
+            } as FormState;
+
+        case "TRIGGER_DUPLICATE_PANE":
+            return {
+                ...state,
+                duplicate_displayed: true
+            } as FormState;
+
+        case "DISMISS_DUPLICATE_PANE":
+            return {
+                ...state,
+                duplicate_displayed: false
             } as FormState;
 
         default:
@@ -48,12 +63,25 @@ function formReducer(state: FormState, action: FormAction) {
 // ~ component
 export function MeetCreationForm() {
     // * initialize state, id, and navigation
-    const [formState, formDispatch] = useReducer(formReducer, { error: null });
+    const [formState, formDispatch] = useReducer(formReducer, {
+        error: null,
+        duplicate_displayed: false,
+    });
     const idPrefix = useId();
     const navigate = useNavigate();
 
     // * define form handlers
-    async function handleSubmit() {
+    function handleDuplicateSelection(duplicate_handling: "unhandled" | "keep_new" | "keep_both" | "cancel") {
+        if (duplicate_handling !== "cancel") {
+            handleSubmit(duplicate_handling);
+        } else {
+            formDispatch({
+                type: "DISMISS_DUPLICATE_PANE"
+            })
+        }
+    }
+
+    async function handleSubmit(duplicate_handling?: "unhandled" | "keep_new" | "keep_both") {
         // * retrieve raw data
         let rawData: {
             name: string
@@ -99,7 +127,7 @@ export function MeetCreationForm() {
 
         // * interpret visibility string
         let is_public = true;
-        switch(rawData.visibility) {
+        switch (rawData.visibility) {
             case "Public":
                 is_public = true;
                 break;
@@ -128,11 +156,11 @@ export function MeetCreationForm() {
 
         // @ send new meet data to the back-end
         try {
-            const response = await axios.post('/api/v1/meets/', formattedData);
-
-            formDispatch({
-                type: "SAVE_SUCCESS"
-            });
+            const response = await axios.post(
+                '/api/v1/meets/',
+                formattedData,
+                { params: { duplicate_handling: duplicate_handling || "unhandled" } }
+            );
 
             navigate(`/meets/${response.data.pk}`);
         } catch (error) {
@@ -149,15 +177,10 @@ export function MeetCreationForm() {
                             }
                         });
                         return;
-                        
+
                     case "unhandled duplicates exist":
                         formDispatch({
-                            type: "SAVE_FAILURE",
-                            error: {
-                                title: "DUPLICATE DATA ERROR",
-                                description: "A meet with the entered name already exists in your account. Meet names owned by a given host must be unique.",
-                                recommendation: "Change the name entered in the name field above to be unique."
-                            }
+                            type: "TRIGGER_DUPLICATE_PANE",
                         });
                         return;
 
@@ -187,6 +210,12 @@ export function MeetCreationForm() {
     return (
         <DataForm>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
+            {formState.duplicate_displayed && <DuplicatePane handleClick={handleDuplicateSelection} info={{
+                title: "UNHANDLED DUPLICATES EXIST",
+                description: "One or more meets with the same name exist in your account. How would you like to resolve the duplicate data conflict?",
+                keep_both: true,
+                keep_new: true,
+            }} />}
 
             <FormGroup
                 label={<InputLabel inputId={idPrefix + "-name-text-field"} text="Name" />}

@@ -9,6 +9,7 @@ from .models import (
     Pool,
     Session,
     Event,
+    Team,
     Swimmer,
     Individual_entry,
     Relay_entry,
@@ -49,6 +50,9 @@ def get_model_of_id(model_type, model_id):
 
             case "Event":
                 return Event.objects.get(id=model_id)
+            
+            case "Team":
+                return Team.objects.get(id=model_id)
 
             case "Swimmer":
                 return Swimmer.objects.get(id=model_id)
@@ -90,11 +94,6 @@ def get_all_duplicates(model_type, model_object):
                 return Pool.objects.filter(
                     meet_id=model_object.meet_id,
                     name=model_object.name,
-                    street_address=model_object.street_address,
-                    city=model_object.city,
-                    state=model_object.state,
-                    country=model_object.country,
-                    zipcode=model_object.zipcode,
                     lanes=model_object.lanes,
                     side_length=model_object.side_length,
                     measure_unit=model_object.measure_unit,
@@ -104,9 +103,6 @@ def get_all_duplicates(model_type, model_object):
                 return Meet.objects.filter(
                     host_id=model_object.host_id,
                     name=model_object.name,
-                    lanes=model_object.lanes,
-                    side_length=model_object.side_length,
-                    measure_unit=model_object.measure_unit,
                 ).exclude(id=model_object.pk)
 
             case "Session":
@@ -128,15 +124,20 @@ def get_all_duplicates(model_type, model_object):
                     competing_max_age=model_object.competing_max_age,
                     competing_min_age=model_object.competing_min_age,
                 ).exclude(id=model_object.pk)
+            
+            case "Team":
+                return Team.objects.filter(
+                    meet_id=model_object.meet_id,
+                    name=model_object.name,
+                    acronym=model_object.acronym,
+                ).exclude(id=model_object.pk)
 
             case "Swimmer":
                 return Swimmer.objects.filter(
                     meet_id=model_object.meet_id,
+                    team_id=model_object.team_id,
                     first_name=model_object.first_name,
                     last_name=model_object.last_name,
-                    prefix=model_object.prefix,
-                    suffix=model_object.suffix,
-                    middle_initials=model_object.middle_initials,
                     age=model_object.age,
                     gender=model_object.gender,
                 ).exclude(id=model_object.pk)
@@ -183,6 +184,9 @@ def handle_duplicates(duplicate_handling, model_type, new_model_object):
             return None
 
     original_duplicates = get_all_duplicates(model_type, new_model_object)
+    # ? error inside of get_all_duplicates
+    if isinstance(original_duplicates, Response):
+        return original_duplicates
 
     # ~ no duplicates exist
     if original_duplicates.count() == 0:
@@ -281,6 +285,53 @@ def check_meet_access_allowed(request, meet_object):
     else:
         return None
 
+
+def check_editing_access(request, model_type, model_object):
+    if not request.user.is_authenticated:
+        return False
+
+    try:
+        match model_type:
+            case "Host":
+                return model_object.id == request.user.id
+            
+            case "Pool":
+                return model_object.meet.host.id == request.user.id
+
+            case "Meet":
+                return model_object.host.id == request.user.id
+
+            case "Session":
+                return model_object.meet.host.id == request.user.id
+
+            case "Event":
+                return model_object.session.meet.host.id == request.user.id
+            
+            case "Team":
+                return model_object.meet.host.id == request.user.id
+
+            case "Swimmer":
+                return model_object.meet.host.id == request.user.id
+
+            case "Individual_entry":
+                return model_object.swimmer.meet.host.id == request.user.id
+
+            case "Relay_entry":
+                return model_object.event.session.meet.host.id == request.user.id
+
+            case "Relay_assignment":
+                return model_object.swimmer.meet.host.id == request.user.id
+
+            case _:
+                return Response(
+                    f"{model_type} is not a valid model type",
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+    except:
+        return Response(
+            "unable to determine editing access",
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 # ! ENTRIES
 
@@ -481,6 +532,29 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     )
 
             return collective_JSON
+        
+        case "Team":
+            collective_JSON = json.loads(
+                serialize(
+                    "json",
+                    model_objects,
+                    fields=[
+                        "name",
+                        "acronym",
+                        "meet",
+                    ],
+                )
+            )
+
+            if get_inner_JSON:
+                for individual_JSON in collective_JSON:
+                    individual_JSON["fields"]["meet"] = get_JSON_single(
+                        "Meet",
+                        Meet.objects.get(id=individual_JSON["fields"]["meet"]),
+                        False,
+                    )
+
+            return collective_JSON
 
         case "Swimmer":
             collective_JSON = json.loads(
@@ -495,9 +569,8 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                         "middle_initials",
                         "age",
                         "gender",
-                        "team_name",
-                        "team_acronym",
                         "meet",
+                        "team",
                     ],
                 )
             )
@@ -507,6 +580,11 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     individual_JSON["fields"]["meet"] = get_JSON_single(
                         "Meet",
                         Meet.objects.get(id=individual_JSON["fields"]["meet"]),
+                        False,
+                    )
+                    individual_JSON["fields"]["team"] = get_JSON_single(
+                        "Team",
+                        Team.objects.get(id=individual_JSON["fields"]["team"]),
                         False,
                     )
 

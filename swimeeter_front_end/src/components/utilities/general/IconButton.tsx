@@ -48,7 +48,7 @@ export function IconButton({ color, handleClick, icon }: {
 
     return (
         <>
-            <button className={`flex flex-row gap-x-2 items-center p-0.5 w-fit rounded-full border-2 ${interpretedButtonColor}`} onClick={handleClick}>
+            <button className={`flex flex-row gap-x-2 items-center p-0.5 w-fit h-fit rounded-full border-2 ${interpretedButtonColor}`} onClick={handleClick}>
                 {icon && <IconSVG icon={icon} color={interpretedFillColor} width="w-[25px]" height="h-[25px]" />}
             </button>
         </>

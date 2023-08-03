@@ -114,6 +114,16 @@ class Swimmer_view(APIView):
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
+        
+        team_id = vh.get_query_param(request, "team_id")
+        # ? no "team_id" param passed
+        if isinstance(team_id, Response):
+            return team_id
+
+        team_of_id = vh.get_model_of_id("Team", team_id)
+        # ? no team of team_id exists
+        if isinstance(team_of_id, Response):
+            return team_of_id
 
         # * create new swimmer
         try:
@@ -125,9 +135,8 @@ class Swimmer_view(APIView):
                 middle_initials=request.data["middle_initials"],
                 age=request.data["age"],
                 gender=request.data["gender"],
-                team_name=request.data["team_name"],
-                team_acronym=request.data["team_acronym"],
                 meet_id=meet_id,
+                team_id=team_id
             )
 
             # * handle any duplicates
@@ -197,10 +206,6 @@ class Swimmer_view(APIView):
                 edited_swimmer.age = request.data["age"]
             if "gender" in request.data:
                 edited_swimmer.gender = request.data["gender"]
-            if "team_name" in request.data:
-                edited_swimmer.team_name = request.data["team_name"]
-            if "team_acronym" in request.data:
-                edited_swimmer.team_acronym = request.data["team_acronym"]
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)

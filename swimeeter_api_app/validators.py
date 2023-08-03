@@ -14,6 +14,6 @@ def swimmer_mi_validator(initials):
     if not re.match(r'^[A-Z ]*$', initials):
         raise ValidationError("Middle initials may only have characters matching '^[A-Z ]*$'")
     
-def swimmer_team_acronym_validator(initials):
+def team_acronym_validator(initials):
     if not re.match(r'^[A-Z]+$', initials):
         raise ValidationError("Team acronyms may only have characters matching '^[A-Z]+$'")

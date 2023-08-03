@@ -1,8 +1,8 @@
-import { useId, useReducer, useState } from "react";
+import { useEffect, useId, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { Meet } from "../../utilities/types/modelTypes.ts";
+import { Host, Meet } from "../../utilities/types/modelTypes.ts";
 
 import { TableGrid } from "../../utilities/tables/TableGrid.tsx";
 import { TableHeader } from "../../utilities/tables/TableHeader.tsx";
@@ -11,42 +11,39 @@ import { TableRow } from "../../utilities/tables/TableRow.tsx";
 import { PageButton } from "../../utilities/general/PageButton.tsx";
 import { InfoPane } from "../../utilities/forms/InfoPane.tsx";
 import { IconButton } from "../../utilities/general/IconButton.tsx";
-import { SearchButton } from "../../utilities/tables/SearchButton.tsx";
 import { SearchField } from "../../utilities/tables/SearchField.tsx";
+import { MainContentText } from "../../utilities/main_content/MainContentText.tsx";
 
 type TableState = {
     nextToLoad: number,
     loadedAllData: boolean,
     searchEntry: string,
-    data: {
-        meet: Meet,
-        id: number
-    }[]
+    data: Meet[]
 }
 
 type TableAction = {
     type: "LOADED_ALL_DATA"
 } | {
     type: "NEW_BATCH_RETRIEVED"
-    data: {
-        meet: Meet,
-        id: number
-    }[]
+    data: Meet[]
 } | {
     type: "NEW_SEARCH_ENTRY",
     searchEntry: string
 }
 
 function tableReducer(state: TableState, action: TableAction) {
+    console.log(action)
+    console.log(state)
+
     switch (action.type) {
         case "NEW_BATCH_RETRIEVED":
             return {
                 ...state,
                 nextToLoad: state.nextToLoad + 10,
-                data: {
+                data: [
                     ...state.data,
                     ...action.data
-                }
+                ]
             } as TableState;
 
         case "LOADED_ALL_DATA":
@@ -94,20 +91,14 @@ export function PublicMeetsTable() {
                     "specific_to": "all",
                     "lower_bound": tableState.nextToLoad,
                     "upper_bound": tableState.nextToLoad + 10,
-                    "filter_value": tableState.searchEntry === "" ? undefined : tableState.searchEntry
+                    "filter_value": tableState.searchEntry
                 }
             });
 
-            const newMeets: {
-                meet: Meet, id: number
-            }[] = [];
+            const newMeets: Meet[] = [];
 
-            for (const meetJSON of response.data as {
-                model: string, pk: number, fields: Meet
-            }[]) {
-                newMeets.push({
-                    meet: meetJSON.fields, id: meetJSON.pk
-                });
+            for (const meetJSON of response.data) {
+                newMeets.push(meetJSON);
             }
 
             tableDispatch({
@@ -131,24 +122,55 @@ export function PublicMeetsTable() {
         const searchField = document.getElementById(idPrefix + "-search-field") as HTMLInputElement;
         const searchValue = searchField.value;
 
-        tableDispatch({
-            type: "NEW_SEARCH_ENTRY",
-            searchEntry: searchValue || ""
-        });
+        if (searchValue !== tableState.searchEntry) {
+            tableDispatch({
+                type: "NEW_SEARCH_ENTRY",
+                searchEntry: searchValue || ""
+            });
+        }
+    }
+
+    // * define initial data loader with useEffect
+    useEffect(() => {
+        handleLoadMore()
+    }, [tableState.searchEntry]);
+
+    // * define host name generator
+    function generateHostName(host: Host) {
+        let accountName = "";
+
+        if (host.fields.prefix !== "") {
+            accountName += host.fields.prefix + " ";
+        }
+
+        accountName += host.fields.first_name + " ";
+
+        if (host.fields.middle_initials !== "") {
+            accountName += host.fields.middle_initials + " ";
+        }
+
+        accountName += host.fields.last_name;
+
+        if (host.fields.suffix !== "") {
+            accountName += " " + host.fields.suffix;
+        }
+
+        return accountName;
     }
 
     return (
         <>
-            <div className="flex flex-row gap-x-2 ">
+            <div className="flex flex-col gap-y-2">
                 {searchInfoShown && <InfoPane info={{
                     title: "MEET SEARCH",
                     description: "The meet search field can be used to search for meets by their name. Type a name into the search field and click the search button to filter the meets listed in the table below."
                 }} handleXClick={() => setSearchInfoShown(false)} />}
-                <SearchField placeholderText="Search meets..." idPrefix={idPrefix} handleReturn={handleSearchSubmit} />
-                <SearchButton handleClick={handleSearchSubmit} />
-                <IconButton color="primary" icon="CIRCLE_INFO" handleClick={() => setSearchInfoShown(!searchInfoShown)} />
-                <div className="flex-auto"></div>
-                <PageButton color="orange" text="Create a meet" icon="CIRCLE_PLUS" handleClick={() => navigate("/meets/create")} />
+                <div className="flex flex-row gap-x-2 items-end">
+                    <SearchField placeholderText="Search meets..." idPrefix={idPrefix} handleSearch={handleSearchSubmit} />
+                    <IconButton color="primary" icon="CIRCLE_INFO" handleClick={() => setSearchInfoShown(!searchInfoShown)} />
+                    <div className="flex-auto"></div>
+                    <PageButton color="orange" text="Create a meet" icon="CIRCLE_PLUS" handleClick={() => navigate("/meets/create", { replace: true })} />
+                </div>
             </div>
             <TableGrid>
                 <colgroup>
@@ -162,18 +184,29 @@ export function PublicMeetsTable() {
                 <TableHeader isOpen={tableShown} handleClick={() => setTableShown(!tableShown)} entries={[
                     "Name", "Begin Time", "End Time", "Host"
                 ]} />
-                {
-                    tableState.data.map(meetIDPair => (
-                        <TableRow handleClick={() => navigate(`/meets/${meetIDPair.id}`)} entries={[
-                            meetIDPair.meet.name,
-                            meetIDPair.meet.begin_time?.toDateString() || "N/A",
-                            meetIDPair.meet.end_time?.toDateString() || "N/A",
-                            `${meetIDPair.meet.host.last_name}, ${meetIDPair.meet.host.first_name}`
-                        ]} />
-                    ))
-                }
+                {tableShown && tableState.data.map(meet => (
+                    <TableRow handleClick={() => navigate(`/meets/${meet.pk}`)} entries={[
+                        meet.fields.name,
+                        meet.fields.begin_time?.toDateString() || "N/A",
+                        meet.fields.end_time?.toDateString() || "N/A",
+                        generateHostName(meet.fields.host)
+                    ]} />
+                ))}
             </TableGrid>
-            {!tableState.loadedAllData && <PageButton color="primary" text="Load more meets" icon="EARTH_GLOBE" handleClick={handleLoadMore} />}
+            {tableState.data.length === 0 && tableShown
+                && <tr>
+                    <td className="flex flex-row justify-center" colSpan={4}>
+                        <MainContentText>
+                            Sorry, no meets were found.
+                        </MainContentText>
+                    </td>
+                </tr>
+            }
+            {!tableState.loadedAllData && 
+                <div className="flex flex-row justify-center">
+                    <PageButton color="yellow" text="Load more meets" icon="EARTH_GLOBE" handleClick={handleLoadMore} />
+                </div>
+            }
         </>
     )
 }

@@ -8,6 +8,8 @@ import { PageButton } from "../../utilities/general/PageButton.tsx";
 
 import { PublicMeetsTable } from "../../sections/meets_list_page/PublicMeetsTable.tsx";
 import { MyMeetsTable } from "../../sections/meets_list_page/MyMeetsTable.tsx";
+import { MainContentText } from "../../utilities/main_content/MainContentText.tsx";
+import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
 // ~ component
 export function MeetsListPage() {
@@ -65,7 +67,10 @@ export function MeetsListPage() {
                 ]}
                 secondaryContent={[
                     <>
-                        <PageButton color="orange" text="Create a meet" icon="CIRCLE_PLUS" handleClick={() => navigate("/meets/create")} />
+                        <SideBarText>
+                            Want to build and customize a meet of your own?
+                        </SideBarText>
+                        <PageButton color="orange" text="Create a meet" icon="CIRCLE_PLUS" handleClick={() => navigate("/meets/create", { replace: true })} />
                     </>
                 ]}
             />

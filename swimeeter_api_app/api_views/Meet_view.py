@@ -28,9 +28,13 @@ class Meet_view(APIView):
         else:
             lower_bound = int(lower_bound_str)
 
+        filter_value = vh.get_query_param(request, "filter_value")
+        # * no "filter_value" param passed -> set to none
+        if isinstance(specific_to, Response):
+            filter_value = None
+
         # $ get meets(s) specific too...
         match specific_to:
-
             # $ ...id
             case "id":
                 meet_id = vh.get_query_param(request, "meet_id")
@@ -42,12 +46,12 @@ class Meet_view(APIView):
                 # ? no meet of meet_id exists
                 if isinstance(meet_of_id, Response):
                     return meet_of_id
-                
+
                 check_meet_access = vh.check_meet_access_allowed(request, meet_of_id)
                 # ? private meet access not allowed
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
-                
+
                 # * get meet JSON
                 meet_JSON = vh.get_JSON_single("Meet", meet_of_id, True)
                 # ? internal error generating JSON
@@ -57,7 +61,7 @@ class Meet_view(APIView):
                     return Response(
                         meet_JSON,
                         status=status.HTTP_200_OK,
-                )
+                    )
 
             # $ ...host
             case "host":
@@ -74,12 +78,14 @@ class Meet_view(APIView):
                 # * determine if logged in as host
                 if request.user.is_authenticated and host_id == request.user.id:
                     meets_of_host = Meet.objects.filter(host_id=host_id).order_by(
-                        "-begin_time", "-end_time"
+                        "-begin_time", "-end_time", "name"
                     )[lower_bound:upper_bound]
                 else:  # ! only include public meets for non-host viewers
                     meets_of_host = Meet.objects.filter(
                         host_id=host_id, is_public=True
-                    ).order_by("-begin_time", "-end_time")[lower_bound:upper_bound]
+                    ).order_by("-begin_time", "-end_time", "name")[
+                        lower_bound:upper_bound
+                    ]
 
                 # * get meets JSON
                 meets_JSON = vh.get_JSON_multiple("Meet", meets_of_host, True)
@@ -90,14 +96,21 @@ class Meet_view(APIView):
                     return Response(
                         meets_JSON,
                         status=status.HTTP_200_OK,
-                )
+                    )
 
             # $ ...all
             case "all":
-                meets_of_all = Meet.objects.filter(is_public=True).order_by(
-                    "-begin_time", "-end_time", "name"
-                )[lower_bound:upper_bound]
-                
+                if filter_value:
+                    meets_of_all = Meet.objects.filter(
+                        is_public=True, name__istartswith=filter_value
+                    ).order_by("-begin_time", "-end_time", "name")[
+                        lower_bound:upper_bound
+                    ]
+                else:
+                    meets_of_all = Meet.objects.filter(is_public=True).order_by(
+                        "-begin_time", "-end_time", "name"
+                    )[lower_bound:upper_bound]
+
                 # * get meets JSON
                 meets_JSON = vh.get_JSON_multiple("Meet", meets_of_all, True)
                 # ? internal error generating JSON
@@ -107,7 +120,7 @@ class Meet_view(APIView):
                     return Response(
                         meets_JSON,
                         status=status.HTTP_200_OK,
-                )
+                    )
 
             # ? invalid "specific_to" specification
             case _:
@@ -121,7 +134,7 @@ class Meet_view(APIView):
         # ? user is not logged in
         if isinstance(check_logged_in, Response):
             return check_logged_in
-        
+
         # * create new meet
         try:
             new_meet = Meet(
@@ -134,7 +147,9 @@ class Meet_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Meet", new_meet)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Meet", new_meet
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -143,12 +158,16 @@ class Meet_view(APIView):
             new_meet.save()
         except ValidationError as err:
             # ? invalid creation data passed -> validators
+            print(err)
+
             return Response(
                 "; ".join(err.messages),
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as err:
             # ? invalid creation data passed -> general
+            print(err)
+
             return Response(
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
@@ -192,7 +211,9 @@ class Meet_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Meet", edited_meet)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Meet", edited_meet
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
