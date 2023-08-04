@@ -32,9 +32,6 @@ type TableAction = {
 }
 
 function tableReducer(state: TableState, action: TableAction) {
-    console.log(action)
-    console.log(state)
-
     switch (action.type) {
         case "NEW_BATCH_RETRIEVED":
             return {
@@ -113,7 +110,7 @@ export function PublicMeetsTable() {
             }
         } catch (error) {
             // ? back-end error
-            // ! unhandled
+            navigate("errors/unknown");
         }
     }
 

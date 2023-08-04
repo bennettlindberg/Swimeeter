@@ -69,7 +69,7 @@ export function NavBar() {
             })
         } catch (error) {
             // ? update screen mode failed on the back-end
-            // ! unhandled
+            navigate("errors/unknown");
         }
     }
 
@@ -86,7 +86,7 @@ export function NavBar() {
             navigate("/");
         } catch (error) {
             // ? log out failed on the back-end
-            // ! unhandled
+            navigate("errors/unknown");
         }
     }
 

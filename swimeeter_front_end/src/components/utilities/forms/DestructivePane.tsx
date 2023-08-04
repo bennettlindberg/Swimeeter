@@ -1,10 +1,27 @@
-import { IconSVG } from "../svgs/IconSVG";
-import { DuplicateType } from "./formTypes.ts"
+import { useContext } from "react";
 
-export function DuplicatePane({ handleClick, info }: {
-    handleClick: (duplicate_handling: "keep_new" | "keep_both" | "cancel") => void,
-    info: DuplicateType
+import { AppContext, UserState } from "../../../App.tsx";
+import { DestructiveType } from "./formTypes.ts"
+
+import { IconSVG } from "../svgs/IconSVG.tsx";
+
+export function DestructivePane({ handleClick, info }: {
+    handleClick: (selection: "continue" | "cancel", duplicate_handling?: "unhandled" | "keep_new" | "keep_both") => void,
+    info: DestructiveType
 }) {
+    const { userState }: { userState: UserState } = useContext(AppContext);
+
+    // * automatically confirm if destructive action confirms are turned off
+    if (!userState.preferences.destructive_action_confirms) {
+        handleClick("continue");
+    }
+
+    // * pass along duplicate choice if applicable
+    let duplicate_handling: "unhandled" | "keep_new" | "keep_both" | undefined = undefined;
+    if (info.type && info.type === "duplicate_keep_new") {
+        duplicate_handling = "keep_new";
+    }
+
     const bgColor = "bg-red-100 border-red-200 dark:bg-red-900 dark:border-red-800";
     const textColor = "text-red-400 dark:text-red-500";
     const fillColor = "fill-red-400 dark:fill-red-500";
@@ -27,25 +44,18 @@ export function DuplicatePane({ handleClick, info }: {
                             <h3 className="font-extrabold text-xl">{info.title}</h3>
                         </div>
 
-                        <p><span className="font-semibold">Conflict: </span>{info.description}</p>
+                        <p><span className="font-semibold">Confirmation: </span>{info.description}</p>
+                        <p><span className="font-semibold">Impact: </span>{info.impact}</p>
 
                         <div className="flex flex-row gap-x-2">
-                            <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${slateButtonColor}`} type="button" onClick={() => handleClick("cancel")}>
+                            <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${slateButtonColor}`} type="button" onClick={() => { handleClick("cancel", duplicate_handling) }}>
                                 <IconSVG icon={"CIRCLE_CROSS"} color={slateFillColor} width="w-[25px]" height="h-[25px]" />
                                 <p className={`text-xl font-semibold ${slateTextColor}`}>Cancel</p>
                             </button>
-                            {info.keep_both &&
-                                <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${purpleButtonColor}`} type="button" onClick={() => handleClick("keep_both")}>
-                                    <IconSVG icon={"CIRCLE_BOLT"} color={purpleFillColor} width="w-[25px]" height="h-[25px]" />
-                                    <p className={`text-xl font-semibold ${purpleTextColor}`}>Add new and <span className="italic underline">keep</span> originals</p>
-                                </button>
-                            }
-                            {info.keep_new &&
-                                <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${purpleButtonColor}`} type="button" onClick={() => handleClick("keep_new")}>
-                                    <IconSVG icon={"CIRCLE_BOLT"} color={purpleFillColor} width="w-[25px]" height="h-[25px]" />
-                                    <p className={`text-xl font-semibold ${purpleTextColor}`}>Add new and <span className="italic underline">delete</span> originals</p>
-                                </button>
-                            }
+                            <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${purpleButtonColor}`} type="button" onClick={() => { handleClick("continue", duplicate_handling) }}>
+                                <IconSVG icon={"CIRCLE_BOLT"} color={purpleFillColor} width="w-[25px]" height="h-[25px]" />
+                                <p className={`text-xl font-semibold ${purpleTextColor}`}>Proceed</p>
+                            </button>
                         </div>
                     </div>
                 </div>

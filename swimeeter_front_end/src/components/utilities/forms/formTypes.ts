@@ -19,3 +19,10 @@ export type DuplicateType = {
     keep_both: boolean,
     keep_new: boolean,
 }
+
+export type DestructiveType = {
+    title: string,
+    description: string,
+    impact: string,
+    type?: string // used for duplicates when keep_new is chosen
+}

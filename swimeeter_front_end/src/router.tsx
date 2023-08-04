@@ -20,9 +20,14 @@ import { PoolCreationPage } from "./components/pages/pools/PoolCreationPage.tsx"
 // * SESSIONS
 import { SessionPage } from "./components/pages/sessions/SessionPage.tsx";
 import { SessionCreationPage } from "./components/pages/sessions/SessionCreationPage.tsx";
+
 // * EVENTS
 import { EventPage } from "./components/pages/events/EventPage.tsx";
 import { EventCreationPage } from "./components/pages/events/EventCreationPage.tsx";
+
+// * TEAMS
+import { TeamPage } from "./components/pages/teams/TeamPage.tsx";
+import { TeamCreationPage } from "./components/pages/teams/TeamCreationPage.tsx";
 
 // * SWIMMERS
 import { SwimmerPage } from "./components/pages/swimmers/SwimmerPage.tsx";
@@ -39,10 +44,16 @@ import { RelayEntryCreationPage } from "./components/pages/relay_entries/RelayEn
 // * HEAT SHEETS
 import { HeatSheetPage } from "./components/pages/heat_sheets/HeatSheetPage.tsx";
 
+// * ERRORS
+import { Error404Redirect } from "./components/pages/errors/Error404Redirect.tsx";
+import { Error404Page } from "./components/pages/errors/Error404Page.tsx";
+import { ErrorUnknownPage } from "./components/pages/errors/ErrorUnknownPage.tsx";
+
 const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
+        errorElement: <Error404Redirect />,
         children: [
             // * GENERAL
             {
@@ -110,6 +121,16 @@ const router = createBrowserRouter([
                 element: <EventCreationPage />,
             },
 
+            // * TEAMS
+            {
+                path: "meets/:meet_id/teams/:team_id",
+                element: <TeamPage />,
+            },
+            {
+                path: "meets/:meet_id/teams/create",
+                element: <TeamCreationPage />,
+            },
+
             // * SWIMMERS
             {
                 path: "meets/:meet_id/swimmers/:swimmer_id",
@@ -137,7 +158,7 @@ const router = createBrowserRouter([
                 path: "meets/:meet_id/sessions/:session_id/events/:event_id/individual_entries/create",
                 element: <IndividualEntryCreationPage />,
             },
-            
+
             // * RELAY ENTRIES
             {
                 path: "meets/:meet_id/swimmers/:swimmer_id/relay_entries/:relay_entry_id",
@@ -161,41 +182,18 @@ const router = createBrowserRouter([
                 path: "meets/:meet_id/heat_sheet",
                 element: <HeatSheetPage />,
             },
+
+            // * ERRORS
+            {
+                path: "errors/404",
+                element: <Error404Page />,
+            },
+            {
+                path: "errors/unknown",
+                element: <ErrorUnknownPage />,
+            },
         ],
     },
 ]);
 
 export default router;
-
-/*
-
-! URL ROUTING
-
-/ (home)
-/about
-/log_in
-/sign_up
-/settings -> profile, preferences, logout button
-
-/meets -> public, my meets, create button
-/meets/create
-/meets/:meet_id -> info, pools, sessions, events, swimmers (CREATE BUTTONS!)
-
-(from meets)
-.../pools/:pool_id -> info, sessions, create button
-.../pools/create
-.../sessions/:session_id -> info (with pool), events, swimmers, heat sheet, create button
-.../sessions/create
-.../events/:event_id -> info (with session), entries, heat sheet, create button
-.../events/create
-.../swimmers/:swimmer_id -> info, individual entries, relay entries, heat sheet, create button
-.../swimmers/create
-.../heat_sheet -> info, each session's heat sheet
-
-(from swimmers or events)
-.../relay_entries/:relay_entry_id -> info, heat from HS, create button
-.../relay_entries/create
-.../individual_entries/:individual_entry_id -> info, heat from HS, create button
-.../individual_entries/create
-
-*/

@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 ('age', models.PositiveSmallIntegerField()),
                 ('gender', models.CharField(max_length=255)),
                 ('team_name', models.CharField(max_length=255, validators=[django.core.validators.MinLengthValidator(1)])),
-                ('team_acronym', models.CharField(max_length=255, validators=[swimeeter_api_app.validators.swimmer_team_acronym_validator, django.core.validators.MinLengthValidator(1)])),
+                ('team_acronym', models.CharField(max_length=255, validators=[swimeeter_api_app.validators.team_acronym_validator, django.core.validators.MinLengthValidator(1)])),
                 ('meet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='swimmers', to='swimeeter_api_app.meet')),
             ],
         ),

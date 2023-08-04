@@ -2,7 +2,8 @@ import { useId, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { ErrorType } from "../../utilities/forms/formTypes.ts"
+import { convertRawData } from "../../utilities/forms/formHelpers.ts";
+import { DestructiveType, DuplicateType, ErrorType } from "../../utilities/forms/formTypes.ts"
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
@@ -13,18 +14,26 @@ import { DataForm } from "../../utilities/forms/DataForm.tsx";
 import { FormGroup } from "../../utilities/forms/FormGroup.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
 import { DuplicatePane } from "../../utilities/forms/DuplicatePane.tsx";
+import { DestructivePane } from "../../utilities/forms/DestructivePane.tsx";
 
 // * define form types
 type FormState = {
     error: ErrorType | null,
-    duplicate_displayed: boolean
+    duplicate: DuplicateType | null,
+    destructive: DestructiveType | null
 }
 
 type FormAction = {
-    type: "SAVE_SUCCESS" | "DISMISS_ERROR" | "TRIGGER_DUPLICATE_PANE" | "DISMISS_DUPLICATE_PANE"
+    type: "SAVE_SUCCESS" | "DISMISS_ERROR" | "DISMISS_DUPLICATE_PANE" | "DISMISS_DESTRUCTIVE_PANE"
 } | {
     type: "SAVE_FAILURE",
     error: ErrorType
+} | {
+    type: "TRIGGER_DUPLICATE_PANE",
+    duplicate: DuplicateType
+} | {
+    type: "TRIGGER_DESTRUCTIVE_PANE",
+    destructive: DestructiveType
 }
 
 // * define form reducer
@@ -46,13 +55,25 @@ function formReducer(state: FormState, action: FormAction) {
         case "TRIGGER_DUPLICATE_PANE":
             return {
                 ...state,
-                duplicate_displayed: true
+                duplicate: action.duplicate
             } as FormState;
 
         case "DISMISS_DUPLICATE_PANE":
             return {
                 ...state,
-                duplicate_displayed: false
+                duplicate: null
+            } as FormState;
+
+        case "TRIGGER_DESTRUCTIVE_PANE":
+            return {
+                ...state,
+                destructive: action.destructive
+            } as FormState;
+
+        case "DISMISS_DESTRUCTIVE_PANE":
+            return {
+                ...state,
+                destructive: null
             } as FormState;
 
         default:
@@ -65,19 +86,40 @@ export function MeetCreationForm() {
     // * initialize state, id, and navigation
     const [formState, formDispatch] = useReducer(formReducer, {
         error: null,
-        duplicate_displayed: false,
+        duplicate: null,
+        destructive: null
     });
     const idPrefix = useId();
     const navigate = useNavigate();
 
     // * define form handlers
-    function handleDuplicateSelection(duplicate_handling: "unhandled" | "keep_new" | "keep_both" | "cancel") {
-        if (duplicate_handling !== "cancel") {
+    function handleDuplicateSelection(duplicate_handling: "keep_new" | "keep_both" | "cancel") {
+        if (duplicate_handling === "keep_new") {
+            formDispatch({
+                type: "TRIGGER_DESTRUCTIVE_PANE",
+                destructive: {
+                    title: "POTENTIALLY DESTRUCTIVE ACTION",
+                    description: "Replacing previously-created duplicate meets with this one will result in the deletion of the original meets. Are you sure you want to continue?",
+                    impact: "Meets with the same name as this one will be deleted.",
+                    type: "duplicate_keep_new"
+                }
+            });
+        } else if (duplicate_handling === "keep_both") {
             handleSubmit(duplicate_handling);
         } else {
             formDispatch({
                 type: "DISMISS_DUPLICATE_PANE"
-            })
+            });
+        }
+    }
+
+    function handleDestructiveSelection(selection: "continue" | "cancel", duplicate_handling?: "unhandled" | "keep_new" | "keep_both") {
+        if (selection === "continue") {
+            handleSubmit(duplicate_handling);
+        } else {
+            formDispatch({
+                type: "DISMISS_DESTRUCTIVE_PANE"
+            });
         }
     }
 
@@ -111,7 +153,7 @@ export function MeetCreationForm() {
 
         // * validate raw data
         const validName = rawData.name.length >= 1
-        // ? email format is invalid
+        // ? name format is invalid
         if (!validName) {
             formDispatch({
                 type: "SAVE_FAILURE",
@@ -126,32 +168,30 @@ export function MeetCreationForm() {
         }
 
         // * interpret visibility string
-        let is_public = true;
-        switch (rawData.visibility) {
-            case "Public":
-                is_public = true;
-                break;
-
-            case "Private":
-                is_public = false;
-                break;
-
-            default:
-                formDispatch({
-                    type: "SAVE_FAILURE",
-                    error: {
-                        title: "VISIBILITY FIELD ERROR",
-                        description: "The entered visibility was a valid visibility selection. The visibility field can only be \"Public\" or \"Private\".",
-                        fields: "Visibility",
-                        recommendation: "Alter the entered visibility to conform to the requirements of the field."
-                    }
-                });
-                return;
+        const formattedVisibility = convertRawData<string, boolean>(
+            rawData.visibility,
+            [
+                { raw: "Public", formatted: true },
+                { raw: "Private", formatted: false },
+            ]
+        );
+        if (formattedVisibility === undefined) {
+            // ? incorrect input error
+            formDispatch({
+                type: "SAVE_FAILURE",
+                error: {
+                    title: "VISIBILITY FIELD ERROR",
+                    description: "An unexpected value was entered for the visibility field.",
+                    fields: "Visibility",
+                    recommendation: "Choose \"Public\" or \"Private\" as the entered value for the visibility field."
+                }
+            });
+            return;
         }
 
         const formattedData = {
             name: rawData.name,
-            is_public: is_public
+            is_public: formattedVisibility
         }
 
         // @ send new meet data to the back-end
@@ -181,6 +221,12 @@ export function MeetCreationForm() {
                     case "unhandled duplicates exist":
                         formDispatch({
                             type: "TRIGGER_DUPLICATE_PANE",
+                            duplicate: {
+                                title: "UNHANDLED DUPLICATE MEETS EXIST",
+                                description: "One or more meets with the same name exist in your account. How would you like to resolve the duplicate data conflict?",
+                                keep_both: true,
+                                keep_new: true,
+                            }
                         });
                         return;
 
@@ -210,12 +256,8 @@ export function MeetCreationForm() {
     return (
         <DataForm>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
-            {formState.duplicate_displayed && <DuplicatePane handleClick={handleDuplicateSelection} info={{
-                title: "UNHANDLED DUPLICATES EXIST",
-                description: "One or more meets with the same name exist in your account. How would you like to resolve the duplicate data conflict?",
-                keep_both: true,
-                keep_new: true,
-            }} />}
+            {formState.duplicate && <DuplicatePane handleClick={handleDuplicateSelection} info={formState.duplicate} />}
+            {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}
 
             <FormGroup
                 label={<InputLabel inputId={idPrefix + "-name-text-field"} text="Name" />}
@@ -248,7 +290,7 @@ export function MeetCreationForm() {
                 }}
             />
 
-            <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Log in" type="submit" handleClick={(event: any) => {
+            <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Create meet" type="submit" handleClick={(event: any) => {
                 event.preventDefault();
                 handleSubmit();
             }} />
