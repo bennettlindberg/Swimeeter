@@ -36,6 +36,8 @@ class Session_view(APIView):
                 # ? no "session_id" param passed
                 if isinstance(session_id, Response):
                     return session_id
+                else:
+                    session_id = int(session_id)
 
                 session_of_id = vh.get_model_of_id("Session", session_id)
                 # ? no session of session_id exists
@@ -66,6 +68,8 @@ class Session_view(APIView):
                 # ? no "meet_id" param passed
                 if isinstance(meet_id, Response):
                     return meet_id
+                else:
+                    meet_id = int(meet_id)
 
                 meet_of_id = vh.get_model_of_id("Meet", meet_id)
                 # ? no meet of meet_id exists
@@ -104,6 +108,8 @@ class Session_view(APIView):
         # ? no "meet_id" param passed
         if isinstance(meet_id, Response):
             return meet_id
+        else:
+            meet_id = int(meet_id)
 
         meet_of_id = vh.get_model_of_id("Meet", meet_id)
         # ? no meet of meet_id exists
@@ -119,6 +125,8 @@ class Session_view(APIView):
         # ? no "pool_id" param passed
         if isinstance(pool_id, Response):
             return pool_id
+        else:
+            pool_id = int(pool_id)
 
         pool_of_id = vh.get_model_of_id("Pool", pool_id)
         # ? no pool of pool_id exists
@@ -189,6 +197,8 @@ class Session_view(APIView):
         # ? no "session_id" param passed
         if isinstance(session_id, Response):
             return session_id
+        else:
+            session_id = int(session_id)
 
         session_of_id = vh.get_model_of_id("Session", session_id)
         # ? no session of session_id exists
@@ -264,6 +274,8 @@ class Session_view(APIView):
         # ? no "session_id" param passed
         if isinstance(session_id, Response):
             return session_id
+        else:
+            session_id = int(session_id)
 
         session_of_id = vh.get_model_of_id("Session", session_id)
         # ? no session of session_id exists

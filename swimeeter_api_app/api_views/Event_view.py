@@ -36,6 +36,8 @@ class Event_view(APIView):
                 # ? no "event_id" param passed
                 if isinstance(event_id, Response):
                     return event_id
+                else:
+                    event_id = int(event_id)
 
                 event_of_id = vh.get_model_of_id("Event", event_id)
                 # ? no event of event_id exists
@@ -66,6 +68,8 @@ class Event_view(APIView):
                 # ? no "session_id" param passed
                 if isinstance(session_id, Response):
                     return session_id
+                else:
+                    session_id = int(session_id)
 
                 session_of_id = vh.get_model_of_id("Session", session_id)
                 # ? no session of session_id exists
@@ -100,6 +104,8 @@ class Event_view(APIView):
                 # ? no "meet_id" param passed
                 if isinstance(meet_id, Response):
                     return meet_id
+                else:
+                    meet_id = int(meet_id)
 
                 meet_of_id = vh.get_model_of_id("Meet", meet_id)
                 # ? no meet of meet_id exists
@@ -142,6 +148,8 @@ class Event_view(APIView):
         # ? no "session_id" param passed
         if isinstance(session_id, Response):
             return session_id
+        else:
+            session_id = int(session_id)
 
         session_of_id = vh.get_model_of_id("Session", session_id)
         # ? no session of session_id exists
@@ -228,6 +236,8 @@ class Event_view(APIView):
         # ? no "event_id" param passed
         if isinstance(event_id, Response):
             return event_id
+        else:
+            event_id = int(event_id)
 
         event_of_id = vh.get_model_of_id("Event", event_id)
         # ? no event of event_id exists
@@ -377,6 +387,8 @@ class Event_view(APIView):
         # ? no "event_id" param passed
         if isinstance(event_id, Response):
             return event_id
+        else:
+            event_id = int(event_id)
 
         event_of_id = vh.get_model_of_id("Event", event_id)
         # ? no event of event_id exists

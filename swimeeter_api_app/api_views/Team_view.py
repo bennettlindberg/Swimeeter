@@ -36,6 +36,8 @@ class Team_view(APIView):
                 # ? no "team_id" param passed
                 if isinstance(team_id, Response):
                     return team_id
+                else:
+                    team_id = int(team_id)
 
                 team_of_id = vh.get_model_of_id("Team", team_id)
                 # ? no team of team_id exists
@@ -66,6 +68,8 @@ class Team_view(APIView):
                 # ? no "meet_id" param passed
                 if isinstance(meet_id, Response):
                     return meet_id
+                else:
+                    meet_id = int(meet_id)
 
                 meet_of_id = vh.get_model_of_id("Meet", meet_id)
                 # ? no meet of meet_id exists
@@ -104,6 +108,8 @@ class Team_view(APIView):
         # ? no "meet_id" param passed
         if isinstance(meet_id, Response):
             return meet_id
+        else:
+            meet_id = int(meet_id)
 
         meet_of_id = vh.get_model_of_id("Meet", meet_id)
         # ? no meet of meet_id exists
@@ -161,6 +167,8 @@ class Team_view(APIView):
         # ? no "team_id" param passed
         if isinstance(team_id, Response):
             return team_id
+        else:
+            team_id = int(team_id)
 
         team_of_id = vh.get_model_of_id("Team", team_id)
         # ? no team of team_id exists
@@ -219,6 +227,8 @@ class Team_view(APIView):
         # ? no "team_id" param passed
         if isinstance(team_id, Response):
             return team_id
+        else:
+            team_id = int(team_id)
 
         team_of_id = vh.get_model_of_id("Team", team_id)
         # ? no team of team_id exists
@@ -229,6 +239,14 @@ class Team_view(APIView):
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
+        
+        swimmers_of_team = Swimmer.objects.filter(team_id=team_id)
+        # ? swimmers associated with team exist
+        if swimmers_of_team.count() > 0:
+            return Response(
+                "cannot delete team with associated swimmers",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # * delete existing swimmer
         try:

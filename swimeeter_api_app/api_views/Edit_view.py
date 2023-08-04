@@ -22,6 +22,8 @@ class Edit_view(APIView):
         # ? no "model_id" param passed
         if isinstance(model_id, Response):
             return model_id
+        else:
+            model_id = int(model_id)
 
         model_object = vh.get_model_of_id(model_type, model_id)
         # ? no model_object of model_id exists

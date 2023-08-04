@@ -152,7 +152,7 @@ class Swimmer(models.Model):
 
     # * association fields
     meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="swimmers")
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="swimmers")
+    team = models.ForeignKey(Team, on_delete=models.RESTRICT, related_name="swimmers")
 
     # via association: individual_entries, relay_entries, relay_assignments
 

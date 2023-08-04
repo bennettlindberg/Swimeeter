@@ -69,6 +69,8 @@ class Meet_view(APIView):
                 # ? no "host_id" param passed
                 if isinstance(host_id, Response):
                     return host_id
+                else:
+                    host_id = int(host_id)
 
                 host_of_id = vh.get_model_of_id("Host", host_id)
                 # ? no host of host_id exists
@@ -76,16 +78,32 @@ class Meet_view(APIView):
                     return host_of_id
 
                 # * determine if logged in as host
-                if request.user.is_authenticated and host_id == request.user.id:
-                    meets_of_host = Meet.objects.filter(host_id=host_id).order_by(
-                        "-begin_time", "-end_time", "name"
-                    )[lower_bound:upper_bound]
-                else:  # ! only include public meets for non-host viewers
-                    meets_of_host = Meet.objects.filter(
-                        host_id=host_id, is_public=True
-                    ).order_by("-begin_time", "-end_time", "name")[
-                        lower_bound:upper_bound
-                    ]
+                if filter_value: # @ do this EVERYWHERE!
+                    if request.user.is_authenticated and host_id == request.user.id:
+                        meets_of_host = Meet.objects.filter(
+                            host_id=host_id, name__istartswith=filter_value
+                        ).order_by("-begin_time", "-end_time", "name")[
+                            lower_bound:upper_bound
+                        ]
+                    else:  # ! only include public meets for non-host viewers
+                        meets_of_host = Meet.objects.filter(
+                            host_id=host_id,
+                            is_public=True,
+                            name__istartswith=filter_value,
+                        ).order_by("-begin_time", "-end_time", "name")[
+                            lower_bound:upper_bound
+                        ]
+                else:
+                    if request.user.is_authenticated and host_id == request.user.id:
+                        meets_of_host = Meet.objects.filter(host_id=host_id).order_by(
+                            "-begin_time", "-end_time", "name"
+                        )[lower_bound:upper_bound]
+                    else:  # ! only include public meets for non-host viewers
+                        meets_of_host = Meet.objects.filter(
+                            host_id=host_id, is_public=True
+                        ).order_by("-begin_time", "-end_time", "name")[
+                            lower_bound:upper_bound
+                        ]
 
                 # * get meets JSON
                 meets_JSON = vh.get_JSON_multiple("Meet", meets_of_host, True)
@@ -189,6 +207,8 @@ class Meet_view(APIView):
         # ? no "meet_id" param passed
         if isinstance(meet_id, Response):
             return meet_id
+        else:
+            meet_id = int(meet_id)
 
         meet_of_id = vh.get_model_of_id("Meet", meet_id)
         # ? no meet of meet_id exists
@@ -249,6 +269,8 @@ class Meet_view(APIView):
         # ? no "meet_id" param passed
         if isinstance(meet_id, Response):
             return meet_id
+        else:
+            meet_id = int(meet_id)
 
         meet_of_id = vh.get_model_of_id("Meet", meet_id)
         # ? no meet of meet_id exists

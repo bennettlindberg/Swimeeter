@@ -58,11 +58,23 @@ export function MeetsListPage() {
                         heading: "My Meets",
                         icon: "USER_CHECK",
                         ref: myMeetsRef,
-                        content: (
-                            <>
-                                <MyMeetsTable />
-                            </>
-                        )
+                        content: userState.logged_in
+                            ? (
+                                <>
+                                    <MyMeetsTable />
+                                </>
+                            )
+                            : (
+                                <>
+                                    <MainContentText>
+                                        Log in or sign up for a Swimeeter account to create and view your own meets.
+                                    </MainContentText>
+                                    <div className="flex flex-row flex-wrap gap-x-2">
+                                        <PageButton color="green" text="Log in" icon="USER_CHECK" handleClick={() => navigate("/log_in", { state: { forwardTo: "/settings" } })} />
+                                        <PageButton color="green" text="Sign up" icon="USER_PLUS" handleClick={() => navigate("/sign_up", { state: { forwardTo: "/settings" } })} />
+                                    </div>
+                                </>
+                            )
                     }
                 ]}
                 secondaryContent={[
@@ -70,7 +82,7 @@ export function MeetsListPage() {
                         <SideBarText>
                             Want to build and customize a meet of your own?
                         </SideBarText>
-                        <PageButton color="orange" text="Create a meet" icon="CIRCLE_PLUS" handleClick={() => navigate("/meets/create", { replace: true })} />
+                        <PageButton color="orange" text="Create a meet" icon="CIRCLE_PLUS" handleClick={() => navigate("/meets/create")} />
                     </>
                 ]}
             />

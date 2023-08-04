@@ -36,6 +36,8 @@ class Individual_entry_view(APIView):
                 # ? no "individual_entry_id" param passed
                 if isinstance(individual_entry_id, Response):
                     return individual_entry_id
+                else:
+                    individual_entry_id = int(individual_entry_id)
 
                 individual_entry_of_id = vh.get_model_of_id("Individual_entry", individual_entry_id)
                 # ? no individual entry of individual_entry_id exists
@@ -68,6 +70,8 @@ class Individual_entry_view(APIView):
                 # ? no "event_id" param passed
                 if isinstance(event_id, Response):
                     return event_id
+                else:
+                    event_id = int(event_id)
 
                 event_of_id = vh.get_model_of_id("Event", event_id)
                 # ? no event of event_id exists
@@ -104,6 +108,8 @@ class Individual_entry_view(APIView):
                 # ? no "event_id" param passed
                 if isinstance(event_id, Response):
                     return event_id
+                else:
+                    event_id = int(event_id)
 
                 event_of_id = vh.get_model_of_id("Event", event_id)
                 # ? no event of event_id exists
@@ -121,6 +127,8 @@ class Individual_entry_view(APIView):
                 # ? no "heat_number" param passed
                 if isinstance(heat_number, Response):
                     return heat_number
+                else:
+                    heat_number = int(heat_number)
 
                 # ? no heat with the given number exists
                 if (
@@ -155,6 +163,8 @@ class Individual_entry_view(APIView):
         # ? no "event_id" param passed
         if isinstance(event_id, Response):
             return event_id
+        else:
+            event_id = int(event_id)
 
         event_of_id = vh.get_model_of_id("Event", event_id)
         # ? no event of event_id exists
@@ -170,6 +180,8 @@ class Individual_entry_view(APIView):
         # ? no "swimmer_id" param passed
         if isinstance(swimmer_id, Response):
             return swimmer_id
+        else:
+            swimmer_id = int(swimmer_id)
 
         swimmer_of_id = vh.get_model_of_id("Swimmer", swimmer_id)
         # ? no swimmer of swimmer_id exists
@@ -244,6 +256,8 @@ class Individual_entry_view(APIView):
         # ? no "individual_entry_id" param passed
         if isinstance(individual_entry_id, Response):
             return individual_entry_id
+        else:
+            individual_entry_id = int(individual_entry_id)
 
         individual_entry_of_id = vh.get_model_of_id("Individual_entry", individual_entry_id)
         # ? no individual entry of individual_entry_id exists
@@ -309,6 +323,8 @@ class Individual_entry_view(APIView):
         # ? no "individual_entry_id" param passed
         if isinstance(individual_entry_id, Response):
             return individual_entry_id
+        else:
+            individual_entry_id = int(individual_entry_id)
 
         individual_entry_of_id = vh.get_model_of_id("Individual_entry", individual_entry_id)
         # ? no individual entry of individual_entry_id exists

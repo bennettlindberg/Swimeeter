@@ -36,6 +36,8 @@ class Swimmer_view(APIView):
                 # ? no "swimmer_id" param passed
                 if isinstance(swimmer_id, Response):
                     return swimmer_id
+                else:
+                    swimmer_id = int(swimmer_id)
 
                 swimmer_of_id = vh.get_model_of_id("Swimmer", swimmer_id)
                 # ? no swimmer of swimmer_id exists
@@ -66,6 +68,8 @@ class Swimmer_view(APIView):
                 # ? no "meet_id" param passed
                 if isinstance(meet_id, Response):
                     return meet_id
+                else:
+                    meet_id = int(meet_id)
 
                 meet_of_id = vh.get_model_of_id("Meet", meet_id)
                 # ? no meet of meet_id exists
@@ -104,6 +108,8 @@ class Swimmer_view(APIView):
         # ? no "meet_id" param passed
         if isinstance(meet_id, Response):
             return meet_id
+        else:
+            meet_id = int(meet_id)
 
         meet_of_id = vh.get_model_of_id("Meet", meet_id)
         # ? no meet of meet_id exists
@@ -119,6 +125,8 @@ class Swimmer_view(APIView):
         # ? no "team_id" param passed
         if isinstance(team_id, Response):
             return team_id
+        else:
+            team_id = int(team_id)
 
         team_of_id = vh.get_model_of_id("Team", team_id)
         # ? no team of team_id exists
@@ -177,6 +185,8 @@ class Swimmer_view(APIView):
         # ? no "swimmer_id" param passed
         if isinstance(swimmer_id, Response):
             return swimmer_id
+        else:
+            swimmer_id = int(swimmer_id)
 
         swimmer_of_id = vh.get_model_of_id("Swimmer", swimmer_id)
         # ? no swimmer of swimmer_id exists
@@ -272,6 +282,8 @@ class Swimmer_view(APIView):
         # ? no "swimmer_id" param passed
         if isinstance(swimmer_id, Response):
             return swimmer_id
+        else:
+            swimmer_id = int(swimmer_id)
 
         swimmer_of_id = vh.get_model_of_id("Swimmer", swimmer_id)
         # ? no swimmer of swimmer_id exists
