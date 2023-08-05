@@ -81,9 +81,9 @@ class Team_view(APIView):
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
 
-                teams_of_meet = Team.objects.filter(meet_id=meet_id).order_by('name', 'acronym')[
-                    lower_bound:upper_bound
-                ]
+                teams_of_meet = Team.objects.filter(meet_id=meet_id).order_by(
+                    "name", "acronym"
+                )[lower_bound:upper_bound]
 
                 # * get teams JSON
                 teams_JSON = vh.get_JSON_multiple("Team", teams_of_meet, True)
@@ -131,7 +131,9 @@ class Team_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Team", new_team)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Team", new_team
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -191,7 +193,9 @@ class Team_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Team", edited_team)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Team", edited_team
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -239,7 +243,7 @@ class Team_view(APIView):
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
-        
+
         swimmers_of_team = Swimmer.objects.filter(team_id=team_id)
         # ? swimmers associated with team exist
         if swimmers_of_team.count() > 0:

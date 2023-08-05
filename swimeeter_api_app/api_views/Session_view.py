@@ -82,7 +82,7 @@ class Session_view(APIView):
                     return check_meet_access
 
                 sessions_of_meet = Session.objects.filter(meet_id=meet_id).order_by(
-                    "begin_time", "end_time"
+                    "begin_time", "end_time", "name"
                 )[lower_bound:upper_bound]
 
                 # * get sessions JSON

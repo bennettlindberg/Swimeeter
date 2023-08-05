@@ -86,7 +86,7 @@ export function SettingsPage() {
                 primaryContent={[
                     {
                         heading: "Account",
-                        icon: "CIRCLE_USER",
+                        icon: "KEY",
                         ref: accountRef,
                         content: userState.logged_in
                             ? (
@@ -94,7 +94,7 @@ export function SettingsPage() {
                                     <MainContentSubheading subheading="Change account password" />
                                     <AccountForm />
                                     <MainContentSubheading subheading="Account management" />
-                                    <PageButton color="red" icon="CIRCLE_CROSS" text="Permanently delete account" handleClick={handleAccountDeletion} />
+                                    <PageButton color="red" icon="TRASH_CAN" text="Permanently delete account" handleClick={handleAccountDeletion} />
                                 </>
                             )
                             : (
@@ -133,7 +133,7 @@ export function SettingsPage() {
                     },
                     {
                         heading: "Preferences",
-                        icon: "SETTINGS",
+                        icon: "COLOR_PALETTE",
                         ref: preferencesRef,
                         content: (
                             <>

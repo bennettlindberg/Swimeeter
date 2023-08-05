@@ -59,7 +59,7 @@ export function InputButton({ color, handleClick, text, icon, idPrefix, type }: 
 
     return (
         <>
-            <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${interpretedButtonColor}`} id={idPrefix + "-input-button"} type={type} onClick={handleClick}>
+            <button className={`flex flex-row gap-x-2 items-center mt-2 px-2 py-1 w-fit rounded-full border-2 ${interpretedButtonColor}`} id={idPrefix + "-input-button"} type={type} onClick={handleClick}>
                 {icon && <IconSVG icon={icon} color={interpretedFillColor} width="w-[25px]" height="h-[25px]" />}
                 {text && <p className={`text-xl font-semibold ${interpretedTextColor}`}>{text}</p>}
             </button>

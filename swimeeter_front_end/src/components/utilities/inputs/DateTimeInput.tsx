@@ -54,13 +54,13 @@ export function DateTimeInput({
                     "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
                 ]} />
                 <p className="w-[5px] text-lg font-semibold"></p>
-                <input id={`${idPrefix}-day-field`} className="max-w-[40px] text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="DD" value={inputDayText} onChange={handleDayChange} />
+                <input id={`${idPrefix}-day-field`} className="max-w-[40px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="DD" value={inputDayText} onChange={handleDayChange} />
                 <p className="w-[5px] text-lg font-semibold"></p>
-                <input id={`${idPrefix}-year-field`} className="max-w-[80px] text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="YYYY" value={inputYearText} onChange={handleYearChange} />
+                <input id={`${idPrefix}-year-field`} className="max-w-[80px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="YYYY" value={inputYearText} onChange={handleYearChange} />
                 <p className="w-[5px] text-lg font-semibold"></p>
-                <input id={`${idPrefix}-hour-field`} className="max-w-[40px] text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="HH" value={inputHourText} onChange={handleHourChange}/>
+                <input id={`${idPrefix}-hour-field`} className="max-w-[40px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="HH" value={inputHourText} onChange={handleHourChange}/>
                 <p className="text-lg font-semibold">:</p>
-                <input id={`${idPrefix}-minute-field`} className="max-w-[40px] text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="MM" value={inputMinuteText} onChange={handleMinuteChange}/>
+                <input id={`${idPrefix}-minute-field`} className="max-w-[40px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="MM" value={inputMinuteText} onChange={handleMinuteChange}/>
                 <p className="w-[5px] text-lg font-semibold"></p>
                 <SearchSelect idPrefix={`${idPrefix}-AMPM`} pixelWidth={40} regex={/^$|^[AP]$|^[AP]M$/} otherEnabled={false} defaultText="AM" options={["AM", "PM"]} />
             </div>

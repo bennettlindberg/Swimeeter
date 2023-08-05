@@ -39,7 +39,9 @@ class Individual_entry_view(APIView):
                 else:
                     individual_entry_id = int(individual_entry_id)
 
-                individual_entry_of_id = vh.get_model_of_id("Individual_entry", individual_entry_id)
+                individual_entry_of_id = vh.get_model_of_id(
+                    "Individual_entry", individual_entry_id
+                )
                 # ? no individual entry of individual_entry_id exists
                 if isinstance(individual_entry_of_id, Response):
                     return individual_entry_of_id
@@ -85,13 +87,58 @@ class Individual_entry_view(APIView):
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
 
-                individual_entries_of_event = Individual_entry.objects.filter(event_id=event_id)[
+                individual_entries_of_event = Individual_entry.objects.filter(
+                    event_id=event_id
+                ).order_by("swimmer__first_name", "swimmer__last_name", "swimmer__age", "swimmer__gender")[
                     lower_bound:upper_bound
                 ]
 
                 # * get individual_entries JSON
                 individual_entries_JSON = vh.get_JSON_multiple(
                     "Individual_entry", individual_entries_of_event, True
+                )
+                # ? internal error generating JSON
+                if isinstance(individual_entries_JSON, Response):
+                    return individual_entries_JSON
+                else:
+                    return Response(
+                        individual_entries_JSON,
+                        status=status.HTTP_200_OK,
+                    )
+
+            # $ ...team
+            case "team":
+                team_id = vh.get_query_param(request, "team_id")
+                # ? no "team_id" param passed
+                if isinstance(team_id, Response):
+                    return team_id
+                else:
+                    team_id = int(team_id)
+
+                team_of_id = vh.get_model_of_id("Team", team_id)
+                # ? no team of team_id exists
+                if isinstance(team_of_id, Response):
+                    return team_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, team_of_id.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+
+                individual_entries_of_team = Individual_entry.objects.filter(
+                    swimmer__team_id=team_id
+                ).order_by(
+                    "event__stroke",
+                    "event__distance",
+                    "event__competing_min_age",
+                    "event__competing_gender",
+                )[lower_bound:upper_bound]
+
+                # * get individual_entries JSON
+                individual_entries_JSON = vh.get_JSON_multiple(
+                    "Individual_entry", individual_entries_of_team, True
                 )
                 # ? internal error generating JSON
                 if isinstance(individual_entries_JSON, Response):
@@ -158,6 +205,56 @@ class Individual_entry_view(APIView):
                         status=status.HTTP_200_OK,
                     )
 
+            # $ ...swimmer
+            case "swimmer":
+                swimmer_id = vh.get_query_param(request, "swimmer_id")
+                # ? no "swimmer_id" param passed
+                if isinstance(swimmer_id, Response):
+                    return swimmer_id
+                else:
+                    swimmer_id = int(swimmer_id)
+
+                swimmer_of_id = vh.get_model_of_id("Swimmer", swimmer_id)
+                # ? no swimmer of swimmer_id exists
+                if isinstance(swimmer_of_id, Response):
+                    return swimmer_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, swimmer_of_id.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+
+                individual_entries_of_swimmer = Individual_entry.objects.filter(
+                    swimmer_id=swimmer_id
+                ).order_by(
+                    "event__stroke",
+                    "event__distance",
+                    "event__competing_min_age",
+                    "event__competing_gender",
+                )[lower_bound:upper_bound]
+
+                # * get individual_entries JSON
+                individual_entries_JSON = vh.get_JSON_multiple(
+                    "Individual_entry", individual_entries_of_swimmer, True
+                )
+                # ? internal error generating JSON
+                if isinstance(individual_entries_JSON, Response):
+                    return individual_entries_JSON
+                else:
+                    return Response(
+                        individual_entries_JSON,
+                        status=status.HTTP_200_OK,
+                    )
+
+            # ? invalid "specific_to" specification
+            case _:
+                return Response(
+                    "invalid 'specific_to' specification",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
     def post(self, request):
         event_id = vh.get_query_param(request, "event_id")
         # ? no "event_id" param passed
@@ -194,8 +291,10 @@ class Individual_entry_view(APIView):
                 "swimmer and event meets do not match",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
-        check_compatibility = vh.validate_swimmer_against_event(swimmer_of_id, event_of_id)
+
+        check_compatibility = vh.validate_swimmer_against_event(
+            swimmer_of_id, event_of_id
+        )
         # ? swimmer and event are not compatible
         if isinstance(check_compatibility, Response):
             return check_compatibility
@@ -212,7 +311,9 @@ class Individual_entry_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_entry_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Individual_entry", new_individual_entry)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Individual_entry", new_individual_entry
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -231,7 +332,7 @@ class Individual_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         # * invalidate event seeding
         invalidate_hs_data = vh.invalidate_event_seeding(new_individual_entry.event)
         # ? internal error invalidating event seeding
@@ -259,21 +360,27 @@ class Individual_entry_view(APIView):
         else:
             individual_entry_id = int(individual_entry_id)
 
-        individual_entry_of_id = vh.get_model_of_id("Individual_entry", individual_entry_id)
+        individual_entry_of_id = vh.get_model_of_id(
+            "Individual_entry", individual_entry_id
+        )
         # ? no individual entry of individual_entry_id exists
         if isinstance(individual_entry_of_id, Response):
             return individual_entry_of_id
-        
-        check_is_host = vh.check_user_is_host(request, individual_entry_of_id.event.session.meet.host_id)
+
+        check_is_host = vh.check_user_is_host(
+            request, individual_entry_of_id.event.session.meet.host_id
+        )
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
-        
+
         seeding_needs_invalidation = False
 
         # * update existing individual_entry
         try:
-            edited_individual_entry = Individual_entry.objects.get(id=individual_entry_id)
+            edited_individual_entry = Individual_entry.objects.get(
+                id=individual_entry_id
+            )
 
             if "seed_time" in request.data:
                 edited_individual_entry.seed_time = request.data["seed_time"]
@@ -297,10 +404,12 @@ class Individual_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         # * invalidate event seeding
         if seeding_needs_invalidation:
-            invalidate_hs_data = vh.invalidate_event_seeding(edited_individual_entry.event)
+            invalidate_hs_data = vh.invalidate_event_seeding(
+                edited_individual_entry.event
+            )
             # ? internal error invalidating event seeding
             if isinstance(invalidate_hs_data, Response):
                 return invalidate_hs_data
@@ -326,12 +435,16 @@ class Individual_entry_view(APIView):
         else:
             individual_entry_id = int(individual_entry_id)
 
-        individual_entry_of_id = vh.get_model_of_id("Individual_entry", individual_entry_id)
+        individual_entry_of_id = vh.get_model_of_id(
+            "Individual_entry", individual_entry_id
+        )
         # ? no individual entry of individual_entry_id exists
         if isinstance(individual_entry_of_id, Response):
             return individual_entry_of_id
-        
-        check_is_host = vh.check_user_is_host(request, individual_entry_of_id.event.session.meet.host_id)
+
+        check_is_host = vh.check_user_is_host(
+            request, individual_entry_of_id.event.session.meet.host_id
+        )
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host

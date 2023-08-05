@@ -28,11 +28,6 @@ class Meet_view(APIView):
         else:
             lower_bound = int(lower_bound_str)
 
-        filter_value = vh.get_query_param(request, "filter_value")
-        # * no "filter_value" param passed -> set to none
-        if isinstance(specific_to, Response):
-            filter_value = None
-
         # $ get meets(s) specific too...
         match specific_to:
             # $ ...id
@@ -78,32 +73,22 @@ class Meet_view(APIView):
                     return host_of_id
 
                 # * determine if logged in as host
-                if filter_value: # @ do this EVERYWHERE!
-                    if request.user.is_authenticated and host_id == request.user.id:
-                        meets_of_host = Meet.objects.filter(
-                            host_id=host_id, name__istartswith=filter_value
-                        ).order_by("-begin_time", "-end_time", "name")[
-                            lower_bound:upper_bound
-                        ]
-                    else:  # ! only include public meets for non-host viewers
-                        meets_of_host = Meet.objects.filter(
-                            host_id=host_id,
-                            is_public=True,
-                            name__istartswith=filter_value,
-                        ).order_by("-begin_time", "-end_time", "name")[
-                            lower_bound:upper_bound
-                        ]
-                else:
-                    if request.user.is_authenticated and host_id == request.user.id:
-                        meets_of_host = Meet.objects.filter(host_id=host_id).order_by(
-                            "-begin_time", "-end_time", "name"
-                        )[lower_bound:upper_bound]
-                    else:  # ! only include public meets for non-host viewers
-                        meets_of_host = Meet.objects.filter(
-                            host_id=host_id, is_public=True
-                        ).order_by("-begin_time", "-end_time", "name")[
-                            lower_bound:upper_bound
-                        ]
+                if request.user.is_authenticated and host_id == request.user.id:
+                    meets_of_host = Meet.objects.filter(host_id=host_id).order_by(
+                        "-begin_time", "-end_time", "name"
+                    )
+                else:  # ! only include public meets for non-host viewers
+                    meets_of_host = Meet.objects.filter(
+                        host_id=host_id, is_public=True
+                    ).order_by("-begin_time", "-end_time", "name")
+
+                # @ apply search filtering
+                search__name = vh.get_query_param(request, "search__name")
+                if isinstance(search__name, str):
+                    meets_of_host = meets_of_host.filter(name__istartswith=search__name)
+
+                # * only retrieve request range of values
+                meets_of_host = meets_of_host[lower_bound:upper_bound]
 
                 # * get meets JSON
                 meets_JSON = vh.get_JSON_multiple("Meet", meets_of_host, True)
@@ -118,16 +103,17 @@ class Meet_view(APIView):
 
             # $ ...all
             case "all":
-                if filter_value:
-                    meets_of_all = Meet.objects.filter(
-                        is_public=True, name__istartswith=filter_value
-                    ).order_by("-begin_time", "-end_time", "name")[
-                        lower_bound:upper_bound
-                    ]
-                else:
-                    meets_of_all = Meet.objects.filter(is_public=True).order_by(
-                        "-begin_time", "-end_time", "name"
-                    )[lower_bound:upper_bound]
+                meets_of_all = Meet.objects.filter(is_public=True).order_by(
+                    "-begin_time", "-end_time", "name"
+                )
+
+                # @ apply search filtering
+                search__name = vh.get_query_param(request, "search__name")
+                if isinstance(search__name, str):
+                    meets_of_all = meets_of_all.filter(name__istartswith=search__name)
+
+                # * only retrieve request range of values
+                meets_of_all = meets_of_all[lower_bound:upper_bound]
 
                 # * get meets JSON
                 meets_JSON = vh.get_JSON_multiple("Meet", meets_of_all, True)

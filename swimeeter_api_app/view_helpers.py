@@ -333,10 +333,11 @@ def check_editing_access(request, model_type, model_object):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
+
 # ! ENTRIES
 
 
-def check_swimmers_are_unique(swimmer_ids):
+def check_swimmers_against_others(swimmer_ids):
     for i in range(len(swimmer_ids)):
         for j in range(i + 1, len(swimmer_ids)):
             if swimmer_ids[i] == swimmer_ids[j]:
@@ -344,6 +345,16 @@ def check_swimmers_are_unique(swimmer_ids):
                     "duplicate swimmers exist inside relay",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            
+    swimmer_objects = list(Swimmer.objects.filter(id__in=swimmer_ids))
+    first_team_id = swimmer_objects[0].team_id
+    for swimmer in swimmer_objects:
+        if swimmer.team_id != first_team_id:
+            return Response(
+                    "swimmers of different teams exist inside relay",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
     return None
 
 

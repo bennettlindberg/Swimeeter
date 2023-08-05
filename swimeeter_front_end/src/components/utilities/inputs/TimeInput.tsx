@@ -26,9 +26,9 @@ export function TimeInput({defaultHour, defaultMinute, idPrefix}: {
     return (
         <>
             <div className="flex flex-row items-center gap-x-1">
-                <input id={`${idPrefix}-hour-field`} className="max-w-[40px] text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="HH" value={inputHourText} onChange={handleHourChange}/>
+                <input id={`${idPrefix}-hour-field`} className="max-w-[40px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="HH" value={inputHourText} onChange={handleHourChange}/>
                 <p className="text-lg font-semibold">:</p>
-                <input id={`${idPrefix}-minute-field`} className="max-w-[40px] text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="MM" value={inputMinuteText} onChange={handleMinuteChange}/>
+                <input id={`${idPrefix}-minute-field`} className="max-w-[40px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="MM" value={inputMinuteText} onChange={handleMinuteChange}/>
                 <p className="w-[5px] text-lg font-semibold"></p>
                 <SearchSelect idPrefix={`${idPrefix}-AMPM`} pixelWidth={40} regex={/^$|^[AP]$|^[AP]M$/} otherEnabled={false} defaultText="AM" options={["AM", "PM"]} />
             </div>

@@ -82,7 +82,7 @@ class Pool_view(APIView):
                     return check_meet_access
 
                 pools_of_meet = Pool.objects.filter(meet_id=meet_id).order_by(
-                    "name"
+                    "name", "lanes", "side_length", "measure_unit"
                 )[lower_bound:upper_bound]
 
                 # * get pools JSON
@@ -182,7 +182,7 @@ class Pool_view(APIView):
         if isinstance(pool_of_id, Response):
             return pool_of_id
 
-        check_is_host = vh.check_user_is_host(request, meet_of_id.host_id)
+        check_is_host = vh.check_user_is_host(request, pool_of_id.host_id)
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host

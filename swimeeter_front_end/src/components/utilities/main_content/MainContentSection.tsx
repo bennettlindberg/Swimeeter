@@ -15,7 +15,8 @@ export const MainContentSection = forwardRef(function MainContentSection({ icon,
     return (
         <>
             <div className="flex flex-col gap-y-2">
-                <div className="flex flex-row gap-x-4 items-center">
+                <div className="w-full border-t-2 border-black dark:border-white"></div>
+                <div className="flex flex-row gap-x-4 items-center mt-4 mb-2">
                     <IconSVG icon={icon} color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[40px]" height="h-[40px]" />
                     <h2 className="text-3xl font-semibold" ref={ref}>
                         {heading}

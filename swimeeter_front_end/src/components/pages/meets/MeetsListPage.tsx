@@ -46,7 +46,7 @@ export function MeetsListPage() {
                 primaryContent={[
                     {
                         heading: "Public Meets",
-                        icon: "USER_CHECK",
+                        icon: "EARTH_GLOBE",
                         ref: publicMeetsRef,
                         content: (
                             <>
@@ -56,7 +56,7 @@ export function MeetsListPage() {
                     },
                     {
                         heading: "My Meets",
-                        icon: "USER_CHECK",
+                        icon: "CIRCLE_USER",
                         ref: myMeetsRef,
                         content: userState.logged_in
                             ? (

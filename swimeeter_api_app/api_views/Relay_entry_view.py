@@ -85,13 +85,65 @@ class Relay_entry_view(APIView):
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
 
-                relay_entries_of_event = Relay_entry.objects.filter(event_id=event_id)[
+                relay_entries_of_event = Relay_entry.objects.filter(
+                    event_id=event_id
+                ).order_by(
+                    "swimmers__first_name",
+                    "swimmers__last_name",
+                    "swimmers__age",
+                    "swimmers__gender",
+                )[
                     lower_bound:upper_bound
                 ]
 
                 # * get relay_entries JSON
                 relay_entries_JSON = vh.get_JSON_multiple(
                     "Relay_entry", relay_entries_of_event, True
+                )
+                # ? internal error generating JSON
+                if isinstance(relay_entries_JSON, Response):
+                    return relay_entries_JSON
+                else:
+                    return Response(
+                        relay_entries_JSON,
+                        status=status.HTTP_200_OK,
+                    )
+
+            # $ ...team
+            case "team":
+                team_id = vh.get_query_param(request, "team_id")
+                # ? no "team_id" param passed
+                if isinstance(team_id, Response):
+                    return team_id
+                else:
+                    team_id = int(team_id)
+
+                team_of_id = vh.get_model_of_id("Team", team_id)
+                # ? no team of team_id exists
+                if isinstance(team_of_id, Response):
+                    return team_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, team_of_id.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+
+                relay_entries_of_team = Relay_entry.objects.filter(
+                    swimmer__team_id=team_id
+                ).order_by(
+                    "event__stroke",
+                    "event__distance",
+                    "event__competing_min_age",
+                    "event__competing_gender",
+                )[
+                    lower_bound:upper_bound
+                ]
+
+                # * get relay_entries JSON
+                relay_entries_JSON = vh.get_JSON_multiple(
+                    "Relay_entry", relay_entries_of_team, True
                 )
                 # ? internal error generating JSON
                 if isinstance(relay_entries_JSON, Response):
@@ -239,14 +291,14 @@ class Relay_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         # ? relay has incorrect number of swimmers
         if len(swimmer_ids) != event_of_id.swimmers_per_entry:
             return Response(
                 "relay has incorrect number of swimmers",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         relay_placements.sort()
         for i in range(len(relay_placements)):
             # ? relay placements are incorrect
@@ -255,13 +307,15 @@ class Relay_entry_view(APIView):
                     "relay placements are incorrect",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        
-        check_swimmers_unique = vh.check_swimmers_are_unique(swimmer_ids)
-        # ? duplicate swimmers exist inside relay
-        if isinstance(check_swimmers_unique, Response):
-            return check_swimmers_unique
 
-        swimmers_of_ids = list(map(lambda model_id: vh.get_model_of_id("Swimmer", model_id), swimmer_ids))
+        check_swimmers_against_others = vh.check_swimmers_against_others(swimmer_ids)
+        # ? duplicate swimmers exist inside relay
+        if isinstance(check_swimmers_against_others, Response):
+            return check_swimmers_against_others
+
+        swimmers_of_ids = list(
+            map(lambda model_id: vh.get_model_of_id("Swimmer", model_id), swimmer_ids)
+        )
         for swimmer_of_id in swimmers_of_ids:
             # ? no swimmer of swimmer_id exists
             if isinstance(swimmer_of_id, Response):
@@ -274,14 +328,18 @@ class Relay_entry_view(APIView):
                     "swimmer and event meets do not match",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            check_compatibility = vh.validate_swimmer_against_event(swimmer_of_id, event_of_id)
+            check_compatibility = vh.validate_swimmer_against_event(
+                swimmer_of_id, event_of_id
+            )
             # ? swimmer and event are not compatible
             if isinstance(check_compatibility, Response):
                 return check_compatibility
-            
+
         # ~ begin handling duplicates
         duplicate_handling = vh.get_entry_duplicate_handling(request)
-        original_duplicates = Relay_entry.objects.filter(event_id=event_id, swimmers__id__in=swimmer_ids)
+        original_duplicates = Relay_entry.objects.filter(
+            event_id=event_id, swimmers__id__in=swimmer_ids
+        )
         if original_duplicates.count() > 0:
             if duplicate_handling == "unhandled":
                 return Response(
@@ -297,7 +355,7 @@ class Relay_entry_view(APIView):
         # * create new relay_entry
         try:
             new_relay_entry = Relay_entry(
-                seed_time=0, # assigned post-creation,
+                seed_time=0,  # assigned post-creation,
                 # heat_number => null,
                 # lane_number => null,
                 # swimmers => assigned post-creation,
@@ -318,7 +376,7 @@ class Relay_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         # * create new relay_assignment(s)
         try:
             total_relay_time = 0
@@ -327,10 +385,10 @@ class Relay_entry_view(APIView):
                 total_relay_time += assignment["seed_relay_split"]
 
                 new_relay_assignment = Relay_assignment(
-                    order_in_relay = assignment["order_in_relay"],
-                    seed_relay_split = assignment["seed_relay_split"],
-                    swimmer_id = assignment["swimmer_id"],
-                    relay_entry = new_relay_entry,
+                    order_in_relay=assignment["order_in_relay"],
+                    seed_relay_split=assignment["seed_relay_split"],
+                    swimmer_id=assignment["swimmer_id"],
+                    relay_entry=new_relay_entry,
                 )
 
                 new_relay_assignment.full_clean()
@@ -343,16 +401,22 @@ class Relay_entry_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Relay_entry", new_relay_entry)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Relay_entry", new_relay_entry
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
-                assignments = Relay_assignment.objects.filter(relay_entry_id=new_relay_entry.pk)
+                assignments = Relay_assignment.objects.filter(
+                    relay_entry_id=new_relay_entry.pk
+                )
                 assignments.delete()
                 new_relay_entry.delete()
                 return handle_duplicates
         except ValidationError as err:
             # ? invalid creation data passed -> validators
-            assignments = Relay_assignment.objects.filter(relay_entry_id=new_relay_entry.pk)
+            assignments = Relay_assignment.objects.filter(
+                relay_entry_id=new_relay_entry.pk
+            )
             assignments.delete()
             new_relay_entry.delete()
 
@@ -362,7 +426,9 @@ class Relay_entry_view(APIView):
             )
         except Exception as err:
             # ? invalid creation data passed -> general
-            assignments = Relay_assignment.objects.filter(relay_entry_id=new_relay_entry.pk)
+            assignments = Relay_assignment.objects.filter(
+                relay_entry_id=new_relay_entry.pk
+            )
             assignments.delete()
             new_relay_entry.delete()
 
@@ -370,7 +436,7 @@ class Relay_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         # ~ finish handling duplicates
         if original_duplicates.count() > 0 and duplicate_handling == "keep_new":
             original_duplicates.delete()
@@ -382,9 +448,7 @@ class Relay_entry_view(APIView):
             return invalidate_hs_data
 
         # * get relay_entry JSON
-        new_relay_entry_JSON = vh.get_JSON_single(
-            "Relay_entry", new_relay_entry, False
-        )
+        new_relay_entry_JSON = vh.get_JSON_single("Relay_entry", new_relay_entry, False)
         # ? internal error generating JSON
         if isinstance(new_relay_entry_JSON, Response):
             return new_relay_entry_JSON
@@ -406,12 +470,14 @@ class Relay_entry_view(APIView):
         # ? no relay entry of relay_entry_id exists
         if isinstance(relay_entry_of_id, Response):
             return relay_entry_of_id
-        
-        check_is_host = vh.check_user_is_host(request, relay_entry_of_id.event.session.meet.host_id)
+
+        check_is_host = vh.check_user_is_host(
+            request, relay_entry_of_id.event.session.meet.host_id
+        )
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
-        
+
         try:
             swimmer_ids = []
             relay_placements = []
@@ -424,14 +490,14 @@ class Relay_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         # ? relay has incorrect number of swimmers
         if len(swimmer_ids) != relay_entry_of_id.event.swimmers_per_entry:
             return Response(
                 "relay has incorrect number of swimmers",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         relay_placements.sort()
         for i in range(len(relay_placements)):
             # ? relay placements are incorrect
@@ -440,13 +506,15 @@ class Relay_entry_view(APIView):
                     "relay placements are incorrect",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        
-        check_swimmers_unique = vh.check_swimmers_are_unique(swimmer_ids)
-        # ? duplicate swimmers exist inside relay
-        if isinstance(check_swimmers_unique, Response):
-            return check_swimmers_unique
 
-        swimmers_of_ids = list(map(lambda model_id: vh.get_model_of_id("Swimmer", model_id), swimmer_ids))
+        check_swimmers_against_others = vh.check_swimmers_against_others(swimmer_ids)
+        # ? duplicate swimmers exist inside relay
+        if isinstance(check_swimmers_against_others, Response):
+            return check_swimmers_against_others
+
+        swimmers_of_ids = list(
+            map(lambda model_id: vh.get_model_of_id("Swimmer", model_id), swimmer_ids)
+        )
         for swimmer_of_id in swimmers_of_ids:
             # ? no swimmer of swimmer_id exists
             if isinstance(swimmer_of_id, Response):
@@ -459,26 +527,30 @@ class Relay_entry_view(APIView):
                     "swimmer and event meets do not match",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            check_compatibility = vh.validate_swimmer_against_event(swimmer_of_id, relay_entry_of_id.event)
+            check_compatibility = vh.validate_swimmer_against_event(
+                swimmer_of_id, relay_entry_of_id.event
+            )
             # ? swimmer and event are not compatible
             if isinstance(check_compatibility, Response):
                 return check_compatibility
-            
+
         # ~ begin handling duplicates
         duplicate_handling = vh.get_entry_duplicate_handling(request)
-        original_duplicates = Relay_entry.objects.filter(event_id=relay_entry_of_id.event, swimmers__id__in=swimmer_ids).exclude(id=relay_entry_id)
+        original_duplicates = Relay_entry.objects.filter(
+            event_id=relay_entry_of_id.event, swimmers__id__in=swimmer_ids
+        ).exclude(id=relay_entry_id)
         if original_duplicates.count() > 0:
             if duplicate_handling == "unhandled":
                 return Response(
-                        "unhandled duplicates exist",
-                        status=status.HTTP_409_CONFLICT,
-                    )
+                    "unhandled duplicates exist",
+                    status=status.HTTP_409_CONFLICT,
+                )
             elif duplicate_handling == "keep_originals":
                 return Response(
-                        "new model is a duplicate; new model not added",
-                        status=status.HTTP_200_OK,
-                    )
-            
+                    "new model is a duplicate; new model not added",
+                    status=status.HTTP_200_OK,
+                )
+
         seeding_needs_invalidation = False
 
         # * update existing relay_entry
@@ -493,10 +565,10 @@ class Relay_entry_view(APIView):
                 total_relay_time += assignment["seed_relay_split"]
 
                 new_relay_assignment = Relay_assignment(
-                    order_in_relay = assignment["order_in_relay"],
-                    seed_relay_split = assignment["seed_relay_split"],
-                    swimmer_id = assignment["swimmer_id"],
-                    relay_entry = edited_relay_entry,
+                    order_in_relay=assignment["order_in_relay"],
+                    seed_relay_split=assignment["seed_relay_split"],
+                    swimmer_id=assignment["swimmer_id"],
+                    relay_entry=edited_relay_entry,
                 )
 
                 new_relay_assignment.full_clean()
@@ -507,7 +579,7 @@ class Relay_entry_view(APIView):
             edited_relay_entry.seed_time = total_relay_time
             if total_relay_time != old_seed_time:
                 seeding_needs_invalidation = True
-            
+
             edited_relay_entry.full_clean()
             edited_relay_entry.save()
         except ValidationError as err:
@@ -530,9 +602,11 @@ class Relay_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
-        Relay_assignment.objects.filter(relay_event_id=edited_relay_entry.pk).exclude(id__in=new_assignment_ids).delete()
-        
+
+        Relay_assignment.objects.filter(relay_event_id=edited_relay_entry.pk).exclude(
+            id__in=new_assignment_ids
+        ).delete()
+
         # ~ finish handling duplicates
         if original_duplicates.count() > 0 and duplicate_handling == "keep_new":
             original_duplicates.delete()
@@ -570,8 +644,10 @@ class Relay_entry_view(APIView):
         # ? no relay entry of relay_entry_id exists
         if isinstance(relay_entry_of_id, Response):
             return relay_entry_of_id
-        
-        check_is_host = vh.check_user_is_host(request, relay_entry_of_id.event.session.meet.host_id)
+
+        check_is_host = vh.check_user_is_host(
+            request, relay_entry_of_id.event.session.meet.host_id
+        )
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host

@@ -21,7 +21,7 @@ export function ErrorPane({ error, handleXClick }: {
 
                     <p><span className="font-semibold">Description: </span>{error.description}</p>
                     
-                    {error.fields && <p><span className="font-semibold">Fields involved: </span>{error.fields}</p>}
+                    {error.fields && <p><span className="font-semibold">Field(s) involved: </span>{error.fields}</p>}
                     {error.recommendation && <p><span className="font-semibold">Recommended action: </span>{error.recommendation}</p>}
                 </div>
                 <IconButton color="slate" icon="CIRCLE_CROSS" handleClick={handleXClick} />

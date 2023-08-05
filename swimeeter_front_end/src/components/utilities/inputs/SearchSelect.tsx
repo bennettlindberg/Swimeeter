@@ -97,7 +97,7 @@ export function SearchSelect({
     return (
         <>
             <div className="flex flex-col gap-y-0">
-                <input id={`${idPrefix}-select-field`} className="text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder={placeholderText} value={inputText} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{width:`${pixelWidth}px`}}/>
+                <input id={`${idPrefix}-select-field`} className="text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder={placeholderText} value={inputText} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{width:`${pixelWidth}px`}}/>
                 <div className="relative">
                     <div className={`${optionsShown && matchingOptions.length > 0 ? "visible" : "invisible"} bg-white dark:bg-black border-2 border-slate-200 dark:border-slate-700 flex flex-col items-start rounded-md absolute left-0 top-0 p-2 z-10`}>
                         {matchingOptions.map((option, index) => {

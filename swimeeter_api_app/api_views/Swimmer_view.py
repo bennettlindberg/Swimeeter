@@ -81,12 +81,48 @@ class Swimmer_view(APIView):
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
 
-                swimmers_of_meet = Swimmer.objects.filter(meet_id=meet_id).order_by('last_name', 'first_name')[
-                    lower_bound:upper_bound
-                ]
+                swimmers_of_meet = Swimmer.objects.filter(meet_id=meet_id).order_by(
+                    "last_name", "first_name", "age", "gender"
+                )[lower_bound:upper_bound]
 
                 # * get swimmers JSON
                 swimmers_JSON = vh.get_JSON_multiple("Swimmer", swimmers_of_meet, True)
+                # ? internal error generating JSON
+                if isinstance(swimmers_JSON, Response):
+                    return swimmers_JSON
+                else:
+                    return Response(
+                        swimmers_JSON,
+                        status=status.HTTP_200_OK,
+                    )
+
+            # $ ...team
+            case "team":
+                team_id = vh.get_query_param(request, "team_id")
+                # ? no "team_id" param passed
+                if isinstance(team_id, Response):
+                    return team_id
+                else:
+                    team_id = int(team_id)
+
+                team_of_id = vh.get_model_of_id("Team", team_id)
+                # ? no team of team_id exists
+                if isinstance(team_of_id, Response):
+                    return team_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, team_of_id.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+
+                swimmers_of_team = Swimmer.objects.filter(team_id=team_id).order_by(
+                    "last_name", "first_name", "age", "gender"
+                )[lower_bound:upper_bound]
+
+                # * get swimmers JSON
+                swimmers_JSON = vh.get_JSON_multiple("Swimmer", swimmers_of_team, True)
                 # ? internal error generating JSON
                 if isinstance(swimmers_JSON, Response):
                     return swimmers_JSON
@@ -120,7 +156,7 @@ class Swimmer_view(APIView):
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
-        
+
         team_id = vh.get_query_param(request, "team_id")
         # ? no "team_id" param passed
         if isinstance(team_id, Response):
@@ -144,12 +180,14 @@ class Swimmer_view(APIView):
                 age=request.data["age"],
                 gender=request.data["gender"],
                 meet_id=meet_id,
-                team_id=team_id
+                team_id=team_id,
             )
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Swimmer", new_swimmer)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Swimmer", new_swimmer
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -219,7 +257,9 @@ class Swimmer_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Swimmer", edited_swimmer)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Swimmer", edited_swimmer
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -238,11 +278,15 @@ class Swimmer_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         # * delete newly incompatible entries and invalidate event seeding
-        relay_entries_of_swimmer = Relay_entry.objects.filter(swimmers__in=[edited_swimmer.pk])
+        relay_entries_of_swimmer = Relay_entry.objects.filter(
+            swimmers__in=[edited_swimmer.pk]
+        )
         for entry in relay_entries_of_swimmer:
-            check_compatibility = vh.validate_swimmer_against_event(edited_swimmer, entry.event)
+            check_compatibility = vh.validate_swimmer_against_event(
+                edited_swimmer, entry.event
+            )
             # ? swimmer and event are not compatible
             if isinstance(check_compatibility, Response):
                 # * invalidate event seeding
@@ -250,12 +294,16 @@ class Swimmer_view(APIView):
                 # ? internal error invalidating event seeding
                 if isinstance(invalidate_hs_data, Response):
                     return invalidate_hs_data
-                
+
                 entry.delete()
 
-        individual_entries_of_swimmer = Individual_entry.objects.filter(swimmer_id=edited_swimmer.pk)
+        individual_entries_of_swimmer = Individual_entry.objects.filter(
+            swimmer_id=edited_swimmer.pk
+        )
         for entry in individual_entries_of_swimmer:
-            check_compatibility = vh.validate_swimmer_against_event(edited_swimmer, entry.event)
+            check_compatibility = vh.validate_swimmer_against_event(
+                edited_swimmer, entry.event
+            )
             # ? swimmer and event are not compatible
             if isinstance(check_compatibility, Response):
                 # * invalidate event seeding
@@ -263,7 +311,7 @@ class Swimmer_view(APIView):
                 # ? internal error invalidating event seeding
                 if isinstance(invalidate_hs_data, Response):
                     return invalidate_hs_data
-                
+
                 entry.delete()
 
         # * get swimmer JSON
