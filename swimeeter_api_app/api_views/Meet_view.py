@@ -180,7 +180,7 @@ class Meet_view(APIView):
             )
 
         # * get meet JSON
-        meet_JSON = vh.get_JSON_single("Meet", new_meet, False)
+        meet_JSON = vh.get_JSON_single("Meet", new_meet, True)
         # ? internal error generating JSON
         if isinstance(meet_JSON, Response):
             return meet_JSON
@@ -242,7 +242,7 @@ class Meet_view(APIView):
             )
 
         # * get meet JSON
-        meet_JSON = vh.get_JSON_single("Meet", edited_meet, False)
+        meet_JSON = vh.get_JSON_single("Meet", edited_meet, True)
         # ? internal error generating JSON
         if isinstance(meet_JSON, Response):
             return meet_JSON

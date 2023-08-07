@@ -24,7 +24,7 @@ export function TextInput({regex, placeholderText, defaultText, pixelWidth, idPr
 
     return (
         <>
-            <input id={`${idPrefix}-text-field`} className="text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black" type={isPassword ? "password" : "text"} placeholder={placeholderText} value={inputText} onChange={handleChange} style={{width: `${pixelWidth}px`}}/>
+            <input id={`${idPrefix}-text-field`} className="text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black read-only:bg-slate-100 read-only:dark:bg-slate-800" type={isPassword ? "password" : "text"} placeholder={placeholderText} value={inputText} onChange={handleChange} style={{width: `${pixelWidth}px`}}/>
         </>
     )
 }

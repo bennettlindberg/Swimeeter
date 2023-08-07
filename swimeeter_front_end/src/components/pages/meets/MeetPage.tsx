@@ -82,11 +82,6 @@ export function MeetPage() {
     const { meet_id } = useParams();
     const meet_id_INT = parseInt(meet_id || "-1");
 
-    console.log("rendered with meet data:")
-    console.log(meetData)
-    console.log(setMeetData)
-    console.log(isMeetHost)
-
     // * retrieve meet data
     useEffect(() => {
         async function retrieveMeetData() {

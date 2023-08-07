@@ -259,7 +259,7 @@ export function AccountForm() {
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
 
             <FormGroup
-                label={<InputLabel inputId={idPrefix + "-email-text-field"} text="Email (read-only)" />}
+                label={<InputLabel inputId={idPrefix + "-email-text-field"} text="Email address" />}
                 field={<TextInput
                     regex={/^[A-Za-z0-9\.\@]*$/}
                     defaultText={userState.profile?.email}
@@ -268,7 +268,7 @@ export function AccountForm() {
                 />}
                 info={{
                     title: "EMAIL",
-                    description: "The email field should contain a valid email address to be associated with the account. This field cannot be changed after account creation.",
+                    description: "The email field should contain a valid email address to be associated with the account. The value of this field is read-only as it cannot be changed after account creation.",
                     permitted_values: "Any email address containing alphanumeric strings, a single @ symbol, no consecutive periods, and no periods at the start or end of alphanumeric strings.",
                     warning: "Email addresses are considered case-insensitive. Emails such as A@A.com and a@a.com will refer to the same email address."
                 }}

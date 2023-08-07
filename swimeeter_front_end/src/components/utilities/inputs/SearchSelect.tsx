@@ -100,8 +100,8 @@ export function SearchSelect({
     return (
         <>
             <div className="flex flex-col gap-y-0">
-                <input id={`${idPrefix}-select-field`} className="text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder={placeholderText} value={inputText} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{width:`${pixelWidth}px`}}/>
-                <div className="relative">
+                <input id={`${idPrefix}-select-field`} className="peer text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black read-only:bg-slate-100 read-only:dark:bg-slate-800" type="text" placeholder={placeholderText} value={inputText} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{width:`${pixelWidth}px`}}/>
+                <div className="relative peer-read-only:invisible">
                     <div className={`${optionsShown && matchingOptions.length > 0 ? "visible" : "invisible"} bg-white dark:bg-black border-2 border-slate-200 dark:border-slate-700 flex flex-col items-start rounded-md absolute left-0 top-0 p-2 z-10`}>
                         {matchingOptions.map((option, index) => {
                             return <button className={`hover:bg-slate-200 dark:hover:bg-slate-700 ${option === inputText ? "bg-sky-100 dark:bg-blue-900" : "bg-transparent"} text-black dark:text-white rounded-md p-1 w-full text-lg text-left`} id={internalIdPrefix + "-" + index} onClick={(event: any) => {

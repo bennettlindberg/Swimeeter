@@ -38,7 +38,7 @@ def get_model_of_id(model_type, model_id):
         match model_type:
             case "Host":
                 return Host.objects.get(id=model_id)
-            
+
             case "Pool":
                 return Pool.objects.get(id=model_id)
 
@@ -50,7 +50,7 @@ def get_model_of_id(model_type, model_id):
 
             case "Event":
                 return Event.objects.get(id=model_id)
-            
+
             case "Team":
                 return Team.objects.get(id=model_id)
 
@@ -89,7 +89,7 @@ def get_all_duplicates(model_type, model_object):
                     f"{model_type} is not supported for duplicate checking",
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
-            
+
             case "Pool":
                 return Pool.objects.filter(
                     meet_id=model_object.meet_id,
@@ -124,7 +124,7 @@ def get_all_duplicates(model_type, model_object):
                     competing_max_age=model_object.competing_max_age,
                     competing_min_age=model_object.competing_min_age,
                 ).exclude(id=model_object.pk)
-            
+
             case "Team":
                 return Team.objects.filter(
                     meet_id=model_object.meet_id,
@@ -297,7 +297,7 @@ def check_editing_access(request, model_type, model_object):
         match model_type:
             case "Host":
                 return model_object.id == request.user.id
-            
+
             case "Pool":
                 return model_object.meet.host.id == request.user.id
 
@@ -309,7 +309,7 @@ def check_editing_access(request, model_type, model_object):
 
             case "Event":
                 return model_object.session.meet.host.id == request.user.id
-            
+
             case "Team":
                 return model_object.meet.host.id == request.user.id
 
@@ -335,7 +335,8 @@ def check_editing_access(request, model_type, model_object):
             "unable to determine editing access",
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    
+
+
 def get_swimmer_name(swimmer_object: Swimmer):
     swimmer_name = ""
 
@@ -354,11 +355,14 @@ def get_swimmer_name(swimmer_object: Swimmer):
 
     return swimmer_name
 
+
 def get_event_name(event_object: Event):
     event_name = event_object.competing_gender + "s "
 
     if event_object.competing_min_age and event_object.competing_max_age:
-        event_name += event_object.competing_min_age + "-" + event_object.competing_max_age + " "
+        event_name += (
+            event_object.competing_min_age + "-" + event_object.competing_max_age + " "
+        )
     elif event_object.competing_min_age:
         event_name += event_object.competing_min_age + " & Over "
     elif event_object.competing_max_age:
@@ -375,6 +379,7 @@ def get_event_name(event_object: Event):
 
     return event_name
 
+
 def get_seed_time_string(hundredths: int):
     hours = hundredths // 360000
     hundredths %= 360000
@@ -387,16 +392,17 @@ def get_seed_time_string(hundredths: int):
 
     seed_string = ""
 
-    for amountTuple in [(hours, ':'), (minutes, ":"), (seconds, "."), (hundredths, "")]:
+    for amountTuple in [(hours, ":"), (minutes, ":"), (seconds, "."), (hundredths, "")]:
         if amountTuple[0] > 0 and amountTuple[0] < 10:
             seed_string += "0"
         seed_string += str(amountTuple[0]) + amountTuple[1]
 
     return seed_string
 
+
 def get_individual_entry_name(individual_entry_object: Individual_entry):
-    entry_name = "" 
-    
+    entry_name = ""
+
     if individual_entry_object.swimmer.first_name.endswith("s"):
         entry_name += individual_entry_object.swimmer.first_name + "' "
     else:
@@ -406,15 +412,16 @@ def get_individual_entry_name(individual_entry_object: Individual_entry):
 
     return entry_name
 
+
 def get_relay_entry_name(relay_entry_object: Relay_entry):
-    entry_name = "" 
+    entry_name = ""
 
     swimmers_list = list(relay_entry_object.swimmers)
     for i in range(len(swimmers_list) - 1):
         entry_name += swimmers_list[i].first_name + ", "
 
     entry_name += "and "
-    
+
     if relay_entry_object.swimmers.last.first_name.endswith("s"):
         entry_name += relay_entry_object.swimmers.last.first_name + "' "
     else:
@@ -423,6 +430,7 @@ def get_relay_entry_name(relay_entry_object: Relay_entry):
     entry_name += get_seed_time_string(relay_entry_object.seed_time) + " Entry"
 
     return entry_name
+
 
 def get_relationship_tree(model_type, model_object):
     try:
@@ -433,24 +441,24 @@ def get_relationship_tree(model_type, model_object):
                         "model": "MEET",
                         "title": model_object.name,
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.id}"
+                        "route": f"/meets/{model_object.id}",
                     }
                 ]
-            
+
             case "Pool":
                 return [
                     {
                         "model": "MEET",
                         "title": model_object.meet.name,
                         "id": model_object.meet.id,
-                        "route": f"/meets/{model_object.meet.id}"
+                        "route": f"/meets/{model_object.meet.id}",
                     },
                     {
                         "model": "POOL",
                         "title": model_object.name,
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.meet.id}/pools/{model_object.id}"
-                    }
+                        "route": f"/meets/{model_object.meet.id}/pools/{model_object.id}",
+                    },
                 ]
 
             case "Session":
@@ -459,14 +467,14 @@ def get_relationship_tree(model_type, model_object):
                         "model": "MEET",
                         "title": model_object.meet.name,
                         "id": model_object.meet.id,
-                        "route": f"/meets/{model_object.meet.id}"
+                        "route": f"/meets/{model_object.meet.id}",
                     },
                     {
                         "model": "SESSION",
                         "title": model_object.name,
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.meet.id}/sessions/{model_object.id}"
-                    }
+                        "route": f"/meets/{model_object.meet.id}/sessions/{model_object.id}",
+                    },
                 ]
 
             case "Event":
@@ -475,36 +483,36 @@ def get_relationship_tree(model_type, model_object):
                         "model": "MEET",
                         "title": model_object.session.meet.name,
                         "id": model_object.session.meet.id,
-                        "route": f"/meets/{model_object.session.meet.id}"
+                        "route": f"/meets/{model_object.session.meet.id}",
                     },
                     {
                         "model": "SESSION",
                         "title": model_object.session.name,
                         "id": model_object.session.id,
-                        "route": f"/meets/{model_object.session.meet.id}/sessions/{model_object.session.id}"
+                        "route": f"/meets/{model_object.session.meet.id}/sessions/{model_object.session.id}",
                     },
                     {
                         "model": "EVENT",
                         "title": get_event_name(model_object),
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.session.meet.id}/events/{model_object.id}"
-                    }
+                        "route": f"/meets/{model_object.session.meet.id}/events/{model_object.id}",
+                    },
                 ]
-            
+
             case "Team":
                 return [
                     {
                         "model": "MEET",
                         "title": model_object.meet.name,
                         "id": model_object.meet.id,
-                        "route": f"/meets/{model_object.meet.id}"
+                        "route": f"/meets/{model_object.meet.id}",
                     },
                     {
                         "model": "TEAM",
                         "title": model_object.name,
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.meet.id}/teams/{model_object.id}"
-                    }
+                        "route": f"/meets/{model_object.meet.id}/teams/{model_object.id}",
+                    },
                 ]
 
             case "Swimmer":
@@ -513,14 +521,14 @@ def get_relationship_tree(model_type, model_object):
                         "model": "MEET",
                         "title": model_object.meet.name,
                         "id": model_object.meet.id,
-                        "route": f"/meets/{model_object.meet.id}"
+                        "route": f"/meets/{model_object.meet.id}",
                     },
                     {
                         "model": "SWIMMER",
                         "title": get_swimmer_name(model_object),
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.meet.id}/swimmers/{model_object.id}"
-                    }
+                        "route": f"/meets/{model_object.meet.id}/swimmers/{model_object.id}",
+                    },
                 ]
 
             case "Individual_entry":
@@ -529,20 +537,20 @@ def get_relationship_tree(model_type, model_object):
                         "model": "MEET",
                         "title": model_object.event.meet.name,
                         "id": model_object.event.meet.id,
-                        "route": f"/meets/{model_object.event.meet.id}"
+                        "route": f"/meets/{model_object.event.meet.id}",
                     },
                     {
                         "model": "EVENT",
                         "title": get_event_name(model_object.event),
                         "id": model_object.event.id,
-                        "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}"
+                        "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}",
                     },
                     {
                         "model": "INDIVIDUAL_ENTRY",
                         "title": get_individual_entry_name(model_object),
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.event.meet.id}/individual_entries/{model_object.id}"
-                    }
+                        "route": f"/meets/{model_object.event.meet.id}/individual_entries/{model_object.id}",
+                    },
                 ]
 
             case "Relay_entry":
@@ -551,20 +559,20 @@ def get_relationship_tree(model_type, model_object):
                         "model": "MEET",
                         "title": model_object.event.meet.name,
                         "id": model_object.event.meet.id,
-                        "route": f"/meets/{model_object.event.meet.id}"
+                        "route": f"/meets/{model_object.event.meet.id}",
                     },
                     {
                         "model": "EVENT",
                         "title": get_event_name(model_object.event),
                         "id": model_object.event.id,
-                        "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}"
+                        "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}",
                     },
                     {
                         "model": "RELAY_ENTRY",
                         "title": get_relay_entry_name(model_object),
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.event.meet.id}/relay_entries/{model_object.id}"
-                    }
+                        "route": f"/meets/{model_object.event.meet.id}/relay_entries/{model_object.id}",
+                    },
                 ]
 
             case _:
@@ -590,15 +598,15 @@ def check_swimmers_against_others(swimmer_ids):
                     "duplicate swimmers exist inside relay",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            
+
     swimmer_objects = list(Swimmer.objects.filter(id__in=swimmer_ids))
     first_team_id = swimmer_objects[0].team_id
     for swimmer in swimmer_objects:
         if swimmer.team_id != first_team_id:
             return Response(
-                    "swimmers of different teams exist inside relay",
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                "swimmers of different teams exist inside relay",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     return None
 
@@ -697,7 +705,7 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     )
 
             return collective_JSON
-        
+
         case "Pool":
             collective_JSON = json.loads(
                 serialize(
@@ -788,7 +796,7 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     )
 
             return collective_JSON
-        
+
         case "Team":
             collective_JSON = json.loads(
                 serialize(
