@@ -39,7 +39,7 @@ class Pool_view(APIView):
                 else:
                     pool_id = int(pool_id)
 
-                pool_of_id = vh.get_model_of_id("pool", pool_id)
+                pool_of_id = vh.get_model_of_id("Pool", pool_id)
                 # ? no pool of pool_id exists
                 if isinstance(pool_of_id, Response):
                     return pool_of_id
@@ -52,7 +52,7 @@ class Pool_view(APIView):
                     return check_meet_access
 
                 # * get pool JSON
-                pool_JSON = vh.get_JSON_single("pool", pool_of_id, True)
+                pool_JSON = vh.get_JSON_single("Pool", pool_of_id, True)
                 # ? internal error generating JSON
                 if isinstance(pool_JSON, Response):
                     return pool_JSON
@@ -86,7 +86,7 @@ class Pool_view(APIView):
                 )[lower_bound:upper_bound]
 
                 # * get pools JSON
-                pools_JSON = vh.get_JSON_multiple("pool", pools_of_meet, True)
+                pools_JSON = vh.get_JSON_multiple("Pool", pools_of_meet, True)
                 # ? internal error generating JSON
                 if isinstance(pools_JSON, Response):
                     return pools_JSON
@@ -138,7 +138,7 @@ class Pool_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "pool", new_pool)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Pool", new_pool)
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -159,7 +159,7 @@ class Pool_view(APIView):
             )
 
         # * get pool JSON
-        pool_JSON = vh.get_JSON_single("pool", new_pool, False)
+        pool_JSON = vh.get_JSON_single("Pool", new_pool, False)
         # ? internal error generating JSON
         if isinstance(pool_JSON, Response):
             return pool_JSON
@@ -177,7 +177,7 @@ class Pool_view(APIView):
         else:
             pool_id = int(pool_id)
 
-        pool_of_id = vh.get_model_of_id("pool", pool_id)
+        pool_of_id = vh.get_model_of_id("Pool", pool_id)
         # ? no pool of pool_id exists
         if isinstance(pool_of_id, Response):
             return pool_of_id
@@ -212,7 +212,7 @@ class Pool_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "pool", edited_pool)
+            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Pool", edited_pool)
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -233,7 +233,7 @@ class Pool_view(APIView):
             )
 
         # * get pool JSON
-        pool_JSON = vh.get_JSON_single("pool", edited_pool, False)
+        pool_JSON = vh.get_JSON_single("Pool", edited_pool, False)
         # ? internal error generating JSON
         if isinstance(pool_JSON, Response):
             return pool_JSON
@@ -251,7 +251,7 @@ class Pool_view(APIView):
         else:
             pool_id = int(pool_id)
 
-        pool_of_id = vh.get_model_of_id("pool", pool_id)
+        pool_of_id = vh.get_model_of_id("Pool", pool_id)
         # ? no pool of pool_id exists
         if isinstance(pool_of_id, Response):
             return pool_of_id

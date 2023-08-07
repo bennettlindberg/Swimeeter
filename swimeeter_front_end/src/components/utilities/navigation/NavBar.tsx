@@ -62,10 +62,7 @@ export function NavBar() {
 
             userDispatch({
                 type: "UPDATE_PREFERENCES",
-                preferences: {
-                    ...userState.preferences,
-                    screen_mode: mode
-                }
+                preferences: response.data.preferences
             })
         } catch (error) {
             // ? update screen mode failed on the back-end
@@ -92,7 +89,7 @@ export function NavBar() {
 
     return (
         <>
-            <div className="fixed top-0 left-0 w-full">
+            <div className="fixed z-10 top-0 left-0 w-full">
                 <div className="flex flex-row items-center text-white dark:text-black gap-x-5 h-[60px] w-full bg-sky-400 dark:bg-blue-500 relative">
                     <div className="w-[0px]"></div>
 

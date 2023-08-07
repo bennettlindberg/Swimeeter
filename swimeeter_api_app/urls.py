@@ -8,7 +8,7 @@ from .api_views.Swimmer_view import Swimmer_view
 from .api_views.Individual_entry_view import Individual_entry_view
 from .api_views.Relay_entry_view import Relay_entry_view
 from .api_views.Heat_sheet_view import Heat_sheet_view
-from .api_views.Edit_view import Edit_view
+from .api_views.Info_view import Info_view
 
 urlpatterns = [
     path("meets/", Meet_view.as_view()),
@@ -20,5 +20,5 @@ urlpatterns = [
     path("individual_entries/", Individual_entry_view.as_view()),
     path("relay_entries/", Relay_entry_view.as_view()),
     path("heat_sheets/", Heat_sheet_view.as_view()),
-    path("check_edit/", Edit_view.as_view()),
+    path("info/", Info_view.as_view()),
 ]

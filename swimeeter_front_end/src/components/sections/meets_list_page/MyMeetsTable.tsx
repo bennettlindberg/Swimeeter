@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-// import axios from "axios";
 
 import { AppContext, UserState } from "../../../App.tsx";
 import { Meet } from "../../utilities/types/modelTypes.ts";
@@ -13,27 +12,7 @@ import { PageButton } from "../../utilities/general/PageButton.tsx";
 export function MyMeetsTable() {
     // * initialize context, state, and navigation
     const { userState }: { userState: UserState } = useContext(AppContext);
-    // const [isMeetHost, setIsMeetHost] = useState(false);
     const navigate = useNavigate();
-
-    // ! MOVE THIS TO PAGE COMPONENT FOR FEWER ASYNC CALLS
-    // useEffect(() => {
-    //     async function checkIfMeetHost() {
-    //         try {
-    //             // @ check if meet host with back-end request
-    //             const response = await axios.get("/api/v1/check_edit/", {
-    //                 params: {
-    //                     model_type: "Meet",
-    //                     model_id: // ! ID HERE
-    //                 }
-    //             })
-    //         } catch (error) {
-    //             // ? back-end error
-    //             navigate("errors/unknown");
-    //         }
-    //     }
-    //     checkIfMeetHost();
-    // });
 
     // * define table row generator
     function tableRowGenerator(item: Meet) {

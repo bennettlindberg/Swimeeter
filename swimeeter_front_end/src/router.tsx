@@ -113,11 +113,11 @@ const router = createBrowserRouter([
 
             // * EVENTS
             {
-                path: "meets/:meet_id/sessions/:session_id/events/:event_id",
+                path: "meets/:meet_id/events/:event_id",
                 element: <EventPage />,
             },
             {
-                path: "meets/:meet_id/sessions/:session_id/events/create",
+                path: "meets/:meet_id/events/create",
                 element: <EventCreationPage />,
             },
 
@@ -143,37 +143,21 @@ const router = createBrowserRouter([
 
             // * INDIVIDUAL ENTRIES
             {
-                path: "meets/:meet_id/swimmers/:swimmer_id/individual_entries/:individual_entry_id",
+                path: "meets/:meet_id/individual_entries/:individual_entry_id",
                 element: <IndividualEntryPage />,
             },
             {
-                path: "meets/:meet_id/swimmers/:swimmer_id/individual_entries/create",
-                element: <IndividualEntryCreationPage />,
-            },
-            {
-                path: "meets/:meet_id/sessions/:session_id/events/:event_id/individual_entries/:individual_entry_id",
-                element: <IndividualEntryPage />,
-            },
-            {
-                path: "meets/:meet_id/sessions/:session_id/events/:event_id/individual_entries/create",
+                path: "meets/:meet_id/individual_entries/create",
                 element: <IndividualEntryCreationPage />,
             },
 
             // * RELAY ENTRIES
             {
-                path: "meets/:meet_id/swimmers/:swimmer_id/relay_entries/:relay_entry_id",
+                path: "meets/:meet_id/relay_entries/:relay_entry_id",
                 element: <RelayEntryPage />,
             },
             {
-                path: "meets/:meet_id/swimmers/:swimmer_id/relay_entries/create",
-                element: <RelayEntryCreationPage />,
-            },
-            {
-                path: "meets/:meet_id/sessions/:session_id/events/:event_id/relay_entries/:relay_entry_id",
-                element: <RelayEntryPage />,
-            },
-            {
-                path: "meets/:meet_id/sessions/:session_id/events/:event_id/relay_entries/create",
+                path: "meets/:meet_id/relay_entries/create",
                 element: <RelayEntryCreationPage />,
             },
 

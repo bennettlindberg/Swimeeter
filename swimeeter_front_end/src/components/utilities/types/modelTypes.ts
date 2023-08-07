@@ -107,8 +107,8 @@ export type Event = {
         swimmers_per_entry: number,
         stage: string,
         competing_gender: string,
-        competing_max_age: number,
-        competing_min_age: number,
+        competing_max_age: number | null,
+        competing_min_age: number | null,
         order_in_session: number,
         total_heats: number | null,
         session: SessionShallow
@@ -125,8 +125,8 @@ export type EventShallow = {
         swimmers_per_entry: number,
         stage: string,
         competing_gender: string,
-        competing_max_age: number,
-        competing_min_age: number,
+        competing_max_age: number | null,
+        competing_min_age: number | null,
         order_in_session: number,
         total_heats: number | null,
         session: number
@@ -207,7 +207,7 @@ export type RelayAssignment = {
     fields: {
         order_in_relay: number,
         seed_relay_split: number,
-        swimmer: SwimmerShallow,
+        swimmer: Swimmer,
         relay_entry: number
     }
 }
@@ -220,7 +220,7 @@ export type RelayEntry = {
         seed_time: number,
         heat_number: number | null,
         lane_number: number | null,
-        relay_assignments: RelayAssignment,
+        relay_assignments: RelayAssignment[],
         event: EventShallow
     }
 }

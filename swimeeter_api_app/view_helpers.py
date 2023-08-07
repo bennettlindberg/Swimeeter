@@ -286,6 +286,9 @@ def check_meet_access_allowed(request, meet_object):
         return None
 
 
+# ! FRONT-END INFO RETRIEVAL
+
+
 def check_editing_access(request, model_type, model_object):
     if not request.user.is_authenticated:
         return False
@@ -330,6 +333,248 @@ def check_editing_access(request, model_type, model_object):
     except:
         return Response(
             "unable to determine editing access",
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+    
+def get_swimmer_name(swimmer_object: Swimmer):
+    swimmer_name = ""
+
+    if swimmer_object.prefix != "":
+        swimmer_name += swimmer_object.prefix + " "
+
+    swimmer_name += swimmer_object.first_name + " "
+
+    if swimmer_object.middle_initials != "":
+        swimmer_name += swimmer_object.middle_initials + " "
+
+    swimmer_name += swimmer_object.last_name
+
+    if swimmer_object.suffix != "":
+        swimmer_name += " " + swimmer_object.suffix + " "
+
+    return swimmer_name
+
+def get_event_name(event_object: Event):
+    event_name = event_object.competing_gender + "s "
+
+    if event_object.competing_min_age and event_object.competing_max_age:
+        event_name += event_object.competing_min_age + "-" + event_object.competing_max_age + " "
+    elif event_object.competing_min_age:
+        event_name += event_object.competing_min_age + " & Over "
+    elif event_object.competing_max_age:
+        event_name += event_object.competing_max_age + " & Under "
+    else:
+        event_object += "Open "
+
+    event_name += event_object.distance + " " + event_object.stroke + " "
+
+    if event_object.is_relay:
+        event_name += "Relay "
+
+    event_name += event_object.stage
+
+    return event_name
+
+def get_seed_time_string(hundredths: int):
+    hours = hundredths // 360000
+    hundredths %= 360000
+
+    minutes = hundredths // 6000
+    hundredths %= 6000
+
+    seconds = hundredths // 100
+    hundredths %= 100
+
+    seed_string = ""
+
+    for amountTuple in [(hours, ':'), (minutes, ":"), (seconds, "."), (hundredths, "")]:
+        if amountTuple[0] > 0 and amountTuple[0] < 10:
+            seed_string += "0"
+        seed_string += str(amountTuple[0]) + amountTuple[1]
+
+    return seed_string
+
+def get_individual_entry_name(individual_entry_object: Individual_entry):
+    entry_name = "" 
+    
+    if individual_entry_object.swimmer.first_name.endswith("s"):
+        entry_name += individual_entry_object.swimmer.first_name + "' "
+    else:
+        entry_name += individual_entry_object.swimmer.first_name + "'s "
+
+    entry_name += get_seed_time_string(individual_entry_object.seed_time) + " Entry"
+
+    return entry_name
+
+def get_relay_entry_name(relay_entry_object: Relay_entry):
+    entry_name = "" 
+
+    swimmers_list = list(relay_entry_object.swimmers)
+    for i in range(len(swimmers_list) - 1):
+        entry_name += swimmers_list[i].first_name + ", "
+
+    entry_name += "and "
+    
+    if relay_entry_object.swimmers.last.first_name.endswith("s"):
+        entry_name += relay_entry_object.swimmers.last.first_name + "' "
+    else:
+        entry_name += relay_entry_object.swimmers.last.first_name + "'s "
+
+    entry_name += get_seed_time_string(relay_entry_object.seed_time) + " Entry"
+
+    return entry_name
+
+def get_relationship_tree(model_type, model_object):
+    try:
+        match model_type:
+            case "Meet":
+                return [
+                    {
+                        "model": "MEET",
+                        "title": model_object.name,
+                        "id": model_object.id,
+                        "route": f"/meets/{model_object.id}"
+                    }
+                ]
+            
+            case "Pool":
+                return [
+                    {
+                        "model": "MEET",
+                        "title": model_object.meet.name,
+                        "id": model_object.meet.id,
+                        "route": f"/meets/{model_object.meet.id}"
+                    },
+                    {
+                        "model": "POOL",
+                        "title": model_object.name,
+                        "id": model_object.id,
+                        "route": f"/meets/{model_object.meet.id}/pools/{model_object.id}"
+                    }
+                ]
+
+            case "Session":
+                return [
+                    {
+                        "model": "MEET",
+                        "title": model_object.meet.name,
+                        "id": model_object.meet.id,
+                        "route": f"/meets/{model_object.meet.id}"
+                    },
+                    {
+                        "model": "SESSION",
+                        "title": model_object.name,
+                        "id": model_object.id,
+                        "route": f"/meets/{model_object.meet.id}/sessions/{model_object.id}"
+                    }
+                ]
+
+            case "Event":
+                return [
+                    {
+                        "model": "MEET",
+                        "title": model_object.session.meet.name,
+                        "id": model_object.session.meet.id,
+                        "route": f"/meets/{model_object.session.meet.id}"
+                    },
+                    {
+                        "model": "SESSION",
+                        "title": model_object.session.name,
+                        "id": model_object.session.id,
+                        "route": f"/meets/{model_object.session.meet.id}/sessions/{model_object.session.id}"
+                    },
+                    {
+                        "model": "EVENT",
+                        "title": get_event_name(model_object),
+                        "id": model_object.id,
+                        "route": f"/meets/{model_object.session.meet.id}/events/{model_object.id}"
+                    }
+                ]
+            
+            case "Team":
+                return [
+                    {
+                        "model": "MEET",
+                        "title": model_object.meet.name,
+                        "id": model_object.meet.id,
+                        "route": f"/meets/{model_object.meet.id}"
+                    },
+                    {
+                        "model": "TEAM",
+                        "title": model_object.name,
+                        "id": model_object.id,
+                        "route": f"/meets/{model_object.meet.id}/teams/{model_object.id}"
+                    }
+                ]
+
+            case "Swimmer":
+                return [
+                    {
+                        "model": "MEET",
+                        "title": model_object.meet.name,
+                        "id": model_object.meet.id,
+                        "route": f"/meets/{model_object.meet.id}"
+                    },
+                    {
+                        "model": "SWIMMER",
+                        "title": get_swimmer_name(model_object),
+                        "id": model_object.id,
+                        "route": f"/meets/{model_object.meet.id}/swimmers/{model_object.id}"
+                    }
+                ]
+
+            case "Individual_entry":
+                return [
+                    {
+                        "model": "MEET",
+                        "title": model_object.event.meet.name,
+                        "id": model_object.event.meet.id,
+                        "route": f"/meets/{model_object.event.meet.id}"
+                    },
+                    {
+                        "model": "EVENT",
+                        "title": get_event_name(model_object.event),
+                        "id": model_object.event.id,
+                        "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}"
+                    },
+                    {
+                        "model": "INDIVIDUAL_ENTRY",
+                        "title": get_individual_entry_name(model_object),
+                        "id": model_object.id,
+                        "route": f"/meets/{model_object.event.meet.id}/individual_entries/{model_object.id}"
+                    }
+                ]
+
+            case "Relay_entry":
+                return [
+                    {
+                        "model": "MEET",
+                        "title": model_object.event.meet.name,
+                        "id": model_object.event.meet.id,
+                        "route": f"/meets/{model_object.event.meet.id}"
+                    },
+                    {
+                        "model": "EVENT",
+                        "title": get_event_name(model_object.event),
+                        "id": model_object.event.id,
+                        "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}"
+                    },
+                    {
+                        "model": "RELAY_ENTRY",
+                        "title": get_relay_entry_name(model_object),
+                        "id": model_object.id,
+                        "route": f"/meets/{model_object.event.meet.id}/relay_entries/{model_object.id}"
+                    }
+                ]
+
+            case _:
+                return Response(
+                    f"{model_type} is not a valid model type",
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+    except:
+        return Response(
+            "error retrieving relationship tree",
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
