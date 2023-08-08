@@ -1,9 +1,9 @@
 import { useContext, useId } from "react";
 
 import { MeetContext } from "../../pages/meets/MeetPage.tsx";
-import { Meet } from "../../utilities/types/modelTypes.ts";
+import { Meet } from "../../utilities/models/modelTypes.ts";
 import { convertRawData } from "../../utilities/forms/formHelpers.ts";
-import { generateHostName } from "../../utilities/helpers/nameGenerators.ts";
+import { generateHostName } from "../../utilities/models/nameGenerators.ts";
 
 import { EditingForm } from "../../utilities/forms/EditingForm.tsx";
 import { FormGroup } from "../../utilities/forms/FormGroup.tsx";
@@ -36,15 +36,17 @@ export function MeetForm() {
                         duplicateSensitive: true,
                         formGroup: <FormGroup
                             label={<InputLabel inputId={idPrefix + "-name-text-field"} text="Name" />}
+                            key={idPrefix + "-name-text-field"}
                             field={<TextInput
                                 regex={/^.*$/}
+                                placeholderText="Name"
                                 defaultText={meetData.fields.name}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-name"}
                             />}
                             info={{
                                 title: "NAME",
-                                description: "The name field should contain the name of the meet being created. ",
+                                description: "The name field should contain the name of the meet being modified.",
                                 permitted_values: "Any string at least 1 character long.",
                             }}
                         />,
@@ -53,10 +55,10 @@ export function MeetForm() {
                                 return true;
                             } else {
                                 return {
-                                    title: "VISIBILITY FIELD ERROR",
-                                    description: "An unexpected value was entered for the visibility field.",
-                                    fields: "Visibility",
-                                    recommendation: "Choose \"Public\" or \"Private\" as the entered value for the visibility field."
+                                    title: "NAME FIELD ERROR",
+                                    description: "The meet name field was left blank. Meet names are required and must be at least 1 character in length.",
+                                    fields: "Name",
+                                    recommendation: "Alter the entered name to conform to the requirements of the field."
                                 }
                             }
                         }
@@ -68,9 +70,11 @@ export function MeetForm() {
                         duplicateSensitive: false,
                         formGroup: <FormGroup
                             label={<InputLabel inputId={idPrefix + "-visibility-select-field"} text="Visibility" />}
+                            key={idPrefix + "-visibility-select-field"}
                             field={<SearchSelect
                                 regex={/^(P(u(b(l(i(c?)?)?)?)?)?)?$|^(P(r(i(v(a(t(e?)?)?)?)?)?)?)?$/}
                                 otherEnabled={false}
+                                placeholderText="Visibility"
                                 defaultText={meetData.fields.is_public ? "Public" : "Private"}
                                 pixelWidth={100}
                                 idPrefix={idPrefix + "-visibility"}
@@ -78,7 +82,7 @@ export function MeetForm() {
                             />}
                             info={{
                                 title: "VISIBILITY",
-                                description: "The value of the visibility field determines who can view the meet being created. Private meets can only be seen by the meet host.",
+                                description: "The value of the visibility field determines who can view the meet being modified. Private meets can only be seen by the meet host.",
                                 permitted_values: "Public, Private"
                             }}
                         />,
@@ -87,10 +91,10 @@ export function MeetForm() {
                                 return true;
                             } else {
                                 return {
-                                    title: "NAME FIELD ERROR",
-                                    description: "The meet name field was left blank. Meet names are required and must be at least 1 character in length.",
-                                    fields: "Name",
-                                    recommendation: "Alter the entered name to conform to the requirements of the field."
+                                    title: "VISIBILITY FIELD ERROR",
+                                    description: "An unexpected value was entered for the visibility field.",
+                                    fields: "Visibility",
+                                    recommendation: "Choose \"Public\" or \"Private\" as the entered value for the visibility field."
                                 }
                             }
                         },
@@ -113,8 +117,10 @@ export function MeetForm() {
                         duplicateSensitive: false,
                         formGroup: <FormGroup
                             label={<InputLabel inputId={idPrefix + "-host-text-field"} text="Host" />}
+                            key={idPrefix + "-host-text-field"}
                             field={<TextInput
                                 regex={/^.*$/}
+                                placeholderText="Host name"
                                 defaultText={generateHostName(meetData.fields.host)}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-host"}
@@ -133,8 +139,10 @@ export function MeetForm() {
                         duplicateSensitive: false,
                         formGroup: <FormGroup
                             label={<InputLabel inputId={idPrefix + "-begin_time-text-field"} text="Begin time" />}
+                            key={idPrefix + "-begin_time-text-field"}
                             field={<TextInput
                                 regex={/^.*$/}
+                                placeholderText="Begin time"
                                 defaultText={meetData.fields.begin_time ? meetData.fields.begin_time.toLocaleTimeString() : "N/A"}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-begin_time"}
@@ -153,8 +161,10 @@ export function MeetForm() {
                         duplicateSensitive: false,
                         formGroup: <FormGroup
                             label={<InputLabel inputId={idPrefix + "-end_time-text-field"} text="End time" />}
+                            key={idPrefix + "-end_time-text-field"}
                             field={<TextInput
                                 regex={/^.*$/}
+                                placeholderText="End time"
                                 defaultText={meetData.fields.end_time ? meetData.fields.end_time.toLocaleTimeString() : "N/A"}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-end_time"}
@@ -195,7 +205,7 @@ export function MeetForm() {
                         matchString: "user is not logged in",
                         error: {
                             title: "AUTHORIZATION ERROR",
-                            description: "You are not currently logged into an account. Log into an account before creating a meet.",
+                            description: "You are not currently logged into an account. Log into an account before modifying this meet.",
                             recommendation: "Log into an account using the log in button found in the navigation bar."
                         }
                     }
@@ -204,6 +214,8 @@ export function MeetForm() {
                 queryParams={{
                     meet_id: meetData.pk
                 }}
+                submitText="Save meet"
+                editText="Edit meet"
             />
         </>
     )

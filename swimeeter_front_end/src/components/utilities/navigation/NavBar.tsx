@@ -83,7 +83,7 @@ export function NavBar() {
             navigate("/");
         } catch (error) {
             // ? log out failed on the back-end
-            navigate("errors/unknown");
+            navigate("/errors/unknown");
         }
     }
 

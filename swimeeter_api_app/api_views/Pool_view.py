@@ -159,7 +159,7 @@ class Pool_view(APIView):
             )
 
         # * get pool JSON
-        pool_JSON = vh.get_JSON_single("Pool", new_pool, False)
+        pool_JSON = vh.get_JSON_single("Pool", new_pool, True)
         # ? internal error generating JSON
         if isinstance(pool_JSON, Response):
             return pool_JSON
@@ -233,7 +233,7 @@ class Pool_view(APIView):
             )
 
         # * get pool JSON
-        pool_JSON = vh.get_JSON_single("Pool", edited_pool, False)
+        pool_JSON = vh.get_JSON_single("Pool", edited_pool, True)
         # ? internal error generating JSON
         if isinstance(pool_JSON, Response):
             return pool_JSON

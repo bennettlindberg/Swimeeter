@@ -213,8 +213,8 @@ export function AccountForm() {
                             type: "SAVE_FAILURE",
                             error: {
                                 title: "AUTHENTICATION ERROR",
-                                description: "The entered current password did not match the currently logged in Swimeeter account.",
-                                recommendation: "Enter the correct current password for the currently logged in account."
+                                description: "The entered current password did not match the currently logged-in Swimeeter account.",
+                                recommendation: "Enter the correct current password for the currently logged-in account."
                             }
                         });
                         return;

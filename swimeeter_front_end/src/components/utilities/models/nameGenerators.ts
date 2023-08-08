@@ -1,4 +1,4 @@
-import { Host, Event, IndividualEntry, RelayEntry, Swimmer } from "../types/modelTypes";
+import { Host, Event, IndividualEntry, RelayEntry, Swimmer } from "./modelTypes";
 
 export function generateHostName(host: Host) {
     let hostName = "";
@@ -20,6 +20,36 @@ export function generateHostName(host: Host) {
         }
 
     return hostName;
+}
+
+export function generateUserProfileName(user: {
+    id: number,
+    email: string,
+    first_name: string,
+    last_name: string,
+    prefix: string,
+    suffix: string,
+    middle_initials: string
+}) {
+    let userName = "";
+
+    if (user.prefix !== "") {
+        userName += user.prefix + " ";
+    }
+
+    userName += user.first_name + " ";
+
+    if (user.middle_initials !== "") {
+        userName += user.middle_initials + " ";
+    }
+
+    userName += user.last_name;
+
+    if (user.suffix !== "") {
+        userName += " " + user.suffix;
+        }
+
+    return userName;
 }
 
 export function generateSwimmerName(swimmer: Swimmer) {

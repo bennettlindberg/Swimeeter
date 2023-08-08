@@ -8,7 +8,7 @@ export function TableHeader({ isOpen, entries, handleClick }: {
 }) {
     return (
         <thead className="group bg-sky-100 dark:bg-blue-900 py-1 font-semibold text-xl text-sky-400 dark:text-blue-500" onClick={handleClick}>
-            {entries.map(entry => <TableHeaderEntry>{entry}</TableHeaderEntry>)}
+            {entries.map(entry => <TableHeaderEntry key={entry}>{entry}</TableHeaderEntry>)}
             <td className="first-of-type:rounded-l-md last-of-type:rounded-r-md border-t-2 border-b-2 first-of-type:border-l-2 last-of-type:border-r-2 border-sky-200 dark:border-blue-800 group-hover:bg-sky-200 group-hover:dark:bg-blue-800">
                 {
                     isOpen

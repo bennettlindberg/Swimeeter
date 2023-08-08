@@ -43,7 +43,7 @@ export function ErrorUnknownPage() {
                     <button className="text-4xl font-semibold p-5 text-red-700 dark:text-red-300 rounded-md border-2 bg-red-300 hover:bg-red-400 border-red-400 dark:bg-red-700 hover:dark:bg-red-500 dark:border-red-500" onClick={() => navigate("/", { replace: true })}>
                         Go to home page
                     </button>
-                    <button className="text-4xl font-semibold p-5 text-red-700 dark:text-red-300 rounded-md border-2 bg-red-300 hover:bg-red-400 border-red-400 dark:bg-red-700 hover:dark:bg-red-500 dark:border-red-500" onClick={() => navigate("meets", { replace: true })}>
+                    <button className="text-4xl font-semibold p-5 text-red-700 dark:text-red-300 rounded-md border-2 bg-red-300 hover:bg-red-400 border-red-400 dark:bg-red-700 hover:dark:bg-red-500 dark:border-red-500" onClick={() => navigate("/meets", { replace: true })}>
                         Browse meets
                     </button>
                 </div>

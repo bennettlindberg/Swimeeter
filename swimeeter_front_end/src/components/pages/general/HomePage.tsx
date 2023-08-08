@@ -40,10 +40,10 @@ export function HomePage() {
                     A tool for managing swim meets and generating heat sheets on the fly.
                 </h2>
                 <div className="flex flex-row justify-center gap-x-7">
-                    <button className="text-4xl font-semibold p-5 text-black dark:text-white rounded-md border-2 bg-sky-300 hover:bg-sky-400 border-sky-400 dark:bg-blue-700 hover:dark:bg-blue-500 dark:border-blue-500" onClick={() => navigate("meets")}>
+                    <button className="text-4xl font-semibold p-5 text-black dark:text-white rounded-md border-2 bg-sky-300 hover:bg-sky-400 border-sky-400 dark:bg-blue-700 hover:dark:bg-blue-500 dark:border-blue-500" onClick={() => navigate("/meets")}>
                         Browse swim meets
                     </button>
-                    <button className="text-4xl font-semibold p-5 text-black dark:text-white rounded-md border-2 bg-sky-300 hover:bg-sky-400 border-sky-400 dark:bg-blue-700 hover:dark:bg-blue-500 dark:border-blue-500" onClick={() => navigate("meets/create")}>
+                    <button className="text-4xl font-semibold p-5 text-black dark:text-white rounded-md border-2 bg-sky-300 hover:bg-sky-400 border-sky-400 dark:bg-blue-700 hover:dark:bg-blue-500 dark:border-blue-500" onClick={() => navigate("/meets/create")}>
                         Create a meet
                     </button>
                 </div>

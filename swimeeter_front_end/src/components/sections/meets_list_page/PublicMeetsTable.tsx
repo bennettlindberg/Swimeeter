@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import { Host, Meet } from "../../utilities/types/modelTypes.ts";
+import { Host, Meet } from "../../utilities/models/modelTypes.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";

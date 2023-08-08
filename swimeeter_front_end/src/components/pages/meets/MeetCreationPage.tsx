@@ -29,13 +29,13 @@ export function MeetCreationPage() {
             data: [
                 { title: "HOME", route: "/" },
                 { title: "MEETS", route: "/meets" },
-                { title: "CREATE MEET", route: "/meets/create" }
+                { title: "CREATE A MEET", route: "/meets/create" }
             ]
         })
     }, []);
 
     // * update tab title
-    useEffect(() => setTabTitle("Create Meet | Swimeeter"), []);
+    useEffect(() => setTabTitle("Create a Meet | Swimeeter"), []);
 
     // * create main content section refs
     const createMeetRef = useRef<HTMLHeadingElement>(null);
@@ -46,8 +46,8 @@ export function MeetCreationPage() {
                 title="Create a Meet"
                 primaryContent={[
                     {
-                        heading: "Create a Meet",
-                        icon: "CIRCLE_PLUS",
+                        heading: "Creation Form",
+                        icon: "EDIT_PAGE",
                         ref: createMeetRef,
                         content: (
                             <>

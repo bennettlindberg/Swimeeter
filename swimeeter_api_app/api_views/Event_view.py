@@ -221,7 +221,7 @@ class Event_view(APIView):
                 event.save()
 
         # * get event JSON
-        event_JSON = vh.get_JSON_single("Event", new_event, False)
+        event_JSON = vh.get_JSON_single("Event", new_event, True)
         # ? internal error generating JSON
         if isinstance(event_JSON, Response):
             return event_JSON
@@ -372,7 +372,7 @@ class Event_view(APIView):
                 event.save()
 
         # * get event JSON
-        event_JSON = vh.get_JSON_single("Event", edited_event, False)
+        event_JSON = vh.get_JSON_single("Event", edited_event, True)
         # ? internal error generating JSON
         if isinstance(event_JSON, Response):
             return event_JSON

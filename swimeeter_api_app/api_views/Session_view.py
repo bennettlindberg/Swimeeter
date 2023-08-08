@@ -182,7 +182,7 @@ class Session_view(APIView):
                 meet_of_id.save()
 
         # * get session JSON
-        session_JSON = vh.get_JSON_single("Session", new_session, False)
+        session_JSON = vh.get_JSON_single("Session", new_session, True)
         # ? internal error generating JSON
         if isinstance(session_JSON, Response):
             return session_JSON
@@ -259,7 +259,7 @@ class Session_view(APIView):
             meet_of_id.save()
 
         # * get session JSON
-        session_JSON = vh.get_JSON_single("Session", edited_session, False)
+        session_JSON = vh.get_JSON_single("Session", edited_session, True)
         # ? internal error generating JSON
         if isinstance(session_JSON, Response):
             return session_JSON

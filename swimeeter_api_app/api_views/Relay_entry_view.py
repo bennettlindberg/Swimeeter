@@ -448,7 +448,7 @@ class Relay_entry_view(APIView):
             return invalidate_hs_data
 
         # * get relay_entry JSON
-        new_relay_entry_JSON = vh.get_JSON_single("Relay_entry", new_relay_entry, False)
+        new_relay_entry_JSON = vh.get_JSON_single("Relay_entry", new_relay_entry, True)
         # ? internal error generating JSON
         if isinstance(new_relay_entry_JSON, Response):
             return new_relay_entry_JSON
@@ -621,7 +621,7 @@ class Relay_entry_view(APIView):
 
         # * get relay_entry JSON
         edited_relay_entry_JSON = vh.get_JSON_single(
-            "Relay_entry", edited_relay_entry, False
+            "Relay_entry", edited_relay_entry, True
         )
         # ? internal error generating JSON
         if isinstance(edited_relay_entry_JSON, Response):

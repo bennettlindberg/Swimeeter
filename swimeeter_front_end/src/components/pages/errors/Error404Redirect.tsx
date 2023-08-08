@@ -5,7 +5,7 @@ export function Error404Redirect() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        navigate("errors/404");
+        navigate("/errors/404");
     }, [])
 
     return (

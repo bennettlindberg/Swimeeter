@@ -1,4 +1,5 @@
 import { useEffect, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { DestructiveType, DuplicateType, ErrorType } from "../../utilities/forms/formTypes.ts";
@@ -12,14 +13,13 @@ import { DestructivePane } from "../../utilities/forms/DestructivePane.tsx";
 
 // * define form types
 type FormState = {
-    mode: "view" | "edit"
     error: ErrorType | null,
     duplicate: DuplicateType | null,
     destructive: DestructiveType | null
 }
 
 type FormAction = {
-    type: "EDIT_CLICKED" | "SAVE_SUCCESS" | "CANCEL_CLICKED" | "DISMISS_ERROR" | "DISMISS_DUPLICATE_PANE" | "DISMISS_DESTRUCTIVE_PANE"
+    type: "SAVE_SUCCESS" | "DISMISS_ERROR" | "DISMISS_DUPLICATE_PANE" | "DISMISS_DESTRUCTIVE_PANE"
 } | {
     type: "SAVE_FAILURE",
     error: ErrorType
@@ -34,21 +34,11 @@ type FormAction = {
 // * define form reducer
 function formReducer(state: FormState, action: FormAction) {
     switch (action.type) {
-        case "EDIT_CLICKED":
-            return {
-                error: null,
-                duplicate: null,
-                destructive: null,
-                mode: "edit"
-            } as FormState;
-
         case "SAVE_SUCCESS":
-        case "CANCEL_CLICKED":
             return {
                 error: null,
                 duplicate: null,
                 destructive: null,
-                mode: "view"
             } as FormState;
 
         case "DISMISS_ERROR":
@@ -97,25 +87,19 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function EditingForm({
-    modelData,
-    setModelData,
-    isMeetHost,
+export function CreationForm({
     formInputFields,
     destructiveKeepNewInfo,
     destructiveSubmitInfo,
     duplicateInfo,
     rawDataInit,
     apiRoute,
+    modelPageRoute,
     errorPossibilities,
     idPrefix,
     queryParams,
-    submitText,
-    editText
+    submitText
 }: {
-    modelData: any,
-    setModelData: React.Dispatch<React.SetStateAction<any>>,
-    isMeetHost: boolean,
     formInputFields: {
         title: string
         idSuffix: string,
@@ -130,6 +114,7 @@ export function EditingForm({
     duplicateInfo: DuplicateType,
     rawDataInit: { [key: string]: any },
     apiRoute: string,
+    modelPageRoute: string,
     errorPossibilities: {
         matchString: string,
         error: ErrorType
@@ -137,28 +122,25 @@ export function EditingForm({
     idPrefix: string,
     queryParams: any,
     submitText: string
-    editText: string
 }) {
-    // * initialize state
+    // * initialize state and navigation
     const [formState, formDispatch] = useReducer(formReducer, {
-        mode: "view",
         error: null,
         duplicate: null,
         destructive: null,
     });
+    const navigate = useNavigate();
 
-    // * disable applicable inputs if view only
+    // * disable read-only inputs
     useEffect(() => {
         for (const formInput of formInputFields) {
             const inputElement = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
 
             if (formInput.readOnly) {
                 inputElement.readOnly = true;
-            } else {
-                inputElement.readOnly = formState.mode === "view";
             }
         }
-    }, [formState.mode]);
+    }, []);
 
     // * define form handlers
     function handleDuplicateSelection(duplicate_handling: "keep_new" | "keep_both" | "cancel") {
@@ -244,20 +226,9 @@ export function EditingForm({
             return;
         }
 
-        // * duplicate-sensitive data did not change -> skip duplicate conflict
-        let ignoreDuplicates = true;
-        for (const formInput of formInputFields) {
-            if (formInput.duplicateSensitive && formData[formInput.title] !== modelData["fields"][formInput.title]) {
-                ignoreDuplicates = false;
-            }
-        }
-        if (ignoreDuplicates) {
-            duplicate_handling = "keep_both";
-        }
-
         // @ send new model data to the back-end
         try {
-            const response = await axios.put(
+            const response = await axios.post(
                 apiRoute,
                 formData,
                 {
@@ -268,11 +239,11 @@ export function EditingForm({
                 }
             );
 
-            setModelData(response.data);
-
             formDispatch({
                 type: "SAVE_SUCCESS"
             });
+
+            navigate(`/${modelPageRoute}/${response.data.pk}`);
         } catch (error) {
             // ? back-end error
             if (axios.isAxiosError(error)) {
@@ -321,18 +292,6 @@ export function EditingForm({
         }
     }
 
-    function handleCancel() {
-        formDispatch({
-            type: "CANCEL_CLICKED"
-        })
-    }
-
-    function handleEdit() {
-        formDispatch({
-            type: "EDIT_CLICKED"
-        })
-    }
-
     return (
         <DataForm>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
@@ -341,16 +300,10 @@ export function EditingForm({
 
             {formInputFields.map(formInput => formInput.formGroup)}
 
-            {formState.mode === "edit"
-                ? <div className="flex flex-row flex-wrap gap-x-2">
-                    <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text={submitText} type="submit" handleClick={(event: any) => {
-                        event.preventDefault();
-                        handleSubmit();
-                    }} />
-                    <InputButton idPrefix={idPrefix + "-cancel"} color="red" icon="CIRCLE_CROSS" text="Cancel" type="button" handleClick={handleCancel} />
-                </div>
-                : isMeetHost && <InputButton idPrefix={idPrefix + "-edit"} color="purple" icon="CIRCLE_BOLT" text={editText} type="button" handleClick={handleEdit} />
-            }
+            <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text={submitText} type="submit" handleClick={(event: any) => {
+                event.preventDefault();
+                handleSubmit();
+            }} />
         </DataForm>
     )
 }

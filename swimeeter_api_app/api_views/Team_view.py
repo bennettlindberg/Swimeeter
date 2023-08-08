@@ -154,7 +154,7 @@ class Team_view(APIView):
             )
 
         # * get team JSON
-        team_JSON = vh.get_JSON_single("Team", new_team, False)
+        team_JSON = vh.get_JSON_single("Team", new_team, True)
         # ? internal error generating JSON
         if isinstance(team_JSON, Response):
             return team_JSON
@@ -216,7 +216,7 @@ class Team_view(APIView):
             )
 
         # * get team JSON
-        team_JSON = vh.get_JSON_single("Team", edited_team, False)
+        team_JSON = vh.get_JSON_single("Team", edited_team, True)
         # ? internal error generating JSON
         if isinstance(team_JSON, Response):
             return team_JSON

@@ -341,7 +341,7 @@ class Individual_entry_view(APIView):
 
         # * get individual_entry JSON
         new_individual_entry_JSON = vh.get_JSON_single(
-            "Individual_entry", new_individual_entry, False
+            "Individual_entry", new_individual_entry, True
         )
         # ? internal error generating JSON
         if isinstance(new_individual_entry_JSON, Response):
@@ -416,7 +416,7 @@ class Individual_entry_view(APIView):
 
         # * get individual_entry JSON
         edited_individual_entry_JSON = vh.get_JSON_single(
-            "Individual_entry", edited_individual_entry, False
+            "Individual_entry", edited_individual_entry, True
         )
         # ? internal error generating JSON
         if isinstance(edited_individual_entry_JSON, Response):

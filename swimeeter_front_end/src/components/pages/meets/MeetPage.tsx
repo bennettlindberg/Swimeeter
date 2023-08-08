@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 import { AppContext, NavTreeAction } from "../../../App.tsx";
-import { Meet } from "../../utilities/types/modelTypes.ts";
+import { Meet } from "../../utilities/models/modelTypes.ts";
 
 import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
@@ -97,7 +97,7 @@ export function MeetPage() {
                 setMeetData(response.data);
             } catch (error) {
                 // ? back-end error
-                navigate("errors/unknown");
+                navigate("/errors/unknown");
             }
         }
         retrieveMeetData();
@@ -119,7 +119,7 @@ export function MeetPage() {
                 setIsMeetHost(response.data.has_editing_access);
             } catch (error) {
                 // ? back-end error
-                navigate("errors/unknown");
+                navigate("/errors/unknown");
             }
         }
         checkIfMeetHost();

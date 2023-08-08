@@ -30,13 +30,13 @@ export function FormGroup({ label, field, info }: {
                     />}
 
                 <div className="flex flex-row gap-x-2 items-center">
-                    {label}
                     {userState.preferences.data_entry_information &&
                         <IconButton color="primary" icon="CIRCLE_INFO" handleClick={(event: any) => {
                             event.preventDefault();
                             setInfoShown(!infoShown);
                         }}
                         />}
+                    {label}
                 </div>
 
                 {field}

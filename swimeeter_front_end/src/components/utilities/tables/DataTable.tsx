@@ -134,7 +134,7 @@ export function DataTable({
             }
         } catch (error) {
             // ? back-end error
-            navigate("errors/unknown");
+            navigate("/errors/unknown");
         }
     }
 
@@ -170,7 +170,7 @@ export function DataTable({
                     }
                 } catch {
                     // ? error retrieving search inputs
-                    navigate("errors/unknown");
+                    navigate("/errors/unknown");
                 }
                 break;
             }
@@ -204,7 +204,7 @@ export function DataTable({
                     }
                 } catch {
                     // ? error retrieving search inputs
-                    navigate("errors/unknown");
+                    navigate("/errors/unknown");
                 }
                 break;
             }
@@ -230,7 +230,7 @@ export function DataTable({
                     }
                 } catch {
                     // ? error retrieving search inputs
-                    navigate("errors/unknown");
+                    navigate("/errors/unknown");
                 }
                 break;
             }
@@ -268,7 +268,7 @@ export function DataTable({
                     }
                 } catch {
                     // ? error retrieving search inputs
-                    navigate("errors/unknown");
+                    navigate("/errors/unknown");
                 }
                 break;
             }
@@ -302,7 +302,7 @@ export function DataTable({
                     }
                 } catch {
                     // ? error retrieving search inputs
-                    navigate("errors/unknown");
+                    navigate("/errors/unknown");
                 }
                 break;
             }
@@ -328,7 +328,7 @@ export function DataTable({
                     }
                 } catch {
                     // ? error retrieving search inputs
-                    navigate("errors/unknown");
+                    navigate("/errors/unknown");
                 }
                 break;
             }
@@ -354,7 +354,7 @@ export function DataTable({
                     }
                 } catch {
                     // ? error retrieving search inputs
-                    navigate("errors/unknown");
+                    navigate("/errors/unknown");
                 }
                 break;
             }
@@ -384,7 +384,7 @@ export function DataTable({
                     }
                 } catch {
                     // ? error retrieving search inputs
-                    navigate("errors/unknown");
+                    navigate("/errors/unknown");
                 }
                 break;
             }
@@ -406,7 +406,7 @@ export function DataTable({
                     }
                 } catch {
                     // ? error retrieving search inputs
-                    navigate("errors/unknown");
+                    navigate("/errors/unknown");
                 }
                 break;
             }
@@ -414,7 +414,7 @@ export function DataTable({
             // ! should never occur
             default:
                 // ? error retrieving search inputs
-                navigate("errors/unknown");
+                navigate("/errors/unknown");
         }
     }
 

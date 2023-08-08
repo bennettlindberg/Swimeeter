@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { AppContext, UserState } from "../../../App.tsx";
-import { Meet } from "../../utilities/types/modelTypes.ts";
+import { Meet } from "../../utilities/models/modelTypes.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";

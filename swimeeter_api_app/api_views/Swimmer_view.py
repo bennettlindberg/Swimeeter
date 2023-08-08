@@ -208,7 +208,7 @@ class Swimmer_view(APIView):
             )
 
         # * get swimmer JSON
-        swimmer_JSON = vh.get_JSON_single("Swimmer", new_swimmer, False)
+        swimmer_JSON = vh.get_JSON_single("Swimmer", new_swimmer, True)
         # ? internal error generating JSON
         if isinstance(swimmer_JSON, Response):
             return swimmer_JSON
@@ -315,7 +315,7 @@ class Swimmer_view(APIView):
                 entry.delete()
 
         # * get swimmer JSON
-        swimmer_JSON = vh.get_JSON_single("Swimmer", edited_swimmer, False)
+        swimmer_JSON = vh.get_JSON_single("Swimmer", edited_swimmer, True)
         # ? internal error generating JSON
         if isinstance(swimmer_JSON, Response):
             return swimmer_JSON
