@@ -89,6 +89,19 @@ class Meet_view(APIView):
                 if isinstance(search__name, str):
                     meets_of_host = meets_of_host.filter(name__istartswith=search__name)
 
+                search__is_public = vh.get_query_param(request, "search__is_public")
+                if isinstance(search__is_public, str):
+                    if search__is_public == "true":
+                        search__is_public = True
+                    elif search__is_public == "false":
+                        search__is_public = False
+                    else:
+                        return Response(
+                            "visibility field not true or false",
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                        )
+                    meets_of_host = meets_of_host.filter(is_public=search__is_public)
+
                 # * only retrieve request range of values
                 meets_of_host = meets_of_host[lower_bound:upper_bound]
 
@@ -114,6 +127,14 @@ class Meet_view(APIView):
                 if isinstance(search__name, str):
                     meets_of_all = meets_of_all.filter(name__istartswith=search__name)
 
+                search__host_first_name = vh.get_query_param(request, "search__host_first_name")
+                if isinstance(search__host_first_name, str):
+                    meets_of_all = meets_of_all.filter(host__first_name__istartswith=search__host_first_name)
+
+                search__host_last_name = vh.get_query_param(request, "search__host_last_name")
+                if isinstance(search__host_last_name, str):
+                    meets_of_all = meets_of_all.filter(host__last_name__istartswith=search__host_last_name)
+                
                 # * only retrieve request range of values
                 meets_of_all = meets_of_all[lower_bound:upper_bound]
 

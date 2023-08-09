@@ -83,7 +83,19 @@ class Team_view(APIView):
 
                 teams_of_meet = Team.objects.filter(meet_id=meet_id).order_by(
                     "name", "acronym"
-                )[lower_bound:upper_bound]
+                )
+
+                # @ apply search filtering
+                search__name = vh.get_query_param(request, "search__name")
+                if isinstance(search__name, str):
+                    teams_of_meet = teams_of_meet.filter(name__istartswith=search__name)
+
+                search__acronym = vh.get_query_param(request, "search__acronym")
+                if isinstance(search__acronym, str):
+                    teams_of_meet = teams_of_meet.filter(acronym__istartswith=search__acronym)
+
+                # * only retrieve request range of values
+                teams_of_meet = teams_of_meet[lower_bound:upper_bound]
 
                 # * get teams JSON
                 teams_JSON = vh.get_JSON_multiple("Team", teams_of_meet, True)

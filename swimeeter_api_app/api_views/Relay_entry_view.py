@@ -92,9 +92,15 @@ class Relay_entry_view(APIView):
                     "swimmers__last_name",
                     "swimmers__age",
                     "swimmers__gender",
-                )[
-                    lower_bound:upper_bound
-                ]
+                )
+
+                # @ apply search filtering
+                search__team_names = vh.get_query_param(request, "search__team_names")
+                if isinstance(search__team_names, str):
+                    relay_entries_of_event = relay_entries_of_event.filter(swimmers__first_name__in=search__team_names.split(", "))
+
+                # * only retrieve request range of values
+                relay_entries_of_event = relay_entries_of_event[lower_bound:upper_bound]
 
                 # * get relay_entries JSON
                 relay_entries_JSON = vh.get_JSON_multiple(
@@ -137,9 +143,23 @@ class Relay_entry_view(APIView):
                     "event__distance",
                     "event__competing_min_age",
                     "event__competing_gender",
-                )[
-                    lower_bound:upper_bound
-                ]
+                )
+
+                # @ apply search filtering
+                search__stroke = vh.get_query_param(request, "search__stroke")
+                if isinstance(search__stroke, str):
+                    relay_entries_of_team = relay_entries_of_team.filter(event__stroke__istartswith=search__stroke)
+
+                search__distance = vh.get_query_param(request, "search__distance")
+                if isinstance(search__distance, int):
+                    relay_entries_of_team = relay_entries_of_team.filter(event__distance=search__distance)
+
+                search__team_names = vh.get_query_param(request, "search__team_names")
+                if isinstance(search__team_names, str):
+                    relay_entries_of_team = relay_entries_of_team.filter(swimmers__first_name__in=search__team_names.split(", "))
+
+                # * only retrieve request range of values
+                relay_entries_of_team = relay_entries_of_team[lower_bound:upper_bound]
 
                 # * get relay_entries JSON
                 relay_entries_JSON = vh.get_JSON_multiple(
@@ -195,7 +215,15 @@ class Relay_entry_view(APIView):
 
                 relay_entries_of_heat = Relay_entry.objects.filter(
                     event_id=event_id, heat_number=heat_number
-                ).order_by("lane_number")[lower_bound:upper_bound]
+                ).order_by("lane_number")
+
+                # @ apply search filtering
+                search__team_names = vh.get_query_param(request, "search__team_names")
+                if isinstance(search__team_names, str):
+                    relay_entries_of_heat = relay_entries_of_heat.filter(swimmers__first_name__in=search__team_names.split(", "))
+
+                # * only retrieve request range of values
+                relay_entries_of_heat = relay_entries_of_heat[lower_bound:upper_bound]
 
                 # * get relay_entries JSON
                 relay_entries_JSON = vh.get_JSON_multiple(
@@ -236,7 +264,23 @@ class Relay_entry_view(APIView):
                     "event__distance",
                     "event__competing_min_age",
                     "event__competing_gender",
-                )[lower_bound:upper_bound]
+                )
+
+                # @ apply search filtering
+                search__stroke = vh.get_query_param(request, "search__stroke")
+                if isinstance(search__stroke, str):
+                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(event__stroke__istartswith=search__stroke)
+
+                search__distance = vh.get_query_param(request, "search__distance")
+                if isinstance(search__distance, int):
+                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(event__distance=search__distance)
+
+                search__team_names = vh.get_query_param(request, "search__team_names")
+                if isinstance(search__team_names, str):
+                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(swimmers__first_name__in=search__team_names.split(", "))
+
+                # * only retrieve request range of values
+                relay_entries_of_swimmer = relay_entries_of_swimmer[lower_bound:upper_bound]
 
                 # * get relay_entries JSON
                 relay_entries_JSON = vh.get_JSON_multiple(

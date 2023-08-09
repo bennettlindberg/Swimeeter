@@ -83,7 +83,27 @@ class Pool_view(APIView):
 
                 pools_of_meet = Pool.objects.filter(meet_id=meet_id).order_by(
                     "name", "lanes", "side_length", "measure_unit"
-                )[lower_bound:upper_bound]
+                )
+                
+                # @ apply search filtering
+                search__name = vh.get_query_param(request, "search__name")
+                if isinstance(search__name, str):
+                    pools_of_meet = pools_of_meet.filter(name__istartswith=search__name)
+
+                search__lanes = vh.get_query_param(request, "search__lanes")
+                if isinstance(search__lanes, int):
+                    pools_of_meet = pools_of_meet.filter(lanes=search__lanes)
+
+                search__side_length = vh.get_query_param(request, "search__side_length")
+                if isinstance(search__side_length, int):
+                    pools_of_meet = pools_of_meet.filter(side_length=search__side_length)
+
+                search__measure_unit = vh.get_query_param(request, "search__measure_unit")
+                if isinstance(search__measure_unit, str):
+                    pools_of_meet = pools_of_meet.filter(measure_unit__istartswith=search__measure_unit)
+
+                # * only retrieve request range of values
+                pools_of_meet = pools_of_meet[lower_bound:upper_bound]
 
                 # * get pools JSON
                 pools_JSON = vh.get_JSON_multiple("Pool", pools_of_meet, True)

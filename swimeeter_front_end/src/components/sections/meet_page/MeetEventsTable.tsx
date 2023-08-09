@@ -55,12 +55,7 @@ export function MeetEventsTable() {
                 specific_to: "meet",
                 meet_id: meetData.pk
             }}
-            searchInfo={{
-                title: "EVENT SEARCH",
-                description: "The event search field can be used to search for events by their stroke, distance, competing ages, and competing genders.",
-                permitted_values: "The provided distance, minimum age, and maximum age must be numerical. Otherwise, any search string is allowed."
-            }}
-            searchType="EVENT"
+            searchType="EVENT_OF_MEET"
             tableBarItems={[]}
             tableBarHostItems={[
                 <PageButton color="orange" text="Create an event" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${meetData.pk}/events/create`)} />

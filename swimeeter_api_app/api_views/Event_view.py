@@ -85,7 +85,31 @@ class Event_view(APIView):
 
                 events_of_session = Event.objects.filter(
                     session_id=session_id
-                ).order_by("order_in_session")[lower_bound:upper_bound]
+                ).order_by("order_in_session")
+
+                # @ apply search filtering
+                search__stroke = vh.get_query_param(request, "search__stroke")
+                if isinstance(search__stroke, str):
+                    events_of_session = events_of_session.filter(stroke__istartswith=search__stroke)
+
+                search__distance = vh.get_query_param(request, "search__distance")
+                if isinstance(search__distance, int):
+                    events_of_session = events_of_session.filter(distance=search__distance)
+
+                search__competing_min_age = vh.get_query_param(request, "search__competing_min_age")
+                if isinstance(search__competing_min_age, int):
+                    events_of_session = events_of_session.filter(competing_min_age=search__competing_min_age)
+
+                search__competing_max_age = vh.get_query_param(request, "search__competing_max_age")
+                if isinstance(search__competing_max_age, int):
+                    events_of_session = events_of_session.filter(competing_max_age=search__competing_max_age)
+
+                search__competing_gender = vh.get_query_param(request, "search__competing_gender")
+                if isinstance(search__competing_gender, str):
+                    events_of_session = events_of_session.filter(competing_gender__istartswith=search__competing_gender)
+
+                # * only retrieve request range of values
+                events_of_session = events_of_session[lower_bound:upper_bound]
 
                 # * get events JSON
                 events_JSON = vh.get_JSON_multiple("Event", events_of_session, True)
@@ -121,9 +145,35 @@ class Event_view(APIView):
                     session__meet_id=meet_id
                 ).order_by(
                     "stroke", "distance", "competing_min_age", "competing_gender"
-                )[
-                    lower_bound:upper_bound
-                ]
+                )
+
+                # @ apply search filtering
+                search__stroke = vh.get_query_param(request, "search__stroke")
+                if isinstance(search__stroke, str):
+                    events_of_meet = events_of_meet.filter(stroke__istartswith=search__stroke)
+
+                search__distance = vh.get_query_param(request, "search__distance")
+                if isinstance(search__distance, int):
+                    events_of_meet = events_of_meet.filter(distance=search__distance)
+
+                search__competing_min_age = vh.get_query_param(request, "search__competing_min_age")
+                if isinstance(search__competing_min_age, int):
+                    events_of_meet = events_of_meet.filter(competing_min_age=search__competing_min_age)
+
+                search__competing_max_age = vh.get_query_param(request, "search__competing_max_age")
+                if isinstance(search__competing_max_age, int):
+                    events_of_meet = events_of_meet.filter(competing_max_age=search__competing_max_age)
+
+                search__competing_gender = vh.get_query_param(request, "search__competing_gender")
+                if isinstance(search__competing_gender, str):
+                    events_of_meet = events_of_meet.filter(competing_gender__istartswith=search__competing_gender)
+
+                search__session_name = vh.get_query_param(request, "search__session_name")
+                if isinstance(search__session_name, str):
+                    events_of_meet = events_of_meet.filter(session__name__istartswith=search__session_name)
+
+                # * only retrieve request range of values
+                events_of_meet = events_of_meet[lower_bound:upper_bound]
 
                 # * get events JSON
                 events_JSON = vh.get_JSON_multiple("Event", events_of_meet, True)

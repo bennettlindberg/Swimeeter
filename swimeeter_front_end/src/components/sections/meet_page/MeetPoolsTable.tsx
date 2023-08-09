@@ -38,12 +38,7 @@ export function MeetPoolsTable() {
                 specific_to: "meet",
                 meet_id: meetData.pk
             }}
-            searchInfo={{
-                title: "POOL SEARCH",
-                description: "The pool search field can be used to search for pools by their name, number of lanes, side length, and measuring unit.",
-                permitted_values: "The provided number of lanes and pool side length must be numerical. Otherwise, any search string is allowed."
-            }}
-            searchType="POOL"
+            searchType="POOL_OF_MEET"
             tableBarItems={[]}
             tableBarHostItems={[
                 <PageButton color="orange" text="Create a pool" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${meetData.pk}/pools/create`)} />

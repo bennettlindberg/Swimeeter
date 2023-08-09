@@ -36,12 +36,7 @@ export function MeetTeamsTable() {
                 specific_to: "meet",
                 meet_id: meetData.pk
             }}
-            searchInfo={{
-                title: "TEAM SEARCH",
-                description: "The team search field can be used to search for teams by their name and acronym.",
-                permitted_values: "Any search string is allowed."
-            }}
-            searchType="TEAM"
+            searchType="TEAM_OF_MEET"
             tableBarItems={[]}
             tableBarHostItems={[
                 <PageButton color="orange" text="Create a team" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${meetData.pk}/teams/create`)} />

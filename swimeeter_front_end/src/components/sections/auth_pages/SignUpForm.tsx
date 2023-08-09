@@ -414,7 +414,7 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                 info={{
                     title: "PREFIX",
                     description: "The prefix field should contain any special prefixes included in the account owner's name.",
-                    common_values: "\"St.\", \"Sir\". This field is not intended for \"Mr.\", \"Mrs.\", and \"Ms.\" prefixes.",
+                    common_values: "\"St.\", \"Sir.\" This field is not intended for \"Mr.\", \"Mrs.\", and \"Ms.\" prefixes.",
                     permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
                 }}
             />

@@ -83,7 +83,15 @@ class Session_view(APIView):
 
                 sessions_of_meet = Session.objects.filter(meet_id=meet_id).order_by(
                     "begin_time", "end_time", "name"
-                )[lower_bound:upper_bound]
+                )
+
+                # @ apply search filtering
+                search__name = vh.get_query_param(request, "search__name")
+                if isinstance(search__name, str):
+                    sessions_of_meet = sessions_of_meet.filter(name__istartswith=search__name)
+
+                # * only retrieve request range of values
+                sessions_of_meet = sessions_of_meet[lower_bound:upper_bound]
 
                 # * get sessions JSON
                 sessions_JSON = vh.get_JSON_multiple("Session", sessions_of_meet, True)

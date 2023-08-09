@@ -38,12 +38,7 @@ export function MeetSessionsTable() {
                 specific_to: "meet",
                 meet_id: meetData.pk
             }}
-            searchInfo={{
-                title: "SESSION SEARCH",
-                description: "The session search field can be used to search for session by their name.",
-                permitted_values: "Any search string is allowed."
-            }}
-            searchType="SESSION"
+            searchType="SESSION_OF_MEET"
             tableBarItems={[]}
             tableBarHostItems={[
                 <PageButton color="orange" text="Create a session" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${meetData.pk}/sessions/create`)} />

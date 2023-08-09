@@ -83,7 +83,35 @@ class Swimmer_view(APIView):
 
                 swimmers_of_meet = Swimmer.objects.filter(meet_id=meet_id).order_by(
                     "last_name", "first_name", "age", "gender"
-                )[lower_bound:upper_bound]
+                )
+
+                # @ apply search filtering
+                search__first_name = vh.get_query_param(request, "search__first_name")
+                if isinstance(search__first_name, str):
+                    swimmers_of_meet = swimmers_of_meet.filter(first_name__istartswith=search__first_name)
+
+                search__last_name = vh.get_query_param(request, "search__last_name")
+                if isinstance(search__last_name, str):
+                    swimmers_of_meet = swimmers_of_meet.filter(last_name__istartswith=search__last_name)
+
+                search__age = vh.get_query_param(request, "search__age")
+                if isinstance(search__age, int):
+                    swimmers_of_meet = swimmers_of_meet.filter(age=search__age)
+
+                search__gender = vh.get_query_param(request, "search__gender")
+                if isinstance(search__gender, str):
+                    swimmers_of_meet = swimmers_of_meet.filter(gender__istartswith=search__gender)
+
+                search__team_name = vh.get_query_param(request, "search__team_name")
+                if isinstance(search__team_name, str):
+                    swimmers_of_meet = swimmers_of_meet.filter(team__name__istartswith=search__team_name)
+
+                search__team_acronym = vh.get_query_param(request, "search__team_acronym")
+                if isinstance(search__team_acronym, str):
+                    swimmers_of_meet = swimmers_of_meet.filter(team__acronym__istartswith=search__team_acronym)
+
+                # * only retrieve request range of values
+                swimmers_of_meet = swimmers_of_meet[lower_bound:upper_bound]
 
                 # * get swimmers JSON
                 swimmers_JSON = vh.get_JSON_multiple("Swimmer", swimmers_of_meet, True)
@@ -119,7 +147,27 @@ class Swimmer_view(APIView):
 
                 swimmers_of_team = Swimmer.objects.filter(team_id=team_id).order_by(
                     "last_name", "first_name", "age", "gender"
-                )[lower_bound:upper_bound]
+                )
+
+                # @ apply search filtering
+                search__first_name = vh.get_query_param(request, "search__first_name")
+                if isinstance(search__first_name, str):
+                    swimmers_of_team = swimmers_of_team.filter(first_name__istartswith=search__first_name)
+
+                search__last_name = vh.get_query_param(request, "search__last_name")
+                if isinstance(search__last_name, str):
+                    swimmers_of_team = swimmers_of_team.filter(last_name__istartswith=search__last_name)
+
+                search__age = vh.get_query_param(request, "search__age")
+                if isinstance(search__age, int):
+                    swimmers_of_team = swimmers_of_team.filter(age=search__age)
+
+                search__gender = vh.get_query_param(request, "search__gender")
+                if isinstance(search__gender, str):
+                    swimmers_of_team = swimmers_of_team.filter(gender__istartswith=search__gender)
+
+                # * only retrieve request range of values
+                swimmers_of_team = swimmers_of_team[lower_bound:upper_bound]
 
                 # * get swimmers JSON
                 swimmers_JSON = vh.get_JSON_multiple("Swimmer", swimmers_of_team, True)

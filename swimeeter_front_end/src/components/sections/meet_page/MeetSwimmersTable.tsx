@@ -60,12 +60,7 @@ export function MeetSwimmersTable() {
                 specific_to: "meet",
                 meet_id: meetData.pk
             }}
-            searchInfo={{
-                title: "SWIMMER SEARCH",
-                description: "The swimmer search field can be used to search for swimmers by their first name, last name, age, and gender.",
-                permitted_values: "The provided age must be numerical. Otherwise, any search string is allowed."
-            }}
-            searchType="SWIMMER"
+            searchType="SWIMMER_OF_MEET"
             tableBarItems={[]}
             tableBarHostItems={[
                 <PageButton color="orange" text="Create a swimmer" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${meetData.pk}/swimmers/create`)} />

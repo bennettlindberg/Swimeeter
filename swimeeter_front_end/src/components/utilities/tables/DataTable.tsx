@@ -6,16 +6,13 @@ import { TableGrid } from "../../utilities/tables/TableGrid.tsx";
 import { TableHeader } from "../../utilities/tables/TableHeader.tsx";
 
 import { PageButton } from "../../utilities/general/PageButton.tsx";
-import { InfoPane } from "../../utilities/forms/InfoPane.tsx";
-import { IconButton } from "../../utilities/general/IconButton.tsx";
-import { SearchField } from "./SearchField.tsx";
+import { FilterForm } from "./FilterForm.tsx";
 import { MainContentText } from "../../utilities/main_content/MainContentText.tsx";
-import { InfoType } from "../forms/formTypes.ts";
 
 type TableState = {
     nextToLoad: number,
     loadedAllData: boolean,
-    searchEntry: {[key: string]: any},
+    searchEntry: { [key: string]: any },
     data: any[]
 }
 
@@ -61,7 +58,6 @@ function tableReducer(state: TableState, action: TableAction) {
 export function DataTable({
     apiRoute,
     queryParams,
-    searchInfo,
     searchType,
     tableBarItems,
     tableBarHostItems,
@@ -73,10 +69,24 @@ export function DataTable({
 }: {
     apiRoute: string,
     queryParams: Object,
-    searchInfo: InfoType,
-    searchType: "MEET" | "SESSION" | "POOL" | "TEAM" | "EVENT" | "SWIMMER"
-    | "INDIVIDUAL_ENTRY_OF_SWIMMER" | "INDIVIDUAL_ENTRY_OF_EVENT"
-    | "RELAY_ENTRY_OF_SWIMMER" | "RELAY_ENTRY_OF_EVENT"
+    searchType:
+    "MEET_OF_ALL"
+    | "MEET_OF_HOST"
+    | "SESSION_OF_MEET"
+    | "POOL_OF_MEET"
+    | "TEAM_OF_MEET"
+    | "EVENT_OF_MEET"
+    | "EVENT_OF_SESSION"
+    | "SWIMMER_OF_MEET"
+    | "SWIMMER_OF_TEAM"
+    | "INDIVIDUAL_ENTRY_OF_EVENT"
+    | "INDIVIDUAL_ENTRY_OF_SWIMMER"
+    | "INDIVIDUAL_ENTRY_OF_HEAT"
+    | "INDIVIDUAL_ENTRY_OF_TEAM"
+    | "RELAY_ENTRY_OF_EVENT"
+    | "RELAY_ENTRY_OF_SWIMMER"
+    | "RELAY_ENTRY_OF_HEAT"
+    | "RELAY_ENTRY_OF_TEAM"
     tableBarItems: JSX.Element[],
     tableBarHostItems: JSX.Element[],
     tableCols: JSX.Element[],
@@ -91,7 +101,6 @@ export function DataTable({
 
     // * initialize state
     const [tableShown, setTableShown] = useState<boolean>(true);
-    const [searchInfoShown, setSearchInfoShown] = useState<boolean>(false);
     const [tableState, tableDispatch] = useReducer(tableReducer, {
         nextToLoad: 0,
         loadedAllData: false,
@@ -139,7 +148,7 @@ export function DataTable({
     }
 
     // * define new search validator
-    function validateNewSearch(newSearchEntry: {[key: string]: any}, oldSearchEntry: {[key: string]: any}) {
+    function validateNewSearch(newSearchEntry: { [key: string]: any }, oldSearchEntry: { [key: string]: any }) {
         for (const key in newSearchEntry) {
             const old = oldSearchEntry[key];
             if (old === undefined || old !== newSearchEntry[key]) {
@@ -152,14 +161,21 @@ export function DataTable({
     // * define search submit handler
     function handleSearchSubmit() {
         switch (searchType) {
-            case "MEET":
-            case "SESSION": {
+            case "MEET_OF_ALL": {
                 try {
-                    const nameField = document.getElementById(idPrefix + "-name-search-field") as HTMLInputElement;
-                    const nameValue = nameField.value;
+                    const meetNameField = document.getElementById(idPrefix + "-meet_name-search-text-field") as HTMLInputElement;
+                    const meetNameValue = meetNameField.value;
+
+                    const hostFirstNameField = document.getElementById(idPrefix + "-host_first_name-search-text-field") as HTMLInputElement;
+                    const hostFirstNameValue = hostFirstNameField.value;
+
+                    const hostLastNameField = document.getElementById(idPrefix + "-host_last_name-search-text-field") as HTMLInputElement;
+                    const hostLastNameValue = hostLastNameField.value;
 
                     const newSearchEntry = {
-                        search__name: nameValue
+                        search__name: meetNameValue || undefined,
+                        search__host_first_name: hostFirstNameValue || undefined,
+                        search__host_last_name: hostLastNameValue || undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -175,25 +191,17 @@ export function DataTable({
                 break;
             }
 
-            case "POOL": {
+            case "MEET_OF_HOST": {
                 try {
-                    const nameField = document.getElementById(idPrefix + "-name-search-field") as HTMLInputElement;
-                    const nameValue = nameField.value;
+                    const meetNameField = document.getElementById(idPrefix + "-meet_name-search-text-field") as HTMLInputElement;
+                    const meetNameValue = meetNameField.value;
 
-                    const lanesField = document.getElementById(idPrefix + "-lanes-search-field") as HTMLInputElement;
-                    const lanesValue = parseInt(lanesField.value);
-
-                    const lengthField = document.getElementById(idPrefix + "-length-search-field") as HTMLInputElement;
-                    const lengthValue = parseInt(lengthField.value);
-
-                    const unitsField = document.getElementById(idPrefix + "-units-search-field") as HTMLInputElement;
-                    const unitsValue = unitsField.value;
+                    const visibilityField = document.getElementById(idPrefix + "-visibility-search-text-field") as HTMLInputElement;
+                    const visibilityValue = visibilityField.value;
 
                     const newSearchEntry = {
-                        search__name: nameValue,
-                        search__lanes: lanesValue,
-                        search__side_length: lengthValue,
-                        search__measure_unit: unitsValue
+                        search__name: meetNameValue || undefined,
+                        search__is_public: visibilityValue === "Public" ? true : visibilityValue === "Private" ? false : undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -209,17 +217,13 @@ export function DataTable({
                 break;
             }
 
-            case "TEAM": {
+            case "SESSION_OF_MEET": {
                 try {
-                    const nameField = document.getElementById(idPrefix + "-name-search-field") as HTMLInputElement;
-                    const nameValue = nameField.value;
-
-                    const acronymField = document.getElementById(idPrefix + "-acronym-search-field") as HTMLInputElement;
-                    const acronymValue = acronymField.value;
+                    const sessionNameField = document.getElementById(idPrefix + "-session_name-search-text-field") as HTMLInputElement;
+                    const sessionNameValue = sessionNameField.value;
 
                     const newSearchEntry = {
-                        search__name: nameValue,
-                        search__acronym: acronymValue
+                        search__name: sessionNameValue || undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -235,29 +239,132 @@ export function DataTable({
                 break;
             }
 
-            case "EVENT": {
+            case "POOL_OF_MEET": {
                 try {
-                    const strokeField = document.getElementById(idPrefix + "-stroke-search-field") as HTMLInputElement;
+                    const poolNameField = document.getElementById(idPrefix + "-pool_name-search-text-field") as HTMLInputElement;
+                    const poolNameValue = poolNameField.value;
+
+                    const numberOfLanesField = document.getElementById(idPrefix + "-number_of_lanes-search-text-field") as HTMLInputElement;
+                    const numberOfLanesValue = parseInt(numberOfLanesField.value || "-1");
+
+                    const sideLengthField = document.getElementById(idPrefix + "-side_length-search-text-field") as HTMLInputElement;
+                    const sideLengthValue = parseInt(sideLengthField.value || "-1");
+
+                    const measureUnitsField = document.getElementById(idPrefix + "-measure_unit-search-text-field") as HTMLInputElement;
+                    const measureUnitsValue = measureUnitsField.value;
+
+                    const newSearchEntry = {
+                        search__name: poolNameValue || undefined,
+                        search__lanes: numberOfLanesValue === -1 ? undefined : numberOfLanesValue,
+                        search__side_length: sideLengthValue === -1 ? undefined : sideLengthValue,
+                        search__measure_unit: measureUnitsValue || undefined
+                    }
+
+                    if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
+                        tableDispatch({
+                            type: "NEW_SEARCH_ENTRY",
+                            searchEntry: newSearchEntry
+                        });
+                    }
+                } catch {
+                    // ? error retrieving search inputs
+                    navigate("/errors/unknown");
+                }
+                break;
+            }
+
+            case "TEAM_OF_MEET": {
+                try {
+                    const teamNameField = document.getElementById(idPrefix + "-team_name-search-text-field") as HTMLInputElement;
+                    const teamNameValue = teamNameField.value;
+
+                    const teamAcronymField = document.getElementById(idPrefix + "-team_acronym-search-text-field") as HTMLInputElement;
+                    const teamAcronymValue = teamAcronymField.value;
+
+                    const newSearchEntry = {
+                        search__name: teamNameValue || undefined,
+                        search__acronym: teamAcronymValue || undefined
+                    }
+
+                    if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
+                        tableDispatch({
+                            type: "NEW_SEARCH_ENTRY",
+                            searchEntry: newSearchEntry
+                        });
+                    }
+                } catch {
+                    // ? error retrieving search inputs
+                    navigate("/errors/unknown");
+                }
+                break;
+            }
+
+            case "INDIVIDUAL_ENTRY_OF_SWIMMER":
+            case "EVENT_OF_MEET": {
+                try {
+                    const strokeField = document.getElementById(idPrefix + "-stroke-search-text-field") as HTMLInputElement;
                     const strokeValue = strokeField.value;
 
-                    const distanceField = document.getElementById(idPrefix + "-distance-search-field") as HTMLInputElement;
-                    const distanceValue = parseInt(distanceField.value);
+                    const distanceField = document.getElementById(idPrefix + "-distance-search-text-field") as HTMLInputElement;
+                    const distanceValue = parseInt(distanceField.value || "-1");
 
-                    const minAgeField = document.getElementById(idPrefix + "-min_age-search-field") as HTMLInputElement;
-                    const minAgeValue = parseInt(minAgeField.value);
+                    const minAgeField = document.getElementById(idPrefix + "-minimum_age-search-text-field") as HTMLInputElement;
+                    const minAgeValue = parseInt(minAgeField.value || "-1");
 
-                    const maxAgeField = document.getElementById(idPrefix + "-max_age-search-field") as HTMLInputElement;
-                    const maxAgeValue = parseInt(maxAgeField.value);
+                    const maxAgeField = document.getElementById(idPrefix + "-maximum_age-search-text-field") as HTMLInputElement;
+                    const maxAgeValue = parseInt(maxAgeField.value || "-1");
 
-                    const genderField = document.getElementById(idPrefix + "-gender-search-field") as HTMLInputElement;
+                    const genderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
+                    const genderValue = genderField.value;
+
+                    const sessionNameField = document.getElementById(idPrefix + "-session_name-search-text-field") as HTMLInputElement;
+                    const sessionNameValue = sessionNameField.value;
+
+                    const newSearchEntry = {
+                        search__stroke: strokeValue || undefined,
+                        search__distance: distanceValue === -1 ? undefined : distanceValue,
+                        search__competing_min_age: minAgeValue === -1 ? undefined : minAgeValue,
+                        search__competing_max_age: maxAgeValue === -1 ? undefined : maxAgeValue,
+                        search__competing_gender: genderValue || undefined,
+                        search__session_name: sessionNameValue || undefined
+                    }
+
+                    if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
+                        tableDispatch({
+                            type: "NEW_SEARCH_ENTRY",
+                            searchEntry: newSearchEntry
+                        });
+                    }
+                } catch {
+                    // ? error retrieving search inputs
+                    navigate("/errors/unknown");
+                }
+                break;
+            }
+
+            case "EVENT_OF_SESSION": {
+                try {
+                    const strokeField = document.getElementById(idPrefix + "-stroke-search-text-field") as HTMLInputElement;
+                    const strokeValue = strokeField.value;
+
+                    const distanceField = document.getElementById(idPrefix + "-distance-search-text-field") as HTMLInputElement;
+                    const distanceValue = parseInt(distanceField.value || "-1");
+
+                    const minAgeField = document.getElementById(idPrefix + "-minimum_age-search-text-field") as HTMLInputElement;
+                    const minAgeValue = parseInt(minAgeField.value || "-1");
+
+                    const maxAgeField = document.getElementById(idPrefix + "-maximum_age-search-text-field") as HTMLInputElement;
+                    const maxAgeValue = parseInt(maxAgeField.value || "-1");
+
+                    const genderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
                     const genderValue = genderField.value;
 
                     const newSearchEntry = {
-                        search__stroke: strokeValue,
-                        search__distance: distanceValue,
-                        search__competing_min_age: minAgeValue,
-                        search__competing_max_age: maxAgeValue,
-                        search__competing_gender: genderValue
+                        search__stroke: strokeValue || undefined,
+                        search__distance: distanceValue === -1 ? undefined : distanceValue,
+                        search__competing_min_age: minAgeValue === -1 ? undefined : minAgeValue,
+                        search__competing_max_age: maxAgeValue === -1 ? undefined : maxAgeValue,
+                        search__competing_gender: genderValue || undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -273,25 +380,69 @@ export function DataTable({
                 break;
             }
 
-            case "SWIMMER": {
+            case "INDIVIDUAL_ENTRY_OF_HEAT":
+            case "INDIVIDUAL_ENTRY_OF_EVENT":
+            case "SWIMMER_OF_MEET": {
                 try {
-                    const firstNameField = document.getElementById(idPrefix + "-first_name-search-field") as HTMLInputElement;
-                    const firstNameValue = firstNameField.value;
+                    const swimmerFirstNameField = document.getElementById(idPrefix + "-swimmer_first_name-search-text-field") as HTMLInputElement;
+                    const swimmerFirstNameValue = swimmerFirstNameField.value;
 
-                    const lastNameField = document.getElementById(idPrefix + "-last_name-search-field") as HTMLInputElement;
-                    const lastNameValue = lastNameField.value;
+                    const swimmerLastNameField = document.getElementById(idPrefix + "-swimmer_last_name-search-text-field") as HTMLInputElement;
+                    const swimmerLastNameValue = swimmerLastNameField.value;
 
-                    const ageField = document.getElementById(idPrefix + "-age-search-field") as HTMLInputElement;
-                    const ageValue = parseInt(ageField.value);
+                    const ageField = document.getElementById(idPrefix + "-age-search-text-field") as HTMLInputElement;
+                    const ageValue = parseInt(ageField.value || "-1");
 
-                    const genderField = document.getElementById(idPrefix + "-gender-search-field") as HTMLInputElement;
+                    const genderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
+                    const genderValue = genderField.value;
+
+                    const teamNameField = document.getElementById(idPrefix + "-team_name-search-text-field") as HTMLInputElement;
+                    const teamNameValue = teamNameField.value;
+
+                    const teamAcronymField = document.getElementById(idPrefix + "-team_acronym-search-text-field") as HTMLInputElement;
+                    const teamAcronymValue = teamAcronymField.value;
+
+                    const newSearchEntry = {
+                        search__first_name: swimmerFirstNameValue || undefined,
+                        search__last_name: swimmerLastNameValue || undefined,
+                        search__age: ageValue === -1 ? undefined : ageValue,
+                        search__gender: genderValue || undefined,
+                        search__team_name: teamNameValue || undefined,
+                        search__team_acronym: teamAcronymValue || undefined
+                    }
+
+                    if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
+                        tableDispatch({
+                            type: "NEW_SEARCH_ENTRY",
+                            searchEntry: newSearchEntry
+                        });
+                    }
+                } catch {
+                    // ? error retrieving search inputs
+                    navigate("/errors/unknown");
+                }
+                break;
+            }
+
+            case "SWIMMER_OF_TEAM": {
+                try {
+                    const swimmerFirstNameField = document.getElementById(idPrefix + "-swimmer_first_name-search-text-field") as HTMLInputElement;
+                    const swimmerFirstNameValue = swimmerFirstNameField.value;
+
+                    const swimmerLastNameField = document.getElementById(idPrefix + "-swimmer_last_name-search-text-field") as HTMLInputElement;
+                    const swimmerLastNameValue = swimmerLastNameField.value;
+
+                    const ageField = document.getElementById(idPrefix + "-age-search-text-field") as HTMLInputElement;
+                    const ageValue = parseInt(ageField.value || "-1");
+
+                    const genderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
                     const genderValue = genderField.value;
 
                     const newSearchEntry = {
-                        search__first_name: firstNameValue,
-                        search__last_name: lastNameValue,
-                        search__age: ageValue,
-                        search__gender: genderValue
+                        search__first_name: swimmerFirstNameValue || undefined,
+                        search__last_name: swimmerLastNameValue || undefined,
+                        search__age: ageValue === -1 ? undefined : ageValue,
+                        search__gender: genderValue || undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -307,17 +458,49 @@ export function DataTable({
                 break;
             }
 
-            case "INDIVIDUAL_ENTRY_OF_SWIMMER": {
+            case "INDIVIDUAL_ENTRY_OF_TEAM": {
                 try {
-                    const strokeField = document.getElementById(idPrefix + "-stroke-search-field") as HTMLInputElement;
-                    const strokeValue = strokeField.value;
+                    const eventStrokeField = document.getElementById(idPrefix + "-stroke-search-text-field") as HTMLInputElement;
+                    const eventStrokeValue = eventStrokeField.value;
 
-                    const distanceField = document.getElementById(idPrefix + "-distance-search-field") as HTMLInputElement;
-                    const distanceValue = parseInt(distanceField.value);
+                    const eventDistanceField = document.getElementById(idPrefix + "-distance-search-text-field") as HTMLInputElement;
+                    const eventDistanceValue = parseInt(eventDistanceField.value || "-1");
+
+                    const eventMinAgeField = document.getElementById(idPrefix + "-minimum_age-search-text-field") as HTMLInputElement;
+                    const eventMinAgeValue = parseInt(eventMinAgeField.value || "-1");
+
+                    const eventMaxAgeField = document.getElementById(idPrefix + "-maximum_age-search-text-field") as HTMLInputElement;
+                    const eventMaxAgeValue = parseInt(eventMaxAgeField.value || "-1");
+
+                    const eventGenderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
+                    const eventGenderValue = eventGenderField.value;
+
+                    const eventSessionNameField = document.getElementById(idPrefix + "-session_name-search-text-field") as HTMLInputElement;
+                    const eventSessionNameValue = eventSessionNameField.value;
+
+                    const swimmerFirstNameField = document.getElementById(idPrefix + "-swimmer_first_name-search-text-field") as HTMLInputElement;
+                    const swimmerFirstNameValue = swimmerFirstNameField.value;
+
+                    const swimmerLastNameField = document.getElementById(idPrefix + "-swimmer_last_name-search-text-field") as HTMLInputElement;
+                    const swimmerLastNameValue = swimmerLastNameField.value;
+
+                    const swimmerAgeField = document.getElementById(idPrefix + "-age-search-text-field") as HTMLInputElement;
+                    const swimmerAgeValue = parseInt(swimmerAgeField.value || "-1");
+
+                    const swimmerGenderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
+                    const swimmerGenderValue = swimmerGenderField.value;
 
                     const newSearchEntry = {
-                        search__stroke: strokeValue,
-                        search__distance: distanceValue
+                        search__event_stroke: eventStrokeValue || undefined,
+                        search__event_distance: eventDistanceValue === -1 ? undefined : eventDistanceValue,
+                        search__event_competing_min_age: eventMinAgeValue === -1 ? undefined : eventMinAgeValue,
+                        search__event_competing_max_age: eventMaxAgeValue === -1 ? undefined : eventMaxAgeValue,
+                        search__event_competing_gender: eventGenderValue || undefined,
+                        search__event_session_name: eventSessionNameValue || undefined,
+                        search__swimmer_first_name: swimmerFirstNameValue || undefined,
+                        search__swimmer_last_name: swimmerLastNameValue || undefined,
+                        search__swimmer_age: swimmerAgeValue === -1 ? undefined : swimmerAgeValue,
+                        search__swimmer_gender: swimmerGenderValue || undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -333,47 +516,38 @@ export function DataTable({
                 break;
             }
 
-            case "INDIVIDUAL_ENTRY_OF_EVENT": {
-                try {
-                    const firstNameField = document.getElementById(idPrefix + "-first_name-search-field") as HTMLInputElement;
-                    const firstNameValue = firstNameField.value;
-
-                    const lastNameField = document.getElementById(idPrefix + "-last_name-search-field") as HTMLInputElement;
-                    const lastNameValue = lastNameField.value;
-
-                    const newSearchEntry = {
-                        search__first_name: firstNameValue,
-                        search__last_name: lastNameValue
-                    }
-
-                    if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
-                        tableDispatch({
-                            type: "NEW_SEARCH_ENTRY",
-                            searchEntry: newSearchEntry
-                        });
-                    }
-                } catch {
-                    // ? error retrieving search inputs
-                    navigate("/errors/unknown");
-                }
-                break;
-            }
-
+            case "RELAY_ENTRY_OF_TEAM":
             case "RELAY_ENTRY_OF_SWIMMER": {
                 try {
-                    const strokeField = document.getElementById(idPrefix + "-stroke-search-field") as HTMLInputElement;
+                    const strokeField = document.getElementById(idPrefix + "-stroke-search-text-field") as HTMLInputElement;
                     const strokeValue = strokeField.value;
 
-                    const distanceField = document.getElementById(idPrefix + "-distance-search-field") as HTMLInputElement;
-                    const distanceValue = parseInt(distanceField.value);
+                    const distanceField = document.getElementById(idPrefix + "-distance-search-text-field") as HTMLInputElement;
+                    const distanceValue = parseInt(distanceField.value || "-1");
 
-                    const teamNamesField = document.getElementById(idPrefix + "-team_names-search-field") as HTMLInputElement;
-                    const teamNamesValue = teamNamesField.value;
+                    const minAgeField = document.getElementById(idPrefix + "-minimum_age-search-text-field") as HTMLInputElement;
+                    const minAgeValue = parseInt(minAgeField.value || "-1");
+
+                    const maxAgeField = document.getElementById(idPrefix + "-maximum_age-search-text-field") as HTMLInputElement;
+                    const maxAgeValue = parseInt(maxAgeField.value || "-1");
+
+                    const genderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
+                    const genderValue = genderField.value;
+
+                    const sessionNameField = document.getElementById(idPrefix + "-session_name-search-text-field") as HTMLInputElement;
+                    const sessionNameValue = sessionNameField.value;
+
+                    const participantNamesField = document.getElementById(idPrefix + "-participant_first_names-search-text-field") as HTMLInputElement;
+                    const participantNamesValue = participantNamesField.value;
 
                     const newSearchEntry = {
-                        search__stroke: strokeValue,
-                        search__distance: distanceValue,
-                        search__team_names: teamNamesValue
+                        search__stroke: strokeValue || undefined,
+                        search__distance: distanceValue === -1 ? undefined : distanceValue,
+                        search__competing_min_age: minAgeValue === -1 ? undefined : minAgeValue,
+                        search__competing_max_age: maxAgeValue === -1 ? undefined : maxAgeValue,
+                        search__competing_gender: genderValue || undefined,
+                        search__session_name: sessionNameValue || undefined,
+                        search__participant_names: participantNamesValue || undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -389,13 +563,14 @@ export function DataTable({
                 break;
             }
 
+            case "RELAY_ENTRY_OF_HEAT":
             case "RELAY_ENTRY_OF_EVENT": {
                 try {
-                    const teamNamesField = document.getElementById(idPrefix + "-team_names-search-field") as HTMLInputElement;
-                    const teamNamesValue = teamNamesField.value;
+                    const participantNamesField = document.getElementById(idPrefix + "-participant_first_names-search-text-field") as HTMLInputElement;
+                    const participantNamesValue = participantNamesField.value;
 
                     const newSearchEntry = {
-                        search__team_names: teamNamesValue
+                        search__participant_names: participantNamesValue || undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -413,7 +588,7 @@ export function DataTable({
 
             // ! should never occur
             default:
-                // ? error retrieving search inputs
+                // ? invalid search type specification
                 navigate("/errors/unknown");
         }
     }
@@ -426,10 +601,8 @@ export function DataTable({
     return (
         <>
             <div className="flex flex-col gap-y-2">
-                {searchInfoShown && <InfoPane info={searchInfo} handleXClick={() => setSearchInfoShown(false)} />}
                 <div className="flex flex-row gap-x-2 items-end">
-                    <SearchField type={searchType} idPrefix={idPrefix} handleSearch={handleSearchSubmit} />
-                    <IconButton color="primary" icon="CIRCLE_INFO" handleClick={() => setSearchInfoShown(!searchInfoShown)} />
+                    <FilterForm type={searchType} idPrefix={idPrefix} handleSearch={handleSearchSubmit} />
                     <div className="flex-auto"></div>
                     {tableBarItems}
                     {isMeetHost && tableBarHostItems}

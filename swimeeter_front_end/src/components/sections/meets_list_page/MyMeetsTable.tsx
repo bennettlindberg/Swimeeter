@@ -33,11 +33,7 @@ export function MyMeetsTable() {
                 specific_to: "host",
                 host_id: userState.profile?.id
             }}
-            searchInfo={{
-                title: "MEET SEARCH",
-                description: "The meet search field can be used to search for meets by their name. Type a name into the search field and click the search button to filter the meets listed in the table below."
-            }}
-            searchType="MEET"
+            searchType="MEET_OF_HOST"
             tableBarItems={[
                 <PageButton color="orange" text="Create a meet" icon="CIRCLE_PLUS" handleClick={() => navigate("/meets/create")} />
             ]}
