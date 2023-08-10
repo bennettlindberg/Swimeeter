@@ -91,11 +91,13 @@ class Pool_view(APIView):
                     pools_of_meet = pools_of_meet.filter(name__istartswith=search__name)
 
                 search__lanes = vh.get_query_param(request, "search__lanes")
-                if isinstance(search__lanes, int):
+                if isinstance(search__lanes, str):
+                    search__lanes = int(search__lanes)
                     pools_of_meet = pools_of_meet.filter(lanes=search__lanes)
 
                 search__side_length = vh.get_query_param(request, "search__side_length")
-                if isinstance(search__side_length, int):
+                if isinstance(search__side_length, str):
+                    search__side_length = int(search__side_length)
                     pools_of_meet = pools_of_meet.filter(side_length=search__side_length)
 
                 search__measure_unit = vh.get_query_param(request, "search__measure_unit")

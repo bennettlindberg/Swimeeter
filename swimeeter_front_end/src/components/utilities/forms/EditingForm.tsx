@@ -1,7 +1,7 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import axios from "axios";
 
-import { DestructiveType, DuplicateType, ErrorType } from "../../utilities/forms/formTypes.ts";
+import { DestructiveType, DuplicateType, ErrorType, InfoType } from "../../utilities/forms/formTypes.ts";
 
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
 
@@ -9,6 +9,7 @@ import { DataForm } from "../../utilities/forms/DataForm.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
 import { DuplicatePane } from "../../utilities/forms/DuplicatePane.tsx";
 import { DestructivePane } from "../../utilities/forms/DestructivePane.tsx";
+import { ModelSelectGenerator } from "./ModelSelectGenerator.tsx";
 
 // * define form types
 type FormState = {
@@ -102,6 +103,7 @@ export function EditingForm({
     setModelData,
     isMeetHost,
     formInputFields,
+    modelSelectFields,
     destructiveKeepNewInfo,
     destructiveSubmitInfo,
     duplicateInfo,
@@ -125,6 +127,18 @@ export function EditingForm({
         validator?: (value: any) => true | ErrorType
         converter?: (value: any) => any
     }[],
+    modelSelectFields: {
+        queryParamTitle: string,
+        idSuffix: string,
+        type: string,
+        info: InfoType,
+        label: JSX.Element,
+        placeholderText: string,
+        defaultInfo: {
+            text: string,
+            model_id: number
+        }
+    }[],
     destructiveKeepNewInfo: DestructiveType,
     destructiveSubmitInfo?: DestructiveType,
     duplicateInfo: DuplicateType,
@@ -146,6 +160,7 @@ export function EditingForm({
         duplicate: null,
         destructive: null,
     });
+    const [modelIdSelections, setModelIdSelections] = useState<{[key: string]: number}>({});
 
     // * disable applicable inputs if view only
     useEffect(() => {
@@ -158,9 +173,29 @@ export function EditingForm({
                 inputElement.readOnly = formState.mode === "view";
             }
         }
+
+        for (const modelSelectInput of modelSelectFields) {
+            const inputElement = document.getElementById(idPrefix + modelSelectInput.idSuffix) as HTMLInputElement;
+
+            inputElement.readOnly = formState.mode === "view";
+        }
     }, [formState.mode]);
 
     // * define form handlers
+    function handleModelSelection(queryParamString: string, selection: {
+        text: string,
+        model_id: number
+    }) {
+        if (selection.model_id === -1) {
+            return;
+        }
+
+        setModelIdSelections({
+            ...modelIdSelections,
+            [queryParamString]: selection.model_id
+        })
+    }
+
     function handleDuplicateSelection(duplicate_handling: "keep_new" | "keep_both" | "cancel") {
         if (duplicate_handling === "keep_new") {
             formDispatch({
@@ -263,7 +298,8 @@ export function EditingForm({
                 {
                     params: {
                         duplicate_handling: duplicate_handling || "unhandled",
-                        ...queryParams
+                        ...queryParams,
+                        ...modelIdSelections
                     }
                 }
             );
@@ -340,6 +376,22 @@ export function EditingForm({
             {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}
 
             {formInputFields.map(formInput => formInput.formGroup)}
+            {modelSelectFields.map(modelSelectInput => {
+                return (
+                    <ModelSelectGenerator 
+                        idPrefix={idPrefix}
+                        type={modelSelectInput.type}
+                        label={modelSelectInput.label}
+                        info={modelSelectInput.info}
+                        placeholderText={modelSelectInput.placeholderText}
+                        defaultInfo={modelSelectInput.defaultInfo}
+                        setModelSelection={(selection: {
+                            text: string,
+                            model_id: number
+                        }) => handleModelSelection(modelSelectInput.queryParamTitle, selection)}
+                    />
+                )
+            })}
 
             {formState.mode === "edit"
                 ? <div className="flex flex-row flex-wrap gap-x-2">

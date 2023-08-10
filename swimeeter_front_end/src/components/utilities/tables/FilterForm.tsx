@@ -19,6 +19,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
     "MEET_OF_ALL"
     | "MEET_OF_HOST"
     | "SESSION_OF_MEET"
+    | "SESSION_OF_POOL"
     | "POOL_OF_MEET"
     | "TEAM_OF_MEET"
     | "EVENT_OF_MEET"
@@ -166,7 +167,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                 ]);
                 break;
     
-            case "SESSION_OF_MEET":
+            case "SESSION_OF_POOL":
                 setSearchInfo({
                     title: "SESSION FILTERS",
                     description: "The session filter fields are used to narrow the sessions listed in the table below by session name."
@@ -189,6 +190,55 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                         info={{
                             title: "SESSION NAME FIELD",
                             description: "The session name field is used to filter sessions by sessions name. Only sessions with names that begin with the provided value will be shown in the table below.",
+                            permitted_values: "Any string."
+                        }}
+                    />
+                ]);
+                break;
+
+            case "SESSION_OF_MEET":
+                setSearchInfo({
+                    title: "SESSION FILTERS",
+                    description: "The session filter fields are used to narrow the sessions listed in the table below by session name and pool name."
+                });
+                setFormInputs([
+                    <FormGroup
+                        label={
+                            <InputLabel
+                                inputId={idPrefix + "-session_name-search-text-field"}
+                                text="Session name"
+                            />}
+                        field={
+                            <TextInput
+                                regex={/^.*$/}
+                                idPrefix={idPrefix + "-session_name-search"}
+                                pixelWidth={200}
+                                placeholderText="Session name"
+                            />
+                        }
+                        info={{
+                            title: "SESSION NAME FIELD",
+                            description: "The session name field is used to filter sessions by sessions name. Only sessions with names that begin with the provided value will be shown in the table below.",
+                            permitted_values: "Any string."
+                        }}
+                    />,
+                    <FormGroup
+                        label={
+                            <InputLabel
+                                inputId={idPrefix + "-pool_name-search-text-field"}
+                                text="Pool name"
+                            />}
+                        field={
+                            <TextInput
+                                regex={/^.*$/}
+                                idPrefix={idPrefix + "-pool_name-search"}
+                                pixelWidth={200}
+                                placeholderText="Pool name"
+                            />
+                        }
+                        info={{
+                            title: "POOL NAME FIELD",
+                            description: "The pool name field is used to filter sessions by pool name. Only sessions with pool names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
                         }}
                     />
@@ -1261,9 +1311,49 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
             case "RELAY_ENTRY_OF_EVENT":
                 setSearchInfo({
                     title: "RELAY ENTRY FILTERS",
-                    description: "The relay entry filter fields are used to narrow the relay entries listed in the table below by participant swimmer names."
+                    description: "The relay entry filter fields are used to narrow the relay entries listed in the table below by participant swimmer names and team name and acronym."
                 });
                 setFormInputs([
+                    <FormGroup
+                        label={
+                            <InputLabel
+                                inputId={idPrefix + "-team_name-search-text-field"}
+                                text="Team name"
+                            />}
+                        field={
+                            <TextInput
+                                regex={/^.*$/}
+                                idPrefix={idPrefix + "-team_name-search"}
+                                pixelWidth={200}
+                                placeholderText="Team name"
+                            />
+                        }
+                        info={{
+                            title: "TEAM NAME FIELD",
+                            description: "The team name field is used to filter relay entries by participating team name. Only relay entries with team names that begin with the provided value will be shown in the table below.",
+                            permitted_values: "Any string."
+                        }}
+                    />,
+                    <FormGroup
+                        label={
+                            <InputLabel
+                                inputId={idPrefix + "-team_acronym-search-text-field"}
+                                text="Team acronym"
+                            />}
+                        field={
+                            <TextInput
+                                regex={/^.*$/}
+                                idPrefix={idPrefix + "-team_acronym-search"}
+                                pixelWidth={200}
+                                placeholderText="Team acronym"
+                            />
+                        }
+                        info={{
+                            title: "TEAM ACRONYM FIELD",
+                            description: "The team acronym field is used to filter relay entries by participating team acronym. Only relay entries with team acronyms that begin with the provided value will be shown in the table below.",
+                            permitted_values: "Any string."
+                        }}
+                    />,
                     <FormGroup
                         label={
                             <InputLabel

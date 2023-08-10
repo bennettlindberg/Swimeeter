@@ -95,9 +95,17 @@ class Relay_entry_view(APIView):
                 )
 
                 # @ apply search filtering
-                search__team_names = vh.get_query_param(request, "search__team_names")
-                if isinstance(search__team_names, str):
-                    relay_entries_of_event = relay_entries_of_event.filter(swimmers__first_name__in=search__team_names.split(", "))
+                search__team_name = vh.get_query_param(request, "search__team_name")
+                if isinstance(search__team_name, str):
+                    relay_entries_of_event = relay_entries_of_event.filter(swimmers__team__name__istartswith=search__team_name)
+
+                search__team_acronym = vh.get_query_param(request, "search__team_acronym")
+                if isinstance(search__team_acronym, str):
+                    relay_entries_of_event = relay_entries_of_event.filter(swimmers__team__acronym__istartswith=search__team_acronym)
+
+                search__participant_names = vh.get_query_param(request, "search__participant_names")
+                if isinstance(search__participant_names, str):
+                    relay_entries_of_event = relay_entries_of_event.filter(swimmers__first_name__in=search__participant_names.split(", "))
 
                 # * only retrieve request range of values
                 relay_entries_of_event = relay_entries_of_event[lower_bound:upper_bound]
@@ -151,12 +159,31 @@ class Relay_entry_view(APIView):
                     relay_entries_of_team = relay_entries_of_team.filter(event__stroke__istartswith=search__stroke)
 
                 search__distance = vh.get_query_param(request, "search__distance")
-                if isinstance(search__distance, int):
+                if isinstance(search__distance, str):
+                    search__distance = int(search__distance)
                     relay_entries_of_team = relay_entries_of_team.filter(event__distance=search__distance)
 
-                search__team_names = vh.get_query_param(request, "search__team_names")
-                if isinstance(search__team_names, str):
-                    relay_entries_of_team = relay_entries_of_team.filter(swimmers__first_name__in=search__team_names.split(", "))
+                search__competing_min_age = vh.get_query_param(request, "search__competing_min_age")
+                if isinstance(search__competing_min_age, str):
+                    search__competing_min_age = int(search__competing_min_age)
+                    relay_entries_of_team = relay_entries_of_team.filter(event__competing_min_age=search__competing_min_age)
+
+                search__competing_max_age = vh.get_query_param(request, "search__competing_max_age")
+                if isinstance(search__competing_max_age, str):
+                    search__competing_max_age = int(search__competing_max_age)
+                    relay_entries_of_team = relay_entries_of_team.filter(event__competing_max_age=search__competing_max_age)
+
+                search__competing_gender = vh.get_query_param(request, "search__competing_gender")
+                if isinstance(search__competing_gender, str):
+                    relay_entries_of_team = relay_entries_of_team.filter(event__competing_gender__istartswith=search__competing_gender)
+
+                search__session_name = vh.get_query_param(request, "search__session_name")
+                if isinstance(search__session_name, str):
+                    relay_entries_of_team = relay_entries_of_team.filter(event__session__name__istartswith=search__session_name)
+
+                search__participant_names = vh.get_query_param(request, "search__participant_names")
+                if isinstance(search__participant_names, str):
+                    relay_entries_of_team = relay_entries_of_team.filter(swimmers__first_name__in=search__participant_names.split(", "))
 
                 # * only retrieve request range of values
                 relay_entries_of_team = relay_entries_of_team[lower_bound:upper_bound]
@@ -218,9 +245,17 @@ class Relay_entry_view(APIView):
                 ).order_by("lane_number")
 
                 # @ apply search filtering
-                search__team_names = vh.get_query_param(request, "search__team_names")
-                if isinstance(search__team_names, str):
-                    relay_entries_of_heat = relay_entries_of_heat.filter(swimmers__first_name__in=search__team_names.split(", "))
+                search__team_name = vh.get_query_param(request, "search__team_name")
+                if isinstance(search__team_name, str):
+                    relay_entries_of_heat = relay_entries_of_heat.filter(swimmers__team__name__istartswith=search__team_name)
+
+                search__team_acronym = vh.get_query_param(request, "search__team_acronym")
+                if isinstance(search__team_acronym, str):
+                    relay_entries_of_heat = relay_entries_of_heat.filter(swimmers__team__acronym__istartswith=search__team_acronym)
+
+                search__participant_names = vh.get_query_param(request, "search__participant_names")
+                if isinstance(search__participant_names, str):
+                    relay_entries_of_heat = relay_entries_of_heat.filter(swimmers__first_name__in=search__participant_names.split(", "))
 
                 # * only retrieve request range of values
                 relay_entries_of_heat = relay_entries_of_heat[lower_bound:upper_bound]
@@ -272,12 +307,31 @@ class Relay_entry_view(APIView):
                     relay_entries_of_swimmer = relay_entries_of_swimmer.filter(event__stroke__istartswith=search__stroke)
 
                 search__distance = vh.get_query_param(request, "search__distance")
-                if isinstance(search__distance, int):
+                if isinstance(search__distance, str):
+                    search__distance = int(search__distance)
                     relay_entries_of_swimmer = relay_entries_of_swimmer.filter(event__distance=search__distance)
 
-                search__team_names = vh.get_query_param(request, "search__team_names")
-                if isinstance(search__team_names, str):
-                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(swimmers__first_name__in=search__team_names.split(", "))
+                search__competing_min_age = vh.get_query_param(request, "search__competing_min_age")
+                if isinstance(search__competing_min_age, str):
+                    search__competing_min_age = int(search__competing_min_age)
+                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(event__competing_min_age=search__competing_min_age)
+
+                search__competing_max_age = vh.get_query_param(request, "search__competing_max_age")
+                if isinstance(search__competing_max_age, str):
+                    search__competing_max_age = int(search__competing_max_age)
+                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(event__competing_max_age=search__competing_max_age)
+
+                search__competing_gender = vh.get_query_param(request, "search__competing_gender")
+                if isinstance(search__competing_gender, str):
+                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(event__competing_gender__istartswith=search__competing_gender)
+
+                search__session_name = vh.get_query_param(request, "search__session_name")
+                if isinstance(search__session_name, str):
+                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(event__session__name__istartswith=search__session_name)
+
+                search__participant_names = vh.get_query_param(request, "search__participant_names")
+                if isinstance(search__participant_names, str):
+                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(swimmers__first_name__in=search__participant_names.split(", "))
 
                 # * only retrieve request range of values
                 relay_entries_of_swimmer = relay_entries_of_swimmer[lower_bound:upper_bound]

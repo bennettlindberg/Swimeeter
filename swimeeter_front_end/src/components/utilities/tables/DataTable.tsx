@@ -73,6 +73,7 @@ export function DataTable({
     "MEET_OF_ALL"
     | "MEET_OF_HOST"
     | "SESSION_OF_MEET"
+    | "SESSION_OF_POOL"
     | "POOL_OF_MEET"
     | "TEAM_OF_MEET"
     | "EVENT_OF_MEET"
@@ -217,13 +218,39 @@ export function DataTable({
                 break;
             }
 
-            case "SESSION_OF_MEET": {
+            case "SESSION_OF_POOL": {
                 try {
                     const sessionNameField = document.getElementById(idPrefix + "-session_name-search-text-field") as HTMLInputElement;
                     const sessionNameValue = sessionNameField.value;
 
                     const newSearchEntry = {
                         search__name: sessionNameValue || undefined
+                    }
+
+                    if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
+                        tableDispatch({
+                            type: "NEW_SEARCH_ENTRY",
+                            searchEntry: newSearchEntry
+                        });
+                    }
+                } catch {
+                    // ? error retrieving search inputs
+                    navigate("/errors/unknown");
+                }
+                break;
+            }
+
+            case "SESSION_OF_MEET": {
+                try {
+                    const sessionNameField = document.getElementById(idPrefix + "-session_name-search-text-field") as HTMLInputElement;
+                    const sessionNameValue = sessionNameField.value;
+
+                    const poolNameField = document.getElementById(idPrefix + "-pool_name-search-text-field") as HTMLInputElement;
+                    const poolNameValue = poolNameField.value;
+
+                    const newSearchEntry = {
+                        search__session_name: sessionNameValue || undefined,
+                        search__pool_name: poolNameValue || undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -566,10 +593,18 @@ export function DataTable({
             case "RELAY_ENTRY_OF_HEAT":
             case "RELAY_ENTRY_OF_EVENT": {
                 try {
+                    const teamNameField = document.getElementById(idPrefix + "-team_name-search-text-field") as HTMLInputElement;
+                    const teamNameValue = teamNameField.value;
+
+                    const teamAcronymField = document.getElementById(idPrefix + "-team_acronym-search-text-field") as HTMLInputElement;
+                    const teamAcronymValue = teamAcronymField.value;
+
                     const participantNamesField = document.getElementById(idPrefix + "-participant_first_names-search-text-field") as HTMLInputElement;
                     const participantNamesValue = participantNamesField.value;
 
                     const newSearchEntry = {
+                        search__team_name: teamNameValue || undefined,
+                        search__team_acronym: teamAcronymValue || undefined,
                         search__participant_names: participantNamesValue || undefined
                     }
 

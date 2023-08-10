@@ -95,7 +95,8 @@ class Swimmer_view(APIView):
                     swimmers_of_meet = swimmers_of_meet.filter(last_name__istartswith=search__last_name)
 
                 search__age = vh.get_query_param(request, "search__age")
-                if isinstance(search__age, int):
+                if isinstance(search__age, str):
+                    search__age = int(search__age)
                     swimmers_of_meet = swimmers_of_meet.filter(age=search__age)
 
                 search__gender = vh.get_query_param(request, "search__gender")
@@ -159,7 +160,8 @@ class Swimmer_view(APIView):
                     swimmers_of_team = swimmers_of_team.filter(last_name__istartswith=search__last_name)
 
                 search__age = vh.get_query_param(request, "search__age")
-                if isinstance(search__age, int):
+                if isinstance(search__age, str):
+                    search__age = int(search__age)
                     swimmers_of_team = swimmers_of_team.filter(age=search__age)
 
                 search__gender = vh.get_query_param(request, "search__gender")
@@ -285,6 +287,7 @@ class Swimmer_view(APIView):
             return check_is_host
 
         # * update existing swimmer
+        team_changed = False
         try:
             edited_swimmer = Swimmer.objects.get(id=swimmer_id)
 
@@ -302,6 +305,20 @@ class Swimmer_view(APIView):
                 edited_swimmer.age = request.data["age"]
             if "gender" in request.data:
                 edited_swimmer.gender = request.data["gender"]
+
+            # @ update foreign keys
+            team_id = vh.get_query_param(request, "team_id")
+            if isinstance(team_id, str):
+                team_id = int(team_id)
+                
+                if (team_id != edited_swimmer.team_id):
+                    team_of_id = vh.get_model_of_id("Team", team_id)
+                    # ? no team of team_id exists
+                    if isinstance(team_of_id, Response):
+                        return team_of_id
+                    
+                    edited_swimmer.team_id = team_id
+                    team_changed = True
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
@@ -332,11 +349,7 @@ class Swimmer_view(APIView):
             swimmers__in=[edited_swimmer.pk]
         )
         for entry in relay_entries_of_swimmer:
-            check_compatibility = vh.validate_swimmer_against_event(
-                edited_swimmer, entry.event
-            )
-            # ? swimmer and event are not compatible
-            if isinstance(check_compatibility, Response):
+            if team_changed:
                 # * invalidate event seeding
                 invalidate_hs_data = vh.invalidate_event_seeding(entry.event)
                 # ? internal error invalidating event seeding
@@ -344,6 +357,19 @@ class Swimmer_view(APIView):
                     return invalidate_hs_data
 
                 entry.delete()
+            else:
+                check_compatibility = vh.validate_swimmer_against_event(
+                    edited_swimmer, entry.event
+                )
+                # ? swimmer and event are not compatible
+                if isinstance(check_compatibility, Response):
+                    # * invalidate event seeding
+                    invalidate_hs_data = vh.invalidate_event_seeding(entry.event)
+                    # ? internal error invalidating event seeding
+                    if isinstance(invalidate_hs_data, Response):
+                        return invalidate_hs_data
+
+                    entry.delete()
 
         individual_entries_of_swimmer = Individual_entry.objects.filter(
             swimmer_id=edited_swimmer.pk

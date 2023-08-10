@@ -61,6 +61,48 @@ class Session_view(APIView):
                         session_JSON,
                         status=status.HTTP_200_OK,
                     )
+                
+            # $ ...pool
+            case "pool":
+                pool_id = vh.get_query_param(request, "pool_id")
+                # ? no "pool_id" param passed
+                if isinstance(pool_id, Response):
+                    return pool_id
+                else:
+                    pool_id = int(pool_id)
+
+                pool_of_id = vh.get_model_of_id("Pool", pool_id)
+                # ? no pool of pool_id exists
+                if isinstance(pool_of_id, Response):
+                    return pool_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(request, pool_of_id.meet)
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+
+                sessions_of_pool = Session.objects.filter(pool_id=pool_id).order_by(
+                    "begin_time", "end_time", "name"
+                )
+
+                # @ apply search filtering
+                search__name = vh.get_query_param(request, "search__name")
+                if isinstance(search__name, str):
+                    sessions_of_pool = sessions_of_pool.filter(name__istartswith=search__name)
+
+                # * only retrieve request range of values
+                sessions_of_pool = sessions_of_pool[lower_bound:upper_bound]
+
+                # * get sessions JSON
+                sessions_JSON = vh.get_JSON_multiple("Session", sessions_of_pool, True)
+                # ? internal error generating JSON
+                if isinstance(sessions_JSON, Response):
+                    return sessions_JSON
+                else:
+                    return Response(
+                        sessions_JSON,
+                        status=status.HTTP_200_OK,
+                    )
 
             # $ ...meet
             case "meet":
@@ -86,9 +128,13 @@ class Session_view(APIView):
                 )
 
                 # @ apply search filtering
-                search__name = vh.get_query_param(request, "search__name")
-                if isinstance(search__name, str):
-                    sessions_of_meet = sessions_of_meet.filter(name__istartswith=search__name)
+                search__session_name = vh.get_query_param(request, "search__session_name")
+                if isinstance(search__session_name, str):
+                    sessions_of_meet = sessions_of_meet.filter(name__istartswith=search__session_name)
+
+                search__pool_name = vh.get_query_param(request, "search__pool_name")
+                if isinstance(search__pool_name, str):
+                    sessions_of_meet = sessions_of_meet.filter(pool__name__istartswith=search__pool_name)
 
                 # * only retrieve request range of values
                 sessions_of_meet = sessions_of_meet[lower_bound:upper_bound]
@@ -228,6 +274,19 @@ class Session_view(APIView):
                 edited_session.begin_time = request.data["begin_time"]
             if "end_time" in request.data:
                 edited_session.end_time = request.data["end_time"]
+
+            # @ update foreign keys
+            pool_id = vh.get_query_param(request, "pool_id")
+            if isinstance(pool_id, str):
+                pool_id = int(pool_id)
+
+                if (pool_id != edited_session.pool_id):
+                    pool_of_id = vh.get_model_of_id("Pool", pool_id)
+                    # ? no pool of pool_id exists
+                    if isinstance(pool_of_id, Response):
+                        return pool_of_id
+                    
+                    edited_session.pool_id = pool_id
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
