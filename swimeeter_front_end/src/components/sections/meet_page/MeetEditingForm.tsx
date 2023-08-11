@@ -13,7 +13,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function MeetForm() {
+export function MeetEditingForm() {
     // * initialize context, state, and id
     const { meetData, setMeetData, isMeetHost }: {
         meetData: Meet,
@@ -177,6 +177,7 @@ export function MeetForm() {
                         />,
                     }
                 ]}
+                modelSelectFields={[]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
                     description: "Replacing previously-created duplicate meets with this one will result in the deletion of the original meets. Are you sure you want to continue?",
@@ -216,6 +217,35 @@ export function MeetForm() {
                 }}
                 submitText="Save meet"
                 editText="Edit meet"
+                destructiveDeletionInfo={{
+                    title: "DESTRUCTIVE DELETION",
+                    description: "Deleting this meet will permanently delete all of the meet's data, including its pools, sessions, events, teams, swimmers, and entries. Are you sure you want to continue?",
+                    impact: "All meet data will be permanently deleted.",
+                    type: "destructive_deletion"
+                }}
+                deletionErrorPossibilities={[
+                    {
+                        matchString: "user is not logged in",
+                        error: {
+                            title: "AUTHORIZATION ERROR",
+                            description: "You are not currently logged into the account of the meet host. Log into the host account before deleting this meet.",
+                            recommendation: "Log into the host account using the log in button found in the navigation bar."
+                        }
+                    },
+                    {
+                        matchString: "user is not logged into meet host account",
+                        error: {
+                            title: "AUTHORIZATION ERROR",
+                            description: "You are not currently logged into the account of the meet host. Log into the host account before deleting this meet.",
+                            recommendation: "Log into the host account using the log in button found in the navigation bar."
+                        }
+                    }
+                ]}
+                deletionText="Delete meet"
+                deletionQueryParam={{
+                    "meet_id": meetData.pk
+                }}
+                deletionForwardRoute="/meets"
             />
         </>
     )

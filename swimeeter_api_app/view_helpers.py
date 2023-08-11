@@ -360,9 +360,12 @@ def get_event_name(event_object: Event):
     event_name = event_object.competing_gender + "s "
 
     if event_object.competing_min_age and event_object.competing_max_age:
-        event_name += (
-            event_object.competing_min_age + "-" + event_object.competing_max_age + " "
-        )
+        if event_object.competing_min_age == event_object.competing_max_age:
+            event_name += event_object.competing_min_age + " Only "
+        else:
+            event_name += (
+                event_object.competing_min_age + "-" + event_object.competing_max_age + " "
+            )
     elif event_object.competing_min_age:
         event_name += event_object.competing_min_age + " & Over "
     elif event_object.competing_max_age:

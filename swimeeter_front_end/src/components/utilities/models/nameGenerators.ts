@@ -78,7 +78,11 @@ export function generateEventName(event: Event) {
     let eventName = event.fields.competing_gender + "s ";
 
     if (event.fields.competing_min_age && event.fields.competing_max_age) {
-        eventName += event.fields.competing_min_age + "-" + event.fields.competing_max_age + " ";
+        if (event.fields.competing_min_age === event.fields.competing_max_age) {
+            eventName += event.fields.competing_min_age + " Only ";
+        } else {
+            eventName += event.fields.competing_min_age + "-" + event.fields.competing_max_age + " ";
+        }
     } else if (event.fields.competing_min_age) {
         eventName += event.fields.competing_min_age + " & Over ";
     } else if (event.fields.competing_max_age) {

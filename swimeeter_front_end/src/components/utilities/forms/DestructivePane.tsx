@@ -6,14 +6,18 @@ import { DestructiveType } from "./formTypes.ts"
 import { IconSVG } from "../svgs/IconSVG.tsx";
 
 export function DestructivePane({ handleClick, info }: {
-    handleClick: (selection: "continue" | "cancel", duplicate_handling?: "unhandled" | "keep_new" | "keep_both", bypassDestructiveSubmission?: boolean) => void,
+    handleClick: (
+        selection: "continue" | "cancel", 
+        context: "duplicate_keep_new" | "destructive_submission" | "destructive_deletion" | "unknown", 
+        duplicate_handling?: "unhandled" | "keep_new" | "keep_both"
+    ) => void,
     info: DestructiveType
 }) {
     const { userState }: { userState: UserState } = useContext(AppContext);
 
     // * automatically confirm if destructive action confirms are turned off
     if (!userState.preferences.destructive_action_confirms) {
-        handleClick("continue");
+        handleClick("continue", info.type || "unknown");
     }
 
     // * pass along duplicate choice if applicable
@@ -48,11 +52,11 @@ export function DestructivePane({ handleClick, info }: {
                         <p><span className="font-semibold">Impact: </span>{info.impact}</p>
 
                         <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
-                            <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${slateButtonColor}`} type="button" onClick={() => { handleClick("cancel", duplicate_handling, info.type === "destructive_submission") }}>
+                            <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${slateButtonColor}`} type="button" onClick={() => { handleClick("cancel", info.type || "unknown", duplicate_handling) }}>
                                 <IconSVG icon={"CIRCLE_CROSS"} color={slateFillColor} width="w-[25px]" height="h-[25px]" />
                                 <p className={`text-xl font-semibold ${slateTextColor}`}>Cancel</p>
                             </button>
-                            <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${purpleButtonColor}`} type="button" onClick={() => { handleClick("continue", duplicate_handling, info.type === "destructive_submission") }}>
+                            <button className={`flex flex-row gap-x-2 items-center px-2 py-1 w-fit rounded-full border-2 ${purpleButtonColor}`} type="button" onClick={() => { handleClick("continue", info.type || "unknown", duplicate_handling) }}>
                                 <IconSVG icon={"CIRCLE_BOLT"} color={purpleFillColor} width="w-[25px]" height="h-[25px]" />
                                 <p className={`text-xl font-semibold ${purpleTextColor}`}>Proceed</p>
                             </button>

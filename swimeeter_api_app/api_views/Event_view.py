@@ -250,6 +250,13 @@ class Event_view(APIView):
                 session_id=session_id,
             )
 
+            if request.data["competing_max_age"] < request.data["competing_min_age"]:
+                # ? invalid age range -> max less than min
+                return Response(
+                    "maximum age less than minimum age",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
             handle_duplicates = vh.handle_duplicates(duplicate_handling, "Event", new_event)
@@ -340,6 +347,13 @@ class Event_view(APIView):
             if "order_in_session" in request.data:
                 # ~ requested order number
                 requested_order_number = request.data["order_in_session"]
+
+            if edited_event.competing_max_age < edited_event.competing_min_age:
+                # ? invalid age range -> max less than min
+                return Response(
+                    "maximum age less than minimum age",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             # @ update foreign keys
             session_id = vh.get_query_param(request, "session_id")

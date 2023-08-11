@@ -24,5 +24,5 @@ export type DestructiveType = {
     title: string,
     description: string,
     impact: string,
-    type?: string // used for duplicates when keep_new is chosen
+    type?: "duplicate_keep_new" | "destructive_submission" | "destructive_deletion"
 }

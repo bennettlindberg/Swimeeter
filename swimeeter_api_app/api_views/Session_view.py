@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework.views import APIView, Response
 from rest_framework import status
 
@@ -197,6 +198,13 @@ class Session_view(APIView):
                 pool_id=pool_id,
             )
 
+            if datetime.fromisoformat(request.data["end_time"]) < datetime.fromisoformat(request.data["begin_time"]):
+                # ? invalid time range -> end earlier than begin
+                return Response(
+                "end time before begin time",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
             handle_duplicates = vh.handle_duplicates(duplicate_handling, "Session", new_session)
@@ -274,6 +282,13 @@ class Session_view(APIView):
                 edited_session.begin_time = request.data["begin_time"]
             if "end_time" in request.data:
                 edited_session.end_time = request.data["end_time"]
+
+            if datetime.fromisoformat(edited_session.end_time) < datetime.fromisoformat(edited_session.begin_time):
+                # ? invalid time range -> end earlier than begin
+                return Response(
+                "end time before begin time",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
             # @ update foreign keys
             pool_id = vh.get_query_param(request, "pool_id")

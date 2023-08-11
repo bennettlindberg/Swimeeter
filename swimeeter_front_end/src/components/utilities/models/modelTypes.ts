@@ -1,3 +1,6 @@
+// * GENERIC
+export type GenericModel = Host | Meet | Pool | Session | Event | Team | Swimmer | IndividualEntry | RelayEntry
+
 // * HOST
 export type Host = {
     model: string,

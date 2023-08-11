@@ -8,7 +8,7 @@ import { Meet } from "../../utilities/models/modelTypes.ts";
 import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
-import { MeetForm } from "../../sections/meet_page/MeetForm.tsx";
+import { MeetEditingForm } from "../../sections/meet_page/MeetEditingForm.tsx";
 import { MeetPoolsTable } from "../../sections/meet_page/MeetPoolsTable.tsx";
 import { MeetSessionsTable } from "../../sections/meet_page/MeetSessionsTable.tsx";
 import { MeetEventsTable } from "../../sections/meet_page/MeetEventsTable.tsx";
@@ -164,7 +164,7 @@ export function MeetPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <MeetForm />
+                                    <MeetEditingForm />
                                 </>
                             )
                         },

@@ -168,6 +168,7 @@ export function MeetCreationForm() {
                         />,
                     }
                 ]}
+                modelSelectFields={[]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
                     description: "Replacing previously-created duplicate meets with this one will result in the deletion of the original meets. Are you sure you want to continue?",

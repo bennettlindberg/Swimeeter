@@ -1,8 +1,8 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { DestructiveType, DuplicateType, ErrorType } from "../../utilities/forms/formTypes.ts";
+import { DestructiveType, DuplicateType, ErrorType, InfoType } from "../../utilities/forms/formTypes.ts";
 
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
 
@@ -10,6 +10,7 @@ import { DataForm } from "../../utilities/forms/DataForm.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
 import { DuplicatePane } from "../../utilities/forms/DuplicatePane.tsx";
 import { DestructivePane } from "../../utilities/forms/DestructivePane.tsx";
+import { ModelSelectGenerator } from "./ModelSelectGenerator.tsx";
 
 // * define form types
 type FormState = {
@@ -89,6 +90,7 @@ function formReducer(state: FormState, action: FormAction) {
 // ~ component
 export function CreationForm({
     formInputFields,
+    modelSelectFields,
     destructiveKeepNewInfo,
     destructiveSubmitInfo,
     duplicateInfo,
@@ -108,6 +110,26 @@ export function CreationForm({
         formGroup: React.ReactNode,
         validator?: (value: any) => true | ErrorType
         converter?: (value: any) => any
+    }[],
+    modelSelectFields: {
+        queryParamTitle: string,
+        idSuffix: string,
+        type: string,
+        info: InfoType,
+        label: JSX.Element,
+        placeholderText: string,
+        defaultInfo: {
+            text: string,
+            model_id: number
+        }
+        modelInfo: {
+            modelName: string,
+            specific_to: number,
+            apiRoute: string,
+            id_params: {
+                meet_id: number
+            }
+        }
     }[],
     destructiveKeepNewInfo: DestructiveType,
     destructiveSubmitInfo?: DestructiveType,
@@ -129,6 +151,7 @@ export function CreationForm({
         duplicate: null,
         destructive: null,
     });
+    const [modelIdSelections, setModelIdSelections] = useState<{[key: string]: number}>({});
     const navigate = useNavigate();
 
     // * disable read-only inputs
@@ -143,6 +166,20 @@ export function CreationForm({
     }, []);
 
     // * define form handlers
+    function handleModelSelection(queryParamString: string, selection: {
+        text: string,
+        model_id: number
+    }) {
+        if (selection.model_id === -1) {
+            return;
+        }
+
+        setModelIdSelections({
+            ...modelIdSelections,
+            [queryParamString]: selection.model_id
+        })
+    }
+
     function handleDuplicateSelection(duplicate_handling: "keep_new" | "keep_both" | "cancel") {
         if (duplicate_handling === "keep_new") {
             formDispatch({
@@ -159,12 +196,24 @@ export function CreationForm({
     }
 
     function handleDestructiveSelection(
-        selection: "continue" | "cancel",
-        duplicate_handling?: "unhandled" | "keep_new" | "keep_both",
-        bypassDestructiveSubmission?: boolean,
+        selection: "continue" | "cancel", 
+        context: "duplicate_keep_new" | "destructive_submission" | "destructive_deletion" | "unknown", 
+        duplicate_handling?: "unhandled" | "keep_new" | "keep_both"
     ) {
         if (selection === "continue") {
-            handleSubmit(duplicate_handling, bypassDestructiveSubmission);
+            switch (context) {
+                case "duplicate_keep_new":
+                    handleSubmit(duplicate_handling);
+                    break;
+
+                case "destructive_submission":
+                    handleSubmit(duplicate_handling, true);
+                    break;
+
+                // ! should never occur
+                default:
+                    navigate("errors/unknown");
+            }
         } else {
             formDispatch({
                 type: "DISMISS_DESTRUCTIVE_PANE"
@@ -234,7 +283,8 @@ export function CreationForm({
                 {
                     params: {
                         duplicate_handling: duplicate_handling || "unhandled",
-                        ...queryParams
+                        ...queryParams,
+                        ...modelIdSelections
                     }
                 }
             );
@@ -299,6 +349,22 @@ export function CreationForm({
             {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}
 
             {formInputFields.map(formInput => formInput.formGroup)}
+            {modelSelectFields.map(modelSelectInput => {
+                return (
+                    <ModelSelectGenerator 
+                        idPrefix={idPrefix}
+                        modelInfo={modelSelectInput.modelInfo}
+                        label={modelSelectInput.label}
+                        info={modelSelectInput.info}
+                        placeholderText={modelSelectInput.placeholderText}
+                        defaultInfo={modelSelectInput.defaultInfo}
+                        setModelSelection={(selection: {
+                            text: string,
+                            model_id: number
+                        }) => handleModelSelection(modelSelectInput.queryParamTitle, selection)}
+                    />
+                )
+            })}
 
             <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text={submitText} type="submit" handleClick={(event: any) => {
                 event.preventDefault();

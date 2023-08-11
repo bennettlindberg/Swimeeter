@@ -12,6 +12,7 @@ import { PreferencesForm } from "../../sections/settings_page/PreferencesForm.ts
 import { ProfileForm } from "../../sections/settings_page/ProfileForm.tsx";
 import { AccountForm } from "../../sections/settings_page/AccountForm.tsx";
 import { MainContentText } from "../../utilities/main_content/MainContentText.tsx";
+import { AccountDeletion } from "../../sections/settings_page/AccountDeletion.tsx";
 
 // ~ component
 export function SettingsPage() {
@@ -61,24 +62,6 @@ export function SettingsPage() {
         }
     }
 
-    // * define account deletion handler
-    async function handleAccountDeletion() {
-        // @ send log out request to the back-end
-        try {
-            const response = await axios.delete('/auth/delete_account/');
-
-            userDispatch({
-                type: "DELETE_ACCOUNT",
-                preferences: response.data.preferences
-            })
-
-            navigate("/");
-        } catch (error) {
-            // ? log out failed on the back-end
-            // ! unhandled
-        }
-    }
-
     return (
         <>
             <ContentPage
@@ -91,10 +74,10 @@ export function SettingsPage() {
                         content: userState.logged_in
                             ? (
                                 <>
-                                    <MainContentSubheading subheading="Change account password" />
+                                    <MainContentSubheading subheading="Account credentials" />
                                     <AccountForm />
                                     <MainContentSubheading subheading="Account management" />
-                                    <PageButton color="red" icon="TRASH_CAN" text="Permanently delete account" handleClick={handleAccountDeletion} />
+                                    <AccountDeletion />
                                 </>
                             )
                             : (

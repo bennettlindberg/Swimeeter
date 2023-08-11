@@ -1,10 +1,10 @@
 import { useEffect, useReducer, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { DestructiveType, DuplicateType, ErrorType, InfoType } from "../../utilities/forms/formTypes.ts";
 
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
-
 import { DataForm } from "../../utilities/forms/DataForm.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
 import { DuplicatePane } from "../../utilities/forms/DuplicatePane.tsx";
@@ -113,7 +113,12 @@ export function EditingForm({
     idPrefix,
     queryParams,
     submitText,
-    editText
+    editText,
+    destructiveDeletionInfo,
+    deletionErrorPossibilities,
+    deletionText,
+    deletionQueryParam,
+    deletionForwardRoute
 }: {
     modelData: any,
     setModelData: React.Dispatch<React.SetStateAction<any>>,
@@ -138,6 +143,14 @@ export function EditingForm({
             text: string,
             model_id: number
         }
+        modelInfo: {
+            modelName: string,
+            specific_to: number,
+            apiRoute: string,
+            id_params: {
+                meet_id: number
+            }
+        }
     }[],
     destructiveKeepNewInfo: DestructiveType,
     destructiveSubmitInfo?: DestructiveType,
@@ -151,9 +164,19 @@ export function EditingForm({
     idPrefix: string,
     queryParams: any,
     submitText: string
-    editText: string
+    editText: string,
+    destructiveDeletionInfo: DestructiveType,
+    deletionErrorPossibilities: {
+        matchString: string,
+        error: ErrorType
+    }[],
+    deletionText: string,
+    deletionQueryParam: {
+        [key: string]: any
+    },
+    deletionForwardRoute: string
 }) {
-    // * initialize state
+    // * initialize state and navigation
     const [formState, formDispatch] = useReducer(formReducer, {
         mode: "view",
         error: null,
@@ -161,6 +184,7 @@ export function EditingForm({
         destructive: null,
     });
     const [modelIdSelections, setModelIdSelections] = useState<{[key: string]: number}>({});
+    const navigate = useNavigate();
 
     // * disable applicable inputs if view only
     useEffect(() => {
@@ -212,12 +236,28 @@ export function EditingForm({
     }
 
     function handleDestructiveSelection(
-        selection: "continue" | "cancel",
-        duplicate_handling?: "unhandled" | "keep_new" | "keep_both",
-        bypassDestructiveSubmission?: boolean,
+        selection: "continue" | "cancel", 
+        context: "duplicate_keep_new" | "destructive_submission" | "destructive_deletion" | "unknown", 
+        duplicate_handling?: "unhandled" | "keep_new" | "keep_both"
     ) {
         if (selection === "continue") {
-            handleSubmit(duplicate_handling, bypassDestructiveSubmission);
+            switch (context) {
+                case "duplicate_keep_new":
+                    handleSubmit(duplicate_handling);
+                    break;
+
+                case "destructive_submission":
+                    handleSubmit(duplicate_handling, true);
+                    break;
+
+                case "destructive_deletion":
+                    handleDelete(true);
+                    break;
+
+                // ! should never occur
+                default:
+                    navigate("errors/unknown");
+            }
         } else {
             formDispatch({
                 type: "DISMISS_DESTRUCTIVE_PANE"
@@ -357,6 +397,66 @@ export function EditingForm({
         }
     }
 
+    async function handleDelete(bypassDestructiveDeletion?: boolean) {
+        // ~ submit counts as destructive action -> show destructive pop-up
+        if (!bypassDestructiveDeletion) {
+            formDispatch({
+                type: "TRIGGER_DESTRUCTIVE_PANE",
+                destructive: destructiveDeletionInfo
+            });
+            return;
+        }
+
+        // @ send new model data to the back-end
+        try {
+            const response = await axios.delete(
+                apiRoute,
+                {
+                    params: {
+                        ...deletionQueryParam,
+                    }
+                }
+            );
+
+            navigate(deletionForwardRoute);
+        } catch (error) {
+            // ? back-end error
+            if (axios.isAxiosError(error)) {
+                const errorTitle = error.response?.data;
+
+                // ~ iterate over passed error possibilities
+                for (const errorPossibility of deletionErrorPossibilities) {
+                    if (errorTitle === errorPossibility.matchString) {
+                        formDispatch({
+                            type: "SAVE_FAILURE",
+                            error: errorPossibility.error
+                        });
+                        return;
+                    }
+                }
+
+                formDispatch({
+                    type: "SAVE_FAILURE",
+                    error: {
+                        title: "UNKNOWN ERROR",
+                        description: "An unknown error ocurred while attempting to submit the form."
+                    }
+                });
+                return;
+
+            } else {
+                formDispatch({
+                    type: "SAVE_FAILURE",
+                    error: {
+                        title: "UNKNOWN ERROR",
+                        description: "An unknown error ocurred while attempting to submit the form."
+                    }
+                });
+                return;
+            }
+        }
+    }
+
     function handleCancel() {
         formDispatch({
             type: "CANCEL_CLICKED"
@@ -380,7 +480,7 @@ export function EditingForm({
                 return (
                     <ModelSelectGenerator 
                         idPrefix={idPrefix}
-                        type={modelSelectInput.type}
+                        modelInfo={modelSelectInput.modelInfo}
                         label={modelSelectInput.label}
                         info={modelSelectInput.info}
                         placeholderText={modelSelectInput.placeholderText}
@@ -394,12 +494,15 @@ export function EditingForm({
             })}
 
             {formState.mode === "edit"
-                ? <div className="flex flex-row flex-wrap gap-x-2">
-                    <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text={submitText} type="submit" handleClick={(event: any) => {
-                        event.preventDefault();
-                        handleSubmit();
-                    }} />
-                    <InputButton idPrefix={idPrefix + "-cancel"} color="red" icon="CIRCLE_CROSS" text="Cancel" type="button" handleClick={handleCancel} />
+                ? <div className="flex flex-col gap-y-2">
+                    <div className="flex flex-row flex-wrap gap-x-2">
+                        <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text={submitText} type="submit" handleClick={(event: any) => {
+                            event.preventDefault();
+                            handleSubmit();
+                        }} />
+                        <InputButton idPrefix={idPrefix + "-cancel"} color="red" icon="CIRCLE_CROSS" text="Cancel" type="button" handleClick={handleCancel} />
+                    </div>
+                    <InputButton idPrefix={idPrefix + "-cancel"} color="red" icon="TRASH_CAN" text={deletionText} type="button" handleClick={() => handleDelete(false)} />
                 </div>
                 : isMeetHost && <InputButton idPrefix={idPrefix + "-edit"} color="purple" icon="CIRCLE_BOLT" text={editText} type="button" handleClick={handleEdit} />
             }
