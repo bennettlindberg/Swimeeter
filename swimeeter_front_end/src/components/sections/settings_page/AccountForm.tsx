@@ -2,15 +2,17 @@ import { useContext, useEffect, useId, useReducer } from "react";
 import axios from "axios";
 
 import { AppContext, UserAction, UserState } from "../../../App.tsx";
-import { ErrorType } from "../../utilities/forms/formTypes.ts"
+import { ErrorType } from "../../utilities/helpers/formTypes.ts"
+import { FormContext } from "../../utilities/helpers/formHelpers.ts";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 
 import { DataForm } from "../../utilities/forms/DataForm.tsx";
-import { FormGroup } from "../../utilities/forms/FormGroup.tsx";
+import { EditingFormGroup } from "../../utilities/forms/EditingFormGroup.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
+import { NeutralFormGroup } from "../../utilities/forms/NeutralFormGroup.tsx";
 
 // * define form types
 type FormState = {
@@ -258,7 +260,7 @@ export function AccountForm() {
         <DataForm>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
 
-            <FormGroup
+            <NeutralFormGroup
                 label={<InputLabel inputId={idPrefix + "-email-text-field"} text="Email address" />}
                 field={<TextInput
                     regex={/^[A-Za-z0-9\.\@]*$/}
@@ -268,16 +270,15 @@ export function AccountForm() {
                 />}
                 info={{
                     title: "EMAIL",
-                    description: "The email field should contain a valid email address to be associated with the account. The value of this field is read-only as it cannot be changed after account creation.",
-                    permitted_values: "Any email address containing alphanumeric strings, a single @ symbol, no consecutive periods, and no periods at the start or end of alphanumeric strings.",
-                    warning: "Email addresses are considered case-insensitive. Emails such as A@A.com and a@a.com will refer to the same email address."
+                    description: "The email field contains the email address associated with the account. The value of this field is read-only as it cannot be changed after account creation.",
                 }}
             />
 
             {formState.mode === "edit" &&
-                <>
-                    <FormGroup
+                <FormContext.Provider value={formState.mode === "edit"}>
+                    <EditingFormGroup
                         label={<InputLabel inputId={idPrefix + "-old_password-text-field"} text="Current password" />}
+                        optional={false}
                         field={<TextInput
                             regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
                             placeholderText="Current password"
@@ -285,15 +286,20 @@ export function AccountForm() {
                             idPrefix={idPrefix + "-old_password"}
                             isPassword={true}
                         />}
-                        info={{
+                        editInfo={{
                             title: "CURRENT PASSWORD",
                             description: "The current password field should contain the password currently associated with the account.",
                             permitted_values: "The password string currently associated with the account."
                         }}
+                        viewInfo={{ // ! should never be seen
+                            title: "CURRENT PASSWORD",
+                            description: "The current password field contains the password currently associated with the account.",
+                        }}
                     />
 
-                    <FormGroup
+                    <EditingFormGroup
                         label={<InputLabel inputId={idPrefix + "-new_password-text-field"} text="New password" />}
+                        optional={false}
                         field={<TextInput
                             regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
                             placeholderText="New password"
@@ -301,15 +307,20 @@ export function AccountForm() {
                             idPrefix={idPrefix + "-new_password"}
                             isPassword={true}
                         />}
-                        info={{
+                        editInfo={{
                             title: "NEW PASSWORD",
                             description: "The new password field should contain a new password to be associated with the account. This field can be changed again after the account is edited.",
                             permitted_values: "Any string at least 8 characters long containing at least one uppercase character (A-Z), one lowercase character (a-z), one number (0-9), and one special character (~`! @#$%^&*()_-+={[}]|\\:;\"\'<,>.?/) and not equal to the current password."
                         }}
+                        viewInfo={{ // ! should never be seen
+                            title: "NEW PASSWORD",
+                            description: "The new password field contains the new password to be associated with the account.",
+                        }}
                     />
 
-                    <FormGroup
+                    <EditingFormGroup
                         label={<InputLabel inputId={idPrefix + "-repeat_new_password-text-field"} text="Repeat new password" />}
+                        optional={false}
                         field={<TextInput
                             regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
                             placeholderText="Repeat new password"
@@ -317,13 +328,17 @@ export function AccountForm() {
                             idPrefix={idPrefix + "-repeat_new_password"}
                             isPassword={true}
                         />}
-                        info={{
+                        editInfo={{
                             title: "REPEAT NEW PASSWORD",
                             description: "The repeat new password field should contain the same new password as provided above. The purpose of the repeat new password field is to ensure that the user has entered their new password as they intend.",
                             permitted_values: "The same string as provided in the new password field above."
                         }}
+                        viewInfo={{ // ! should never be seen
+                            title: "REPEAT NEW PASSWORD",
+                            description: "The repeat new password field contains the same new password as listed above. The purpose of the repeat new password field is to ensure that the user has entered their new password as they intend.",
+                        }}
                     />
-                </>
+                </FormContext.Provider>
             }
 
             {formState.mode === "edit"

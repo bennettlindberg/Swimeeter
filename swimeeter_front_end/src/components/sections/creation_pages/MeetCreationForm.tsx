@@ -1,11 +1,12 @@
 import { useContext, useId } from "react";
 
 import { AppContext, UserState } from "../../../App.tsx";
-import { convertRawData } from "../../utilities/forms/formHelpers.ts";
-import { generateUserProfileName } from "../../utilities/models/nameGenerators.ts";
+import { convertRawData } from "../../utilities/helpers/formHelpers.ts";
+import { generateUserProfileName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { CreationForm } from "../../utilities/forms/CreationForm.tsx";
-import { FormGroup } from "../../utilities/forms/FormGroup.tsx";
+import { CreationFormGroup } from "../../utilities/forms/CreationFormGroup.tsx";
+import { NeutralFormGroup } from "../../utilities/forms/NeutralFormGroup.tsx";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
@@ -26,16 +27,17 @@ export function MeetCreationForm() {
                         idSuffix: "-name-text-field",
                         readOnly: false,
                         duplicateSensitive: true,
-                        formGroup: <FormGroup
+                        formGroup: <CreationFormGroup
                             label={<InputLabel inputId={idPrefix + "-name-text-field"} text="Name" />}
                             key={idPrefix + "-name-text-field"}
+                            optional={false}
                             field={<TextInput
                                 regex={/^.*$/}
                                 placeholderText="Name"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-name"}
                             />}
-                            info={{
+                            createInfo={{
                                 title: "NAME",
                                 description: "The name field should contain the name of the meet being created.",
                                 permitted_values: "Any string at least 1 character long.",
@@ -59,19 +61,20 @@ export function MeetCreationForm() {
                         idSuffix: "-visibility-select-field",
                         readOnly: false,
                         duplicateSensitive: false,
-                        formGroup: <FormGroup
+                        formGroup: <CreationFormGroup
                             label={<InputLabel inputId={idPrefix + "-visibility-select-field"} text="Visibility" />}
                             key={idPrefix + "-visibility-select-field"}
+                            optional={false}
                             field={<SearchSelect
                                 regex={/^(P(u(b(l(i(c?)?)?)?)?)?)?$|^(P(r(i(v(a(t(e?)?)?)?)?)?)?)?$/}
                                 otherEnabled={false}
                                 placeholderText="Visibility"
                                 defaultText="Public"
-                                pixelWidth={100}
+                                pixelWidth={300}
                                 idPrefix={idPrefix + "-visibility"}
                                 options={["Public", "Private"]}
                             />}
-                            info={{
+                            createInfo={{
                                 title: "VISIBILITY",
                                 description: "The value of the visibility field determines who can view the meet being created. Private meets can only be seen by the meet host.",
                                 permitted_values: "Public, Private"
@@ -106,7 +109,7 @@ export function MeetCreationForm() {
                         idSuffix: "-host-text-field",
                         readOnly: true,
                         duplicateSensitive: false,
-                        formGroup: <FormGroup
+                        formGroup: <NeutralFormGroup
                             label={<InputLabel inputId={idPrefix + "-host-text-field"} text="Host" />}
                             key={idPrefix + "-host-text-field"}
                             field={<TextInput
@@ -118,8 +121,7 @@ export function MeetCreationForm() {
                             />}
                             info={{
                                 title: "HOST",
-                                description: "The host field contains the name of the account that created and owns the meet being viewed. The value of this field is read-only as it must contain the currently logged-in user.",
-                                permitted_values: "Any string at least 1 character long.",
+                                description: "The host field contains the name of the account that created and owns the meet. The value of this field is read-only as it must contain the currently logged-in user.",
                             }}
                         />,
                     },
@@ -128,7 +130,7 @@ export function MeetCreationForm() {
                         idSuffix: "-begin_time-text-field",
                         readOnly: true,
                         duplicateSensitive: false,
-                        formGroup: <FormGroup
+                        formGroup: <NeutralFormGroup
                             label={<InputLabel inputId={idPrefix + "-begin_time-text-field"} text="Begin time" />}
                             key={idPrefix + "-begin_time-text-field"}
                             field={<TextInput
@@ -141,7 +143,6 @@ export function MeetCreationForm() {
                             info={{
                                 title: "BEGIN TIME",
                                 description: "The begin time field contains the overall beginning time of the meet. The value of this field is read-only as it is determined automatically by the beginning times of the meet's sessions.",
-                                permitted_values: "Any valid date and time.",
                             }}
                         />,
                     },
@@ -150,7 +151,7 @@ export function MeetCreationForm() {
                         idSuffix: "-end_time-text-field",
                         readOnly: true,
                         duplicateSensitive: false,
-                        formGroup: <FormGroup
+                        formGroup: <NeutralFormGroup
                             label={<InputLabel inputId={idPrefix + "-end_time-text-field"} text="End time" />}
                             key={idPrefix + "-end_time-text-field"}
                             field={<TextInput
@@ -163,7 +164,6 @@ export function MeetCreationForm() {
                             info={{
                                 title: "END TIME",
                                 description: "The end time field contains the overall ending time of the meet. The value of this field is read-only as it is determined automatically by the ending times of the meet's sessions.",
-                                permitted_values: "Any valid date and time.",
                             }}
                         />,
                     }

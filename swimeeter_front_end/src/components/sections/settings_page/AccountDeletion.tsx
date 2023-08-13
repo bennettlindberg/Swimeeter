@@ -2,15 +2,14 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { AppContext, UserAction, UserState } from "../../../App.tsx";
+import { AppContext, UserAction } from "../../../App.tsx";
 
 import { PageButton } from "../../utilities/general/PageButton.tsx";
 import { DestructivePane } from "../../utilities/forms/DestructivePane.tsx";
 
 export function AccountDeletion() {
     // * initialize context, state, and navigation
-    const { userState, userDispatch }: {
-        userState: UserState,
+    const { userDispatch }: {
         userDispatch: React.Dispatch<UserAction>,
     } = useContext(AppContext);
     const [status, setStatus] = useState<"normal" | "confirming">("normal");

@@ -5,7 +5,7 @@ export function ModelSearchSelect({
     regex,
     otherEnabled,
     placeholderText,
-    defaultInfo,
+    defaultSelection,
     pixelWidth,
     options,
     setModelSelection,
@@ -14,7 +14,7 @@ export function ModelSearchSelect({
     regex: RegExp,
     otherEnabled: boolean,
     placeholderText?: string,
-    defaultInfo?: {
+    defaultSelection?: {
         text: string,
         model_id: number
     },
@@ -30,10 +30,10 @@ export function ModelSearchSelect({
     idPrefix: string
 }) {
     // * initialize state variables
-    const [inputInfo, setInputInfo] = useState<{
+    const [inputSelection, setInputSelection] = useState<{
         text: string,
         model_id: number
-    }>(defaultInfo || {
+    }>(defaultSelection || {
         text: "",
         model_id: -1
     });
@@ -50,8 +50,8 @@ export function ModelSearchSelect({
     function handleChange(event: any) {
         // * ensure following input regex
         if (regex.test(event.target.value)) {
-            setInputInfo({
-                ...inputInfo,
+            setInputSelection({
+                ...inputSelection,
                 text: event.target.value
             });
         }
@@ -114,34 +114,34 @@ export function ModelSearchSelect({
         }
 
         if (maxLengthMatch > 0) {
-            setInputInfo(matchOption);
+            setInputSelection(matchOption);
             setModelSelection(matchOption);
         } else {
-            setInputInfo(defaultInfo || options[0]);
-            setModelSelection(defaultInfo || options[0]);
+            setInputSelection(defaultSelection || options[0]);
+            setModelSelection(defaultSelection || options[0]);
         }
     }
 
     // * update state if DOM doesn't change
-    useEffect(() => setInputInfo(defaultInfo || {
+    useEffect(() => setInputSelection(defaultSelection || {
         text: "",
         model_id: -1
-    }), [defaultInfo]);
+    }), [defaultSelection]);
 
     return (
         <>
             <div className="flex flex-col gap-y-0">
-                <input id={`${idPrefix}-model-select-field`} className="peer text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black read-only:bg-slate-100 read-only:dark:bg-slate-800" type="text" placeholder={placeholderText} value={inputInfo.text} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{ width: `${pixelWidth}px` }} />
+                <input id={`${idPrefix}-model-select-field`} className="peer text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black read-only:bg-slate-100 read-only:dark:bg-slate-800" type="text" placeholder={placeholderText} value={inputSelection.text} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{ width: `${pixelWidth}px` }} />
                 <div className="relative peer-read-only:invisible">
                     <div className={`${optionsShown && matchingOptions.length > 0 ? "visible" : "invisible"} bg-white dark:bg-black border-2 border-slate-200 dark:border-slate-700 flex flex-col items-start rounded-md absolute left-0 top-0 p-2 z-10`}>
                         {matchingOptions.map((option, index) => {
                             return <button
-                                className={`hover:bg-slate-200 dark:hover:bg-slate-700 ${option.model_id === inputInfo.model_id ? "bg-sky-100 dark:bg-blue-900" : "bg-transparent"} text-black dark:text-white rounded-md p-1 w-full text-lg text-left`}
+                                className={`hover:bg-slate-200 dark:hover:bg-slate-700 ${option.model_id === inputSelection.model_id ? "bg-sky-100 dark:bg-blue-900" : "bg-transparent"} text-black dark:text-white rounded-md p-1 w-full text-lg text-left`}
                                 key={internalIdPrefix + "-" + index}
                                 id={internalIdPrefix + "-" + index}
                                 onClick={(event: any) => {
                                     event.preventDefault();
-                                    setInputInfo(option);
+                                    setInputSelection(option);
                                     setModelSelection(option);
                                     setOptionsShown(false);
                                 }}>

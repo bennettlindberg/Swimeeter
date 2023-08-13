@@ -1,12 +1,13 @@
 import { useContext, useId } from "react";
 
 import { MeetContext } from "../../pages/meets/MeetPage.tsx";
-import { Meet } from "../../utilities/models/modelTypes.ts";
-import { convertRawData } from "../../utilities/forms/formHelpers.ts";
-import { generateHostName } from "../../utilities/models/nameGenerators.ts";
+import { Meet } from "../../utilities/helpers/modelTypes.ts";
+import { convertRawData } from "../../utilities/helpers/formHelpers.ts";
+import { generateHostName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { EditingForm } from "../../utilities/forms/EditingForm.tsx";
-import { FormGroup } from "../../utilities/forms/FormGroup.tsx";
+import { EditingFormGroup } from "../../utilities/forms/EditingFormGroup.tsx";
+import { NeutralFormGroup } from "../../utilities/forms/NeutralFormGroup.tsx";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
@@ -34,9 +35,10 @@ export function MeetEditingForm() {
                         idSuffix: "-name-text-field",
                         readOnly: false,
                         duplicateSensitive: true,
-                        formGroup: <FormGroup
+                        formGroup: <EditingFormGroup
                             label={<InputLabel inputId={idPrefix + "-name-text-field"} text="Name" />}
                             key={idPrefix + "-name-text-field"}
+                            optional={false}
                             field={<TextInput
                                 regex={/^.*$/}
                                 placeholderText="Name"
@@ -44,10 +46,14 @@ export function MeetEditingForm() {
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-name"}
                             />}
-                            info={{
+                            editInfo={{
                                 title: "NAME",
-                                description: "The name field should contain the name of the meet being modified.",
+                                description: "The name field should contain the name of the meet.",
                                 permitted_values: "Any string at least 1 character long.",
+                            }}
+                            viewInfo={{
+                                title: "NAME",
+                                description: "The name field contains the name of the meet.",
                             }}
                         />,
                         validator: (name: string) => {
@@ -68,22 +74,27 @@ export function MeetEditingForm() {
                         idSuffix: "-visibility-select-field",
                         readOnly: false,
                         duplicateSensitive: false,
-                        formGroup: <FormGroup
+                        formGroup: <EditingFormGroup
                             label={<InputLabel inputId={idPrefix + "-visibility-select-field"} text="Visibility" />}
                             key={idPrefix + "-visibility-select-field"}
+                            optional={false}
                             field={<SearchSelect
                                 regex={/^(P(u(b(l(i(c?)?)?)?)?)?)?$|^(P(r(i(v(a(t(e?)?)?)?)?)?)?)?$/}
                                 otherEnabled={false}
                                 placeholderText="Visibility"
                                 defaultText={meetData.fields.is_public ? "Public" : "Private"}
-                                pixelWidth={100}
+                                pixelWidth={300}
                                 idPrefix={idPrefix + "-visibility"}
                                 options={["Public", "Private"]}
                             />}
-                            info={{
+                            editInfo={{
                                 title: "VISIBILITY",
-                                description: "The value of the visibility field determines who can view the meet being modified. Private meets can only be seen by the meet host.",
+                                description: "The value of the visibility field determines who can view the meet. Private meets can only be seen by the meet host.",
                                 permitted_values: "Public, Private"
+                            }}
+                            viewInfo={{
+                                title: "VISIBILITY",
+                                description: "The value of the visibility field determines who can view the meet. Private meets can only be seen by the meet host.",
                             }}
                         />,
                         validator: (visibility: string) => {
@@ -115,7 +126,7 @@ export function MeetEditingForm() {
                         idSuffix: "-host-text-field",
                         readOnly: true,
                         duplicateSensitive: false,
-                        formGroup: <FormGroup
+                        formGroup: <NeutralFormGroup
                             label={<InputLabel inputId={idPrefix + "-host-text-field"} text="Host" />}
                             key={idPrefix + "-host-text-field"}
                             field={<TextInput
@@ -127,8 +138,7 @@ export function MeetEditingForm() {
                             />}
                             info={{
                                 title: "HOST",
-                                description: "The host field contains the name of the account that created and owns the meet being viewed. The value of this field is read-only as it cannot be changed after meet creation.",
-                                permitted_values: "Any string at least 1 character long.",
+                                description: "The host field contains the name of the account that created and owns the meet. The value of this field is read-only as it cannot be changed after meet creation.",
                             }}
                         />,
                     },
@@ -137,7 +147,7 @@ export function MeetEditingForm() {
                         idSuffix: "-begin_time-text-field",
                         readOnly: true,
                         duplicateSensitive: false,
-                        formGroup: <FormGroup
+                        formGroup: <NeutralFormGroup
                             label={<InputLabel inputId={idPrefix + "-begin_time-text-field"} text="Begin time" />}
                             key={idPrefix + "-begin_time-text-field"}
                             field={<TextInput
@@ -150,7 +160,6 @@ export function MeetEditingForm() {
                             info={{
                                 title: "BEGIN TIME",
                                 description: "The begin time field contains the overall beginning time of the meet. The value of this field is read-only as it is determined automatically by the beginning times of the meet's sessions.",
-                                permitted_values: "Any valid date and time.",
                             }}
                         />,
                     },
@@ -159,7 +168,7 @@ export function MeetEditingForm() {
                         idSuffix: "-end_time-text-field",
                         readOnly: true,
                         duplicateSensitive: false,
-                        formGroup: <FormGroup
+                        formGroup: <NeutralFormGroup
                             label={<InputLabel inputId={idPrefix + "-end_time-text-field"} text="End time" />}
                             key={idPrefix + "-end_time-text-field"}
                             field={<TextInput
@@ -172,7 +181,6 @@ export function MeetEditingForm() {
                             info={{
                                 title: "END TIME",
                                 description: "The end time field contains the overall ending time of the meet. The value of this field is read-only as it is determined automatically by the ending times of the meet's sessions.",
-                                permitted_values: "Any valid date and time.",
                             }}
                         />,
                     }

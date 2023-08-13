@@ -439,144 +439,126 @@ def get_relationship_tree(model_type, model_object):
     try:
         match model_type:
             case "Meet":
-                return [
-                    {
-                        "model": "MEET",
+                return {
+                    "MEET": {
                         "title": model_object.name,
                         "id": model_object.id,
                         "route": f"/meets/{model_object.id}",
                     }
-                ]
+                }
 
             case "Pool":
-                return [
-                    {
-                        "model": "MEET",
+                return {
+                    "MEET": {
                         "title": model_object.meet.name,
                         "id": model_object.meet.id,
                         "route": f"/meets/{model_object.meet.id}",
                     },
-                    {
-                        "model": "POOL",
+                    "POOL": {
                         "title": model_object.name,
                         "id": model_object.id,
                         "route": f"/meets/{model_object.meet.id}/pools/{model_object.id}",
                     },
-                ]
+                }
 
             case "Session":
-                return [
-                    {
-                        "model": "MEET",
+                return {
+                    "MEET": {
                         "title": model_object.meet.name,
                         "id": model_object.meet.id,
                         "route": f"/meets/{model_object.meet.id}",
                     },
-                    {
-                        "model": "SESSION",
+                    "SESSION": {
                         "title": model_object.name,
                         "id": model_object.id,
                         "route": f"/meets/{model_object.meet.id}/sessions/{model_object.id}",
                     },
-                ]
+                }
 
             case "Event":
-                return [
-                    {
-                        "model": "MEET",
+                return {
+                    "MEET": {
                         "title": model_object.session.meet.name,
                         "id": model_object.session.meet.id,
                         "route": f"/meets/{model_object.session.meet.id}",
                     },
-                    {
-                        "model": "SESSION",
+                    "SESSION": {
                         "title": model_object.session.name,
                         "id": model_object.session.id,
                         "route": f"/meets/{model_object.session.meet.id}/sessions/{model_object.session.id}",
                     },
-                    {
-                        "model": "EVENT",
+                    "EVENT": {
                         "title": get_event_name(model_object),
                         "id": model_object.id,
                         "route": f"/meets/{model_object.session.meet.id}/events/{model_object.id}",
                     },
-                ]
+                }
 
             case "Team":
-                return [
-                    {
-                        "model": "MEET",
+                return {
+                    "MEET": {
                         "title": model_object.meet.name,
                         "id": model_object.meet.id,
                         "route": f"/meets/{model_object.meet.id}",
                     },
-                    {
-                        "model": "TEAM",
+                    "TEAM": {
                         "title": model_object.name,
                         "id": model_object.id,
                         "route": f"/meets/{model_object.meet.id}/teams/{model_object.id}",
                     },
-                ]
+                }
 
             case "Swimmer":
-                return [
-                    {
-                        "model": "MEET",
+                return {
+                    "MEET": {
                         "title": model_object.meet.name,
                         "id": model_object.meet.id,
                         "route": f"/meets/{model_object.meet.id}",
                     },
-                    {
-                        "model": "SWIMMER",
+                    "SWIMMER": {
                         "title": get_swimmer_name(model_object),
                         "id": model_object.id,
                         "route": f"/meets/{model_object.meet.id}/swimmers/{model_object.id}",
                     },
-                ]
+                }
 
             case "Individual_entry":
-                return [
-                    {
-                        "model": "MEET",
+                return {
+                    "MEET": {
                         "title": model_object.event.meet.name,
                         "id": model_object.event.meet.id,
                         "route": f"/meets/{model_object.event.meet.id}",
                     },
-                    {
-                        "model": "EVENT",
+                    "EVENT": {
                         "title": get_event_name(model_object.event),
                         "id": model_object.event.id,
                         "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}",
                     },
-                    {
-                        "model": "INDIVIDUAL_ENTRY",
+                    "INDIVIDUAL_ENTRY": {
                         "title": get_individual_entry_name(model_object),
                         "id": model_object.id,
                         "route": f"/meets/{model_object.event.meet.id}/individual_entries/{model_object.id}",
                     },
-                ]
+                }
 
             case "Relay_entry":
-                return [
-                    {
-                        "model": "MEET",
+                return {
+                    "MEET": {
                         "title": model_object.event.meet.name,
                         "id": model_object.event.meet.id,
                         "route": f"/meets/{model_object.event.meet.id}",
                     },
-                    {
-                        "model": "EVENT",
+                    "EVENT": {
                         "title": get_event_name(model_object.event),
                         "id": model_object.event.id,
                         "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}",
                     },
-                    {
-                        "model": "RELAY_ENTRY",
+                    "RELAY_ENTRY": {
                         "title": get_relay_entry_name(model_object),
                         "id": model_object.id,
                         "route": f"/meets/{model_object.event.meet.id}/relay_entries/{model_object.id}",
                     },
-                ]
+                }
 
             case _:
                 return Response(

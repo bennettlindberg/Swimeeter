@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 import { AppContext, NavTreeAction } from "../../../App.tsx";
-import { Meet } from "../../utilities/models/modelTypes.ts";
+import { Meet } from "../../utilities/helpers/modelTypes.ts";
+import { convertStringParamToInt } from "../../utilities/helpers/helperFunctions.ts";
 
 import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
@@ -79,8 +80,12 @@ export function MeetPage() {
     });
     const [isMeetHost, setIsMeetHost] = useState<boolean>(false);
 
+    // * initialize URL params
     const { meet_id } = useParams();
-    const meet_id_INT = parseInt(meet_id || "-1");
+    const meet_id_INT = convertStringParamToInt(meet_id || "-1");
+    if (meet_id_INT === -1) {
+        navigate("/errors/unknown");
+    }
 
     // * retrieve meet data
     useEffect(() => {

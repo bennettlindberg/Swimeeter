@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { AppContext, UserAction } from "../../../App.tsx";
-import { ErrorType } from "../../utilities/forms/formTypes.ts"
+import { ErrorType } from "../../utilities/helpers/formTypes.ts"
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
@@ -12,7 +12,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { MainContentSubheading } from "../../utilities/main_content/MainContentSubheading.tsx";
 
 import { DataForm } from "../../utilities/forms/DataForm.tsx";
-import { FormGroup } from "../../utilities/forms/FormGroup.tsx";
+import { CreationFormGroup } from "../../utilities/forms/CreationFormGroup.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
 
 // * define form types
@@ -306,15 +306,16 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
 
             <MainContentSubheading subheading="Credentials" />
 
-            <FormGroup
+            <CreationFormGroup
                 label={<InputLabel inputId={idPrefix + "-email-text-field"} text="Email" />}
+                optional={false}
                 field={<TextInput
                     regex={/^[A-Za-z0-9\.\@]*$/}
                     placeholderText="Email"
                     pixelWidth={300}
                     idPrefix={idPrefix + "-email"}
                 />}
-                info={{
+                createInfo={{
                     title: "EMAIL",
                     description: "The email field should contain a valid email address to be associated with the account. This field cannot be changed after account creation.",
                     permitted_values: "Any email address containing alphanumeric strings, a single @ symbol, no consecutive periods, and no periods at the start or end of alphanumeric strings.",
@@ -322,8 +323,9 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                 }}
             />
 
-            <FormGroup
+            <CreationFormGroup
                 label={<InputLabel inputId={idPrefix + "-password-text-field"} text="Password" />}
+                optional={false}
                 field={<TextInput
                     regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
                     placeholderText="Password"
@@ -331,15 +333,16 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                     idPrefix={idPrefix + "-password"}
                     isPassword={true}
                 />}
-                info={{
+                createInfo={{
                     title: "PASSWORD",
                     description: "The password field should contain a password to be associated with the account. This field can be changed after account creation.",
                     permitted_values: "Any string at least 8 characters long containing at least one uppercase character (A-Z), one lowercase character (a-z), one number (0-9), and one special character (~`! @#$%^&*()_-+={[}]|\\:;\"\'<,>.?/)."
                 }}
             />
 
-            <FormGroup
+            <CreationFormGroup
                 label={<InputLabel inputId={idPrefix + "-repeat_password-text-field"} text="Repeat Password" />}
+                optional={false}
                 field={<TextInput
                     regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
                     placeholderText="Password"
@@ -347,7 +350,7 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                     idPrefix={idPrefix + "-repeat_password"}
                     isPassword={true}
                 />}
-                info={{
+                createInfo={{
                     title: "REPEAT PASSWORD",
                     description: "The repeat password field should contain the same password as provided above. The purpose of the repeat password field is to ensure that the user has entered their password as they intend.",
                     permitted_values: "The same string as provided in the password field above."
@@ -356,30 +359,32 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
 
             <MainContentSubheading subheading="Name (required)" />
 
-            <FormGroup
+            <CreationFormGroup
                 label={<InputLabel inputId={idPrefix + "-first_name-text-field"} text="First name" />}
+                optional={false}
                 field={<TextInput
                     regex={/^[A-Za-z\'\-]*$/}
                     placeholderText="First name"
-                    pixelWidth={200}
+                    pixelWidth={300}
                     idPrefix={idPrefix + "-first_name"}
                 />}
-                info={{
+                createInfo={{
                     title: "FIRST NAME",
                     description: "The first name field should contain the account owner's given name.",
                     permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
                 }}
             />
 
-            <FormGroup
+            <CreationFormGroup
                 label={<InputLabel inputId={idPrefix + "-last_name-text-field"} text="Last name" />}
+                optional={false}
                 field={<TextInput
                     regex={/^[A-Za-z\'\-]*$/}
                     placeholderText="Last name"
-                    pixelWidth={200}
+                    pixelWidth={300}
                     idPrefix={idPrefix + "-last_name"}
                 />}
-                info={{
+                createInfo={{
                     title: "LAST NAME",
                     description: "The last name field should contain the account owner's family name.",
                     permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
@@ -388,30 +393,32 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
 
             <MainContentSubheading subheading="Name (optional)" />
 
-            <FormGroup
+            <CreationFormGroup
                 label={<InputLabel inputId={idPrefix + "-middle_initials-text-field"} text="Middle initials" />}
+                optional={true}
                 field={<TextInput
                     regex={/^[A-Z ]*$/}
                     placeholderText="Middle initials"
-                    pixelWidth={200}
+                    pixelWidth={300}
                     idPrefix={idPrefix + "-middle_initials"}
                 />}
-                info={{
+                createInfo={{
                     title: "MIDDLE INITIALS",
                     description: "The middle initials field should contain a space-separated list of uppercase middle initials.",
                     permitted_values: "Empty, or any string at least 1 character long containing space-separated uppercase alphabetic characters."
                 }}
             />
 
-            <FormGroup
+            <CreationFormGroup
                 label={<InputLabel inputId={idPrefix + "-prefix-text-field"} text="Prefix" />}
+                optional={true}
                 field={<TextInput
                     regex={/^[A-Za-z\'\-\.]*$/}
                     placeholderText="Prefix"
-                    pixelWidth={200}
+                    pixelWidth={300}
                     idPrefix={idPrefix + "-prefix"}
                 />}
-                info={{
+                createInfo={{
                     title: "PREFIX",
                     description: "The prefix field should contain any special prefixes included in the account owner's name.",
                     common_values: "\"St.\", \"Sir.\" This field is not intended for \"Mr.\", \"Mrs.\", and \"Ms.\" prefixes.",
@@ -419,15 +426,16 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                 }}
             />
 
-            <FormGroup
+            <CreationFormGroup
                 label={<InputLabel inputId={idPrefix + "-suffix-text-field"} text="Suffix" />}
+                optional={true}
                 field={<TextInput
                     regex={/^[A-Za-z\'\-\.]*$/}
                     placeholderText="Suffix"
-                    pixelWidth={200}
+                    pixelWidth={300}
                     idPrefix={idPrefix + "-suffix"}
                 />}
-                info={{
+                createInfo={{
                     title: "SUFFIX",
                     description: "The suffix field should contain any special suffixes included in the account owner's name.",
                     common_values: "\"Jr.\", \"Sr.\", \"III\"",

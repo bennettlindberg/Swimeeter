@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { InfoType } from "../forms/formTypes.ts";
+import { InfoType } from "../helpers/formTypes.ts";
 
 import { DataForm } from "../forms/DataForm.tsx";
-import { FormGroup } from "../forms/FormGroup.tsx";
+import { NeutralFormGroup } from "../forms/NeutralFormGroup.tsx";
 
 import { InputLabel } from "../forms/InputLabel.tsx";
 import { TextInput } from "../inputs/TextInput.tsx";
@@ -55,7 +55,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The meet filter fields are used to narrow the meets listed in the table below by meet name and host name."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-meet_name-search-text-field"}
@@ -75,7 +75,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-host_first_name-search-text-field"}
@@ -95,7 +95,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-host_last_name-search-text-field"}
@@ -124,7 +124,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The meet filter fields are used to narrow the meets listed in the table below by meet name."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-meet_name-search-text-field"}
@@ -144,7 +144,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-visibility-search-text-field"}
@@ -173,7 +173,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The session filter fields are used to narrow the sessions listed in the table below by session name."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-session_name-search-text-field"}
@@ -202,7 +202,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The session filter fields are used to narrow the sessions listed in the table below by session name and pool name."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-session_name-search-text-field"}
@@ -222,7 +222,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-pool_name-search-text-field"}
@@ -251,7 +251,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The pool filter fields are used to narrow the pools listed in the table below by pool name, number of lanes, side length, and measure unit."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-pool_name-search-text-field"}
@@ -271,7 +271,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-number_of_lanes-search-text-field"}
@@ -291,7 +291,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-side_length-search-text-field"}
@@ -311,7 +311,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-measure_unit-search-text-field"}
@@ -340,7 +340,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The team filter fields are used to narrow the teams listed in the table below by team name and acronym."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-team_name-search-text-field"}
@@ -360,7 +360,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-team_acronym-search-text-field"}
@@ -389,7 +389,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The event filter fields are used to narrow the events listed in the table below by session name and event stroke, distance, minimum competing age, maximum competing age, and competing gender."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-distance-search-text-field"}
@@ -409,7 +409,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-stroke-search-text-field"}
@@ -429,7 +429,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-minimum_age-search-text-field"}
@@ -449,7 +449,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-maximum_age-search-text-field"}
@@ -469,7 +469,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-gender-search-text-field"}
@@ -489,7 +489,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-session_name-search-text-field"}
@@ -518,7 +518,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The event filter fields are used to narrow the events listed in the table below by event stroke, distance, minimum competing age, maximum competing age, and competing gender."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-distance-search-text-field"}
@@ -538,7 +538,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-stroke-search-text-field"}
@@ -558,7 +558,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-minimum_age-search-text-field"}
@@ -578,7 +578,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-maximum_age-search-text-field"}
@@ -598,7 +598,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-gender-search-text-field"}
@@ -627,7 +627,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The swimmer filter fields are used to narrow the swimmers listed in the table below by swimmer name, age, and gender and team name and acronym."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-swimmer_first_name-search-text-field"}
@@ -647,7 +647,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-swimmer_last_name-search-text-field"}
@@ -667,7 +667,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-age-search-text-field"}
@@ -687,7 +687,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-gender-search-text-field"}
@@ -707,7 +707,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-team_name-search-text-field"}
@@ -727,7 +727,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-team_acronym-search-text-field"}
@@ -756,7 +756,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The swimmer filter fields are used to narrow the swimmers listed in the table below by swimmer name, age, and gender."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-swimmer_first_name-search-text-field"}
@@ -776,7 +776,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-swimmer_last_name-search-text-field"}
@@ -796,7 +796,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-age-search-text-field"}
@@ -816,7 +816,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-gender-search-text-field"}
@@ -846,7 +846,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The individual entry filter fields are used to narrow the individual entries listed in the table below by swimmer name, age, and gender and swimmer team name and acronym."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-swimmer_first_name-search-text-field"}
@@ -866,7 +866,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-swimmer_last_name-search-text-field"}
@@ -886,7 +886,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-age-search-text-field"}
@@ -906,7 +906,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-gender-search-text-field"}
@@ -926,7 +926,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-team_name-search-text-field"}
@@ -946,7 +946,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-team_acronym-search-text-field"}
@@ -975,7 +975,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The individual entry filter fields are used to narrow the individual entries listed in the table below by event session name and event stroke, distance, minimum competing age, maximum competing age, and competing gender."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-distance-search-text-field"}
@@ -995,7 +995,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-stroke-search-text-field"}
@@ -1015,7 +1015,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-minimum_age-search-text-field"}
@@ -1035,7 +1035,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-maximum_age-search-text-field"}
@@ -1055,7 +1055,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-gender-search-text-field"}
@@ -1075,7 +1075,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-session_name-search-text-field"}
@@ -1104,7 +1104,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The individual entry filter fields are used to narrow the individual entries listed in the table below by the information associated with each entry's swimmer and event."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-distance-search-text-field"}
@@ -1124,7 +1124,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-stroke-search-text-field"}
@@ -1144,7 +1144,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-minimum_age-search-text-field"}
@@ -1164,7 +1164,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-maximum_age-search-text-field"}
@@ -1184,7 +1184,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-gender-search-text-field"}
@@ -1204,7 +1204,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-session_name-search-text-field"}
@@ -1224,7 +1224,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-swimmer_first_name-search-text-field"}
@@ -1244,7 +1244,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-swimmer_last_name-search-text-field"}
@@ -1264,7 +1264,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-age-search-text-field"}
@@ -1284,7 +1284,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-gender-search-text-field"}
@@ -1314,7 +1314,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The relay entry filter fields are used to narrow the relay entries listed in the table below by participant swimmer names and team name and acronym."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-team_name-search-text-field"}
@@ -1334,7 +1334,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-team_acronym-search-text-field"}
@@ -1354,7 +1354,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-participant_first_names-search-text-field"}
@@ -1384,7 +1384,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     description: "The relay entry filter fields are used to narrow the relay entries listed in the table below by event session name, event stroke, distance, minimum competing age, maximum competing age, and competing gender, and participant swimmer names."
                 });
                 setFormInputs([
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-distance-search-text-field"}
@@ -1404,7 +1404,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-stroke-search-text-field"}
@@ -1424,7 +1424,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-minimum_age-search-text-field"}
@@ -1444,7 +1444,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-maximum_age-search-text-field"}
@@ -1464,7 +1464,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any positive integer."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-gender-search-text-field"}
@@ -1484,7 +1484,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-session_name-search-text-field"}
@@ -1504,7 +1504,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                             permitted_values: "Any string."
                         }}
                     />,
-                    <FormGroup
+                    <NeutralFormGroup
                         label={
                             <InputLabel
                                 inputId={idPrefix + "-participant_first_names-search-text-field"}

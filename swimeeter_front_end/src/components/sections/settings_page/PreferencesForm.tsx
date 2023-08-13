@@ -1,18 +1,18 @@
 import { useContext, useEffect, useId, useReducer } from "react";
 import axios from "axios";
 
-import { convertRawData } from "../../utilities/forms/formHelpers.ts";
+import { FormContext, convertRawData } from "../../utilities/helpers/formHelpers.ts";
 
 import { AppContext, UserAction, UserState } from "../../../App.tsx";
-import { ErrorType } from "../../utilities/forms/formTypes.ts"
+import { ErrorType } from "../../utilities/helpers/formTypes.ts"
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 import { DataForm } from "../../utilities/forms/DataForm.tsx";
-import { FormGroup } from "../../utilities/forms/FormGroup.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
+import { EditingFormGroup } from "../../utilities/forms/EditingFormGroup.tsx";
 
 // * define form types
 type FormState = {
@@ -172,8 +172,8 @@ export function PreferencesForm() {
         const formattedDataEntryInformation = convertRawData<string, boolean>(
             rawData.data_entry_information,
             [
-                { raw: "Yes", formatted: true },
-                { raw: "No", formatted: false }
+                { raw: "Show", formatted: true },
+                { raw: "Hide", formatted: false }
             ]
         );
         if (formattedDataEntryInformation === undefined) {
@@ -181,10 +181,10 @@ export function PreferencesForm() {
             formDispatch({
                 type: "SAVE_FAILURE",
                 error: {
-                    title: "DATA ENTRY INFORMATION ENTRY ERROR",
-                    description: "An unexpected value was entered for the display data entry information field.",
+                    title: "INFORMATION BUTTONS ENTRY ERROR",
+                    description: "An unexpected value was entered for the information buttons field.",
                     fields: "Display data entry information",
-                    recommendation: "Choose \"Yes\" or \"No\" as the entered value for the display data entry information field."
+                    recommendation: "Choose \"Show\" or \"Hide\" as the entered value for the display data entry information field."
                 }
             });
             return;
@@ -195,8 +195,8 @@ export function PreferencesForm() {
         const formattedDestructiveActionConfirms = convertRawData<string, boolean>(
             rawData.destructive_action_confirms,
             [
-                { raw: "Yes", formatted: true },
-                { raw: "No", formatted: false }
+                { raw: "Show", formatted: true },
+                { raw: "Hide", formatted: false }
             ]
         );
         if (formattedDestructiveActionConfirms === undefined) {
@@ -205,9 +205,9 @@ export function PreferencesForm() {
                 type: "SAVE_FAILURE",
                 error: {
                     title: "DESTRUCTIVE ACTION CONFIRMATIONS ENTRY ERROR",
-                    description: "An unexpected value was entered for the display destructive action confirmations field.",
+                    description: "An unexpected value was entered for the destructive action confirmations field.",
                     fields: "Display destructive action confirmations",
-                    recommendation: "Choose \"Yes\" or \"No\" as the entered value for the display destructive action confirmations field."
+                    recommendation: "Choose \"Show\" or \"Hide\" as the entered value for the display destructive action confirmations field."
                 }
             });
             return;
@@ -218,8 +218,8 @@ export function PreferencesForm() {
         const formattedMotionSafe = convertRawData<string, boolean>(
             rawData.motion_safe,
             [
-                { raw: "Yes", formatted: true },
-                { raw: "No", formatted: false }
+                { raw: "Show", formatted: true },
+                { raw: "Hide", formatted: false }
             ]
         );
         if (formattedMotionSafe === undefined) {
@@ -228,9 +228,9 @@ export function PreferencesForm() {
                 type: "SAVE_FAILURE",
                 error: {
                     title: "MOTION EFFECTS ENTRY ERROR",
-                    description: "An unexpected value was entered for the use motion effects field.",
+                    description: "An unexpected value was entered for the motion effects field.",
                     fields: "Use motion effects",
-                    recommendation: "Choose \"Yes\" or \"No\" as the entered value for the use motion effects field."
+                    recommendation: "Choose \"Show\" or \"Hide\" as the entered value for the use motion effects field."
                 }
             });
             return;
@@ -291,73 +291,95 @@ export function PreferencesForm() {
         <DataForm>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
 
-            <FormGroup
-                label={<InputLabel inputId={idPrefix + "-screen_mode-select-field"} text="Preferred screen mode" />}
-                field={<SearchSelect
-                    regex={/^(S(y(s(t(e(m?)?)?)?)?)?)?$|^(D(a(r(k?)?)?)?)?$|^(L(i(g(h(t?)?)?)?)?)?$/}
-                    otherEnabled={false}
-                    pixelWidth={100}
-                    idPrefix={idPrefix + "-screen_mode"}
-                    defaultText={userState.preferences.screen_mode == "system" ? "System" : userState.preferences.screen_mode == "dark" ? "Dark" : "Light"}
-                    options={["System", "Light", "Dark"]}
-                />}
-                info={{
-                    title: "PREFERRED SCREEN MODE",
-                    description: "The preferred screen mode option determines if the site is displayed in light or dark mode. Use the value \"System\" to use your system's screen mode setting.",
-                    permitted_values: "System, Light, Dark"
-                }}
-            />
+            <FormContext.Provider value={formState.mode === "edit"}>
+                <EditingFormGroup
+                    label={<InputLabel inputId={idPrefix + "-screen_mode-select-field"} text="Screen mode" />}
+                    optional={false}
+                    field={<SearchSelect
+                        regex={/^(S(y(s(t(e(m?)?)?)?)?)?)?$|^(D(a(r(k?)?)?)?)?$|^(L(i(g(h(t?)?)?)?)?)?$/}
+                        otherEnabled={false}
+                        pixelWidth={300}
+                        idPrefix={idPrefix + "-screen_mode"}
+                        defaultText={userState.preferences.screen_mode == "system" ? "System" : userState.preferences.screen_mode == "dark" ? "Dark" : "Light"}
+                        options={["System", "Light", "Dark"]}
+                    />}
+                    editInfo={{
+                        title: "SCREEN MODE",
+                        description: "The screen mode option determines if the site is displayed in light or dark mode. Use the value \"System\" to use your system's screen mode setting.",
+                        permitted_values: "System, Light, Dark"
+                    }}
+                    viewInfo={{
+                        title: "SCREEN MODE",
+                        description: "The screen mode option determines if the site is displayed in light or dark mode. Use the value \"System\" to use your system's screen mode setting.",
+                    }}
+                />
 
-            <FormGroup
-                label={<InputLabel inputId={idPrefix + "-data_entry_information-select-field"} text="Display data entry information buttons" />}
-                field={<SearchSelect
-                    regex={/^(Y(e(s?)?)?)?$|^(N(o?)?)?$/}
-                    otherEnabled={false}
-                    pixelWidth={100}
-                    idPrefix={idPrefix + "-data_entry_information"}
-                    defaultText={userState.preferences.data_entry_information ? "Yes" : "No"}
-                    options={["Yes", "No"]}
-                />}
-                info={{
-                    title: "DATA ENTRY INFORMATION",
-                    description: "The display data entry information option determines if information buttons and panes (such as this one) are displayed on site forms.",
-                    permitted_values: "On, Off"
-                }}
-            />
+                <EditingFormGroup
+                    label={<InputLabel inputId={idPrefix + "-data_entry_information-select-field"} text="Information buttons" />}
+                    optional={false}
+                    field={<SearchSelect
+                        regex={/^(S(h(o(w?)?)?)?)?$|^(H(i(d(e?)?)?)?)?$/}
+                        otherEnabled={false}
+                        pixelWidth={300}
+                        idPrefix={idPrefix + "-data_entry_information"}
+                        defaultText={userState.preferences.data_entry_information ? "Show" : "Hide"}
+                        options={["Show", "Hide"]}
+                    />}
+                    editInfo={{
+                        title: "INFORMATION BUTTONS",
+                        description: "The information buttons option determines if information buttons and panes (such as this one) are displayed on site forms.",
+                        permitted_values: "Show, Hide"
+                    }}
+                    viewInfo={{
+                        title: "INFORMATION BUTTONS",
+                        description: "The information buttons option determines if information buttons and panes (such as this one) are displayed on site forms.",
+                    }}
+                />
 
-            <FormGroup
-                label={<InputLabel inputId={idPrefix + "-destructive_action_confirms-select-field"} text="Display destructive action confirmation pop-ups" />}
-                field={<SearchSelect
-                    regex={/^(Y(e(s?)?)?)?$|^(N(o?)?)?$/}
-                    otherEnabled={false}
-                    pixelWidth={100}
-                    idPrefix={idPrefix + "-destructive_action_confirms"}
-                    defaultText={userState.preferences.destructive_action_confirms ? "Yes" : "No"}
-                    options={["Yes", "No"]}
-                />}
-                info={{
-                    title: "DESTRUCTIVE ACTION CONFIRMATIONS",
-                    description: "The display data entry confirmation pop-ups option determines if confirmation panes are displayed when a user\'s action may result in data destruction.",
-                    permitted_values: "On, Off"
-                }}
-            />
+                <EditingFormGroup
+                    label={<InputLabel inputId={idPrefix + "-destructive_action_confirms-select-field"} text="Destructive action confirmations" />}
+                    optional={false}
+                    field={<SearchSelect
+                        regex={/^(S(h(o(w?)?)?)?)?$|^(H(i(d(e?)?)?)?)?$/}
+                        otherEnabled={false}
+                        pixelWidth={300}
+                        idPrefix={idPrefix + "-destructive_action_confirms"}
+                        defaultText={userState.preferences.destructive_action_confirms ? "Show" : "Hide"}
+                        options={["Show", "Hide"]}
+                    />}
+                    editInfo={{
+                        title: "DESTRUCTIVE ACTION CONFIRMATIONS",
+                        description: "The data entry confirmations option determines if confirmation panes are displayed when a user\'s action may result in data destruction.",
+                        permitted_values: "Show, Hide"
+                    }}
+                    viewInfo={{
+                        title: "DESTRUCTIVE ACTION CONFIRMATIONS",
+                        description: "The data entry confirmations option determines if confirmation panes are displayed when a user\'s action may result in data destruction.",
+                    }}
+                />
 
-            <FormGroup
-                label={<InputLabel inputId={idPrefix + "-motion_safe-select-field"} text="Use motion effects" />}
-                field={<SearchSelect
-                    regex={/^(Y(e(s?)?)?)?$|^(N(o?)?)?$/}
-                    otherEnabled={false}
-                    pixelWidth={100}
-                    idPrefix={idPrefix + "-motion_safe"}
-                    defaultText={userState.preferences.motion_safe ? "Yes" : "No"}
-                    options={["Yes", "No"]}
-                />}
-                info={{
-                    title: "MOTION EFFECTS",
-                    description: "The use motion effects option determines if applicable site components display animations. For example, setting this option to \"No\" will freeze the site\'s navigation bar waves.",
-                    permitted_values: "On, Off"
-                }}
-            />
+                <EditingFormGroup
+                    label={<InputLabel inputId={idPrefix + "-motion_safe-select-field"} text="Motion effects" />}
+                    optional={false}
+                    field={<SearchSelect
+                        regex={/^(S(h(o(w?)?)?)?)?$|^(H(i(d(e?)?)?)?)?$/}
+                        otherEnabled={false}
+                        pixelWidth={300}
+                        idPrefix={idPrefix + "-motion_safe"}
+                        defaultText={userState.preferences.motion_safe ? "Show" : "Hide"}
+                        options={["Show", "Hide"]}
+                    />}
+                    editInfo={{
+                        title: "MOTION EFFECTS",
+                        description: "The motion effects option determines if applicable site components display animations. For example, setting this option to \"Hide\" will freeze the site\'s navigation bar waves.",
+                        permitted_values: "Show, Hide"
+                    }}
+                    viewInfo={{
+                        title: "MOTION EFFECTS",
+                        description: "The motion effects option determines if applicable site components display animations. For example, setting this option to \"Hide\" will freeze the site\'s navigation bar waves.",
+                    }}
+                />
+            </FormContext.Provider>
 
             {formState.mode === "edit"
                 ? <div className="flex flex-row flex-wrap gap-x-2">

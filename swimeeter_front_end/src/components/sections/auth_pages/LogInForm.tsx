@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { AppContext, UserAction } from "../../../App.tsx";
-import { ErrorType } from "../../utilities/forms/formTypes.ts"
+import { ErrorType } from "../../utilities/helpers/formTypes.ts"
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 
 import { DataForm } from "../../utilities/forms/DataForm.tsx";
-import { FormGroup } from "../../utilities/forms/FormGroup.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
+import { NeutralFormGroup } from "../../utilities/forms/NeutralFormGroup.tsx";
 
 // * define form types
 type FormState = {
@@ -184,7 +184,7 @@ export function LogInForm({ forwardTo }: { forwardTo?: string }) {
         <DataForm>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
 
-            <FormGroup
+            <NeutralFormGroup
                 label={<InputLabel inputId={idPrefix + "-email-text-field"} text="Email" />}
                 field={<TextInput
                     regex={/^[A-Za-z0-9\.\@]*$/}
@@ -200,7 +200,7 @@ export function LogInForm({ forwardTo }: { forwardTo?: string }) {
                 }}
             />
 
-            <FormGroup
+            <NeutralFormGroup
                 label={<InputLabel inputId={idPrefix + "-password-text-field"} text="Password" />}
                 field={<TextInput
                     regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}

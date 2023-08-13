@@ -2,9 +2,10 @@ import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { DestructiveType, DuplicateType, ErrorType, InfoType } from "../../utilities/forms/formTypes.ts";
+import { DestructiveType, DuplicateType, ErrorType, InfoType } from "../helpers/formTypes.ts";
 
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
+import { FormContext } from "../helpers/formHelpers.ts";
 
 import { DataForm } from "../../utilities/forms/DataForm.tsx";
 import { ErrorPane } from "../../utilities/forms/ErrorPane.tsx";
@@ -115,10 +116,12 @@ export function CreationForm({
         queryParamTitle: string,
         idSuffix: string,
         type: string,
-        info: InfoType,
+        baseInfo: InfoType,
+        viewInfo?: InfoType
         label: JSX.Element,
+        optional: boolean,
         placeholderText: string,
-        defaultInfo: {
+        defaultSelection: {
             text: string,
             model_id: number
         }
@@ -348,23 +351,27 @@ export function CreationForm({
             {formState.duplicate && <DuplicatePane handleClick={handleDuplicateSelection} info={formState.duplicate} />}
             {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}
 
-            {formInputFields.map(formInput => formInput.formGroup)}
-            {modelSelectFields.map(modelSelectInput => {
-                return (
-                    <ModelSelectGenerator 
-                        idPrefix={idPrefix}
-                        modelInfo={modelSelectInput.modelInfo}
-                        label={modelSelectInput.label}
-                        info={modelSelectInput.info}
-                        placeholderText={modelSelectInput.placeholderText}
-                        defaultInfo={modelSelectInput.defaultInfo}
-                        setModelSelection={(selection: {
-                            text: string,
-                            model_id: number
-                        }) => handleModelSelection(modelSelectInput.queryParamTitle, selection)}
-                    />
-                )
-            })}
+            <FormContext.Provider value={true}>
+                {formInputFields.map(formInput => formInput.formGroup)}
+                {modelSelectFields.map(modelSelectInput => {
+                    return (
+                        <ModelSelectGenerator 
+                            formGroupType="creation"
+                            optional={modelSelectInput.optional}
+                            idPrefix={idPrefix}
+                            modelInfo={modelSelectInput.modelInfo}
+                            label={modelSelectInput.label}
+                            baseInfo={modelSelectInput.baseInfo}
+                            placeholderText={modelSelectInput.placeholderText}
+                            defaultSelection={modelSelectInput.defaultSelection}
+                            setModelSelection={(selection: {
+                                text: string,
+                                model_id: number
+                            }) => handleModelSelection(modelSelectInput.queryParamTitle, selection)}
+                        />
+                    )
+                })}
+            </FormContext.Provider>
 
             <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text={submitText} type="submit" handleClick={(event: any) => {
                 event.preventDefault();

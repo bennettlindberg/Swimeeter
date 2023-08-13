@@ -1,5 +1,5 @@
 import { IconSVG } from "../svgs/IconSVG";
-import { DuplicateType } from "./formTypes.ts"
+import { DuplicateType } from "../helpers/formTypes.ts"
 
 export function DuplicatePane({ handleClick, info }: {
     handleClick: (duplicate_handling: "keep_new" | "keep_both" | "cancel") => void,

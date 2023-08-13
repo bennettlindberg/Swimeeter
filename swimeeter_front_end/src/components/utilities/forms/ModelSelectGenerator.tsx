@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { InfoType } from "./formTypes.ts";
-import { GenericModel, Pool, Session, Event, Swimmer, Team, IndividualEntry, RelayEntry } from "../models/modelTypes.ts";
+import { InfoType } from "../helpers/formTypes.ts";
+import { GenericModel, Pool, Session, Event, Swimmer, Team, IndividualEntry, RelayEntry } from "../helpers/modelTypes.ts";
 
-import { FormGroup } from "./FormGroup.tsx";
+import { EditingFormGroup } from "./EditingFormGroup.tsx";
+import { CreationFormGroup } from "./CreationFormGroup.tsx";
 import { ModelSearchSelect } from "../inputs/ModelSearchSelect.tsx";
-import { generateEventName, generateIndividualEntryName, generateRelayEntryName, generateSwimmerName } from "../models/nameGenerators.ts";
+import { generateEventName, generateIndividualEntryName, generateRelayEntryName, generateSwimmerName } from "../helpers/nameGenerators.ts";
 
 export type ModelInfo = {
     modelName: string,
@@ -46,20 +47,26 @@ function formatOptionText(model_object: GenericModel, modelName: string) {
 
 // ~ component
 export function ModelSelectGenerator({
+    formGroupType,
     idPrefix,
     modelInfo,
+    optional,
     label,
-    info,
+    baseInfo,
+    viewInfo,
     placeholderText,
-    defaultInfo,
+    defaultSelection,
     setModelSelection,
 }: {
+    formGroupType: "editing" | "creation",
     idPrefix: string,
-    modelInfo: ModelInfo
+    modelInfo: ModelInfo,
+    optional: boolean,
     label: JSX.Element,
-    info: InfoType,
+    baseInfo: InfoType,
+    viewInfo?: InfoType,
     placeholderText: string,
-    defaultInfo: {
+    defaultSelection: {
         text: string,
         model_id: number
     }
@@ -109,24 +116,50 @@ export function ModelSelectGenerator({
         retrieveOptions();
     }, []);
 
-    return (
-        <>
-            <FormGroup
-                label={label}
-                info={info}
-                field={
-                    <ModelSearchSelect
-                        regex={/^.*$/}
-                        otherEnabled={false}
-                        placeholderText={placeholderText}
-                        defaultInfo={defaultInfo}
-                        pixelWidth={200}
-                        setModelSelection={setModelSelection}
-                        idPrefix={idPrefix}
-                        options={options}
-                    />
-                }
-            />
-        </>
-    )
+    if (formGroupType === "editing") { // ~ "editing"
+        return (
+            <>
+                <EditingFormGroup
+                    label={label}
+                    editInfo={baseInfo}
+                    viewInfo={viewInfo || baseInfo}
+                    optional={optional}
+                    field={
+                        <ModelSearchSelect
+                            regex={/^.*$/}
+                            otherEnabled={false}
+                            placeholderText={placeholderText}
+                            defaultSelection={defaultSelection}
+                            pixelWidth={200}
+                            setModelSelection={setModelSelection}
+                            idPrefix={idPrefix}
+                            options={options}
+                        />
+                    }
+                />
+            </>
+        );
+    } else { // ~ "creation"
+        return (
+            <>
+                <CreationFormGroup
+                    label={label}
+                    createInfo={baseInfo}
+                    optional={optional}
+                    field={
+                        <ModelSearchSelect
+                            regex={/^.*$/}
+                            otherEnabled={false}
+                            placeholderText={placeholderText}
+                            defaultSelection={defaultSelection}
+                            pixelWidth={200}
+                            setModelSelection={setModelSelection}
+                            idPrefix={idPrefix}
+                            options={options}
+                        />
+                    }
+                />
+            </>
+        );
+    }
 }

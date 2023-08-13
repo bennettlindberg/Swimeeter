@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { MeetContext } from "../../pages/meets/MeetPage.tsx";
-import { Meet, Pool } from "../../utilities/models/modelTypes.ts";
+import { Meet, Pool } from "../../utilities/helpers/modelTypes.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";

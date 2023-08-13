@@ -1,7 +1,7 @@
 import { useContext } from "react";
 
 import { AppContext, UserState } from "../../../App.tsx";
-import { DestructiveType } from "./formTypes.ts"
+import { DestructiveType } from "../helpers/formTypes.ts"
 
 import { IconSVG } from "../svgs/IconSVG.tsx";
 

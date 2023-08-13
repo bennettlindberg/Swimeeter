@@ -419,6 +419,27 @@ class Swimmer_view(APIView):
 
         # * delete existing swimmer
         try:
+            individual_entries_of_swimmer = Individual_entry.objects.filter(
+            swimmer_id=swimmer_of_id.pk
+            )
+            for entry in individual_entries_of_swimmer:
+                # * invalidate event seeding
+                invalidate_hs_data = vh.invalidate_event_seeding(entry.event)
+                # ? internal error invalidating event seeding
+                if isinstance(invalidate_hs_data, Response):
+                    return invalidate_hs_data
+
+            relay_entries_of_swimmer = Relay_entry.objects.filter(
+                swimmers__in=[swimmer_of_id.pk]
+            )
+            for entry in relay_entries_of_swimmer:
+                # * invalidate event seeding
+                invalidate_hs_data = vh.invalidate_event_seeding(entry.event)
+                # ? internal error invalidating event seeding
+                if isinstance(invalidate_hs_data, Response):
+                    return invalidate_hs_data
+                entry.delete() # ! manual deletion due to indirect relationship through Relay_assignment
+
             swimmer_of_id.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         # ? internal error deleting model
