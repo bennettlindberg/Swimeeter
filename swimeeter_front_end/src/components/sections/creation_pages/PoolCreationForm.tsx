@@ -37,7 +37,7 @@ export function PoolCreationForm({ meet_id_INT }: {meet_id_INT: number}) {
                             }}
                         />,
                         validator: (name: string) => {
-                            if (name.length > 1) {
+                            if (name.length > 0) {
                                 return true;
                             } else {
                                 return {
@@ -272,8 +272,8 @@ export function PoolCreationForm({ meet_id_INT }: {meet_id_INT: number}) {
                                 permitted_values: "Any string at least 1 character long."
                             }}
                         />,
-                        validator: (name: string) => {
-                            if (name.length > 1) {
+                        validator: (measure_unit: string) => {
+                            if (measure_unit.length > 0) {
                                 return true;
                             } else {
                                 return {
@@ -318,7 +318,7 @@ export function PoolCreationForm({ meet_id_INT }: {meet_id_INT: number}) {
                         matchString: "user is not logged in",
                         error: {
                             title: "AUTHORIZATION ERROR",
-                            description: "You are not currently logged into an account. Log into an account before creating a meet.",
+                            description: "You are not currently logged into an account. Log into an account before creating a pool for this meet.",
                             recommendation: "Log into an account using the log in button found in the navigation bar."
                         }
                     },

@@ -12,11 +12,9 @@ import { generateEventName, generateIndividualEntryName, generateRelayEntryName,
 
 export type ModelInfo = {
     modelName: string,
-    specific_to: number,
+    specific_to: string,
     apiRoute: string,
-    id_params: {
-        meet_id: number
-    }
+    id_params: Object
 }
 
 // * define option text formatter
@@ -79,10 +77,7 @@ export function ModelSelectGenerator({
     const [options, setOptions] = useState<{
         text: string,
         model_id: number
-    }[]>([{
-        text: "",
-        model_id: -1
-    }]);
+    }[]>([]);
 
     // * initialize navigation
     const navigate = useNavigate();
@@ -130,9 +125,9 @@ export function ModelSelectGenerator({
                             otherEnabled={false}
                             placeholderText={placeholderText}
                             defaultSelection={defaultSelection}
-                            pixelWidth={200}
+                            pixelWidth={300}
                             setModelSelection={setModelSelection}
-                            idPrefix={idPrefix}
+                            idPrefix={`${idPrefix}-${modelInfo.modelName.toLowerCase()}`}
                             options={options}
                         />
                     }
@@ -152,9 +147,9 @@ export function ModelSelectGenerator({
                             otherEnabled={false}
                             placeholderText={placeholderText}
                             defaultSelection={defaultSelection}
-                            pixelWidth={200}
+                            pixelWidth={300}
                             setModelSelection={setModelSelection}
-                            idPrefix={idPrefix}
+                            idPrefix={`${idPrefix}-${modelInfo.modelName.toLowerCase()}`}
                             options={options}
                         />
                     }

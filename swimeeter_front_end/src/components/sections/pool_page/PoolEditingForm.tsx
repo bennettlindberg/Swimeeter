@@ -53,7 +53,7 @@ export function PoolEditingForm() {
                             }}
                         />,
                         validator: (name: string) => {
-                            if (name.length > 1) {
+                            if (name.length > 0) {
                                 return true;
                             } else {
                                 return {
@@ -328,8 +328,8 @@ export function PoolEditingForm() {
                                 description: "The measure unit field contains the units used to measure the side length of the pool.",
                             }}
                         />,
-                        validator: (name: string) => {
-                            if (name.length > 1) {
+                        validator: (measure_unit: string) => {
+                            if (measure_unit.length > 0) {
                                 return true;
                             } else {
                                 return {
@@ -373,7 +373,7 @@ export function PoolEditingForm() {
                         matchString: "user is not logged in",
                         error: {
                             title: "AUTHORIZATION ERROR",
-                            description: "You are not currently logged into an account. Log into an account before creating a meet.",
+                            description: "You are not currently logged into an account. Log into an account before modifying this pool.",
                             recommendation: "Log into an account using the log in button found in the navigation bar."
                         }
                     },
@@ -381,7 +381,7 @@ export function PoolEditingForm() {
                         matchString: "user is not logged into meet host account",
                         error: {
                             title: "AUTHORIZATION ERROR",
-                            description: "You are not currently logged into the host account for this meet. Log into the host account before creating a pool for this meet.",
+                            description: "You are not currently logged into the host account for this meet. Log into the host account before modifying this pool.",
                             recommendation: "Log into the host account using the log in button found in the navigation bar."
                         }
                     }
@@ -403,7 +403,7 @@ export function PoolEditingForm() {
                         matchString: "user is not logged in",
                         error: {
                             title: "AUTHORIZATION ERROR",
-                            description: "You are not currently logged into the account of the meet host. Log into the host account before deleting this meet.",
+                            description: "You are not currently logged into the account of the meet host. Log into the host account before deleting this pool.",
                             recommendation: "Log into the host account using the log in button found in the navigation bar."
                         }
                     },
@@ -411,7 +411,7 @@ export function PoolEditingForm() {
                         matchString: "user is not logged into meet host account",
                         error: {
                             title: "AUTHORIZATION ERROR",
-                            description: "You are not currently logged into the account of the meet host. Log into the host account before deleting this meet.",
+                            description: "You are not currently logged into the account of the meet host. Log into the host account before deleting this pool.",
                             recommendation: "Log into the host account using the log in button found in the navigation bar."
                         }
                     }

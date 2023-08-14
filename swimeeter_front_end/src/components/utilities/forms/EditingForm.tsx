@@ -135,8 +135,7 @@ export function EditingForm({
     }[],
     modelSelectFields: {
         queryParamTitle: string,
-        idSuffix: string,
-        type: string,
+        idSuffix?: string,
         baseInfo: InfoType,
         viewInfo?: InfoType
         label: JSX.Element,
@@ -148,11 +147,9 @@ export function EditingForm({
         }
         modelInfo: {
             modelName: string,
-            specific_to: number,
+            specific_to: string,
             apiRoute: string,
-            id_params: {
-                meet_id: number
-            }
+            id_params: Object
         }
     }[],
     destructiveKeepNewInfo: DestructiveType,
@@ -206,7 +203,7 @@ export function EditingForm({
 
             inputElement.readOnly = formState.mode === "view";
         }
-    }, [formState.mode]);
+    }, [formState.mode, modelData]);
 
     // * define form handlers
     function handleModelSelection(queryParamString: string, selection: {

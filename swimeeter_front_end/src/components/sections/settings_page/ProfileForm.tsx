@@ -122,7 +122,7 @@ export function ProfileForm() {
             rawData.last_name = lastNameField.value;
 
             const middleInitialsField = document.getElementById(idPrefix + "-middle_initials-text-field") as HTMLInputElement;
-            rawData.middle_initials = middleInitialsField.value;
+            rawData.middle_initials = middleInitialsField.value.trim();
 
             const prefixField = document.getElementById(idPrefix + "-prefix-text-field") as HTMLInputElement;
             rawData.prefix = prefixField.value;
@@ -329,19 +329,19 @@ export function ProfileForm() {
                     label={<InputLabel inputId={idPrefix + "-middle_initials-text-field"} text="Middle initials" />}
                     optional={true}
                     field={<TextInput
-                        regex={/^[A-Z ]*$/}
+                        regex={/^([A-Z] )*$|^([A-Z] )*[A-Z]?$/}
                         defaultText={userState.profile?.middle_initials}
                         pixelWidth={300}
                         idPrefix={idPrefix + "-middle_initials"}
                     />}
                     editInfo={{
                         title: "MIDDLE INITIALS",
-                        description: "The middle initials field should contain a space-separated list of uppercase middle initials.",
+                        description: "The middle initials field should contain a space-separated list of the account owner's uppercase middle initials.",
                         permitted_values: "Empty, or any string at least 1 character long containing space-separated uppercase alphabetic characters."
                     }}
                     viewInfo={{
                         title: "MIDDLE INITIALS",
-                        description: "The middle initials field contains a space-separated list of uppercase middle initials.",
+                        description: "The middle initials field contains a space-separated list of account owner's uppercase middle initials.",
                     }}
                 />
 

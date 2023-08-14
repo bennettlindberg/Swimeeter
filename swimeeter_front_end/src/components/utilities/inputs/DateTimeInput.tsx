@@ -1,8 +1,11 @@
-import { useState } from "react";
 import { SearchSelect } from "./SearchSelect";
+import { TextInput } from "./TextInput";
+import { MainContentText } from "../main_content/MainContentText";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export function DateTimeInput({ 
-    defaultHour, 
+export function DateTimeInput({
+    defaultHour,
     defaultMinute,
     defaultDay,
     defaultMonth,
@@ -16,53 +19,164 @@ export function DateTimeInput({
     defaultYear?: string,
     idPrefix: string
 }) {
+    // * initialize navigation
+    const navigate = useNavigate();
+
     // * initialize state variables
-    const [inputHourText, setInputHourText] = useState<string>(defaultHour || "");
-    const [inputMinuteText, setInputMinuteText] = useState<string>(defaultMinute || "");
-    const [inputDayText, setInputDayText] = useState<string>(defaultDay || "");
-    const [inputYearText, setInputYearText] = useState<string>(defaultYear || "");
-    
+    const [inputMonth, setInputMonth] = useState<string>("");
+    const [inputDay, setInputDay] = useState<string>("");
+    const [inputYear, setInputYear] = useState<string>("");
+    const [inputHour, setInputHour] = useState<string>("");
+    const [inputMinute, setInputMinute] = useState<string>("");
+    const [inputAMPM, setInputAMPM] = useState<string>("");
+    const [inputDateTime, setInputDateTime] = useState<string>("");
+
     // * define onChange event handlers
-    function handleDayChange(event: any) {
-        if (/^$|^[012]?[0-9]$|^3[01]$/.test(event.target.value)) {
-            setInputDayText(event.target.value)
-        }
+    function handleChangeMonth(month: string) {
+        const monthConversions: {[key: string]: string} = {
+            January: "01",
+            February: "02",
+            March: "03",
+            April: "04",
+            May: "05",
+            June: "06",
+            July: "07",
+            August: "08",
+            September: "09",
+            October: "10",
+            November: "11",
+            December: "12"           
+        };
+
+        setInputMonth(monthConversions[month] || "");
+
+        // // * check date validity
+        // if (inputDay && inputYear) {
+        //     try {
+        //         const testDate = new Date(`${inputYear}-${monthConversions[month]}-${inputDay}`);
+
+        //         if (isNaN(testDate.getTime())) {
+        //             setInputDay("");
+        //             (document.getElementById(`${idPrefix}-day-text-field`) as HTMLInputElement).value = "";
+        //         }
+        //     } catch {
+        //         navigate("/errors/unknown");
+        //     }
+        // }
     }
 
-    function handleYearChange(event: any) {
-        if (/^([0-9]?){4}$/.test(event.target.value)) {
-            setInputYearText(event.target.value)
+    function handleChangeDay(day: string) {
+        let formattedDay = day;
+
+        if (formattedDay.length === 1) {
+            formattedDay = "0" + formattedDay;
         }
+
+        setInputDay(formattedDay || "");
     }
 
-    function handleHourChange(event: any) {
-        if (/^$|^0?[0-9]$|^1[012]$/.test(event.target.value)) {
-            setInputHourText(event.target.value)
-        }
+    function handleChangeYear(year: string) {
+        setInputYear(year || "");
     }
 
-    function handleMinuteChange(event: any) {
-        if (/^$|^0?[0-9]$|^[12345][0-9]$/.test(event.target.value)) {
-            setInputMinuteText(event.target.value)
-        }
+    function handleChangeHour(hour: string) {
+        setInputHour(hour || "");
     }
+
+    function handleChangeMinute(minute: string) {
+        setInputMinute(minute || "");
+    }
+
+    function handleChangeAMPM(AMPM: string) {
+        setInputAMPM(AMPM || "");
+    }
+
+    // * define inputDateTime formatter
+    useEffect(() => {
+        if (!inputMonth || !inputDay || !inputYear || !inputHour || !inputMinute || !inputAMPM) {
+            setInputDateTime("");
+        }
+
+        let adjustedHour = inputHour;
+        try {
+            if (inputAMPM === "PM" && inputHour !== "12") {
+                adjustedHour = "" + (parseInt(inputHour) + 12);
+            } else if (inputAMPM === "AM" && inputHour === "12") {
+                adjustedHour = "00";
+            }
+        } catch {
+            // * error adjusting hour
+            setInputDateTime("");
+        }
+
+        setInputDateTime(`${inputYear}-${inputMonth}-${inputDay}T${adjustedHour}:${inputMinute}`);
+    }, [inputMonth, inputDay, inputYear, inputHour, inputMinute, inputAMPM]);
 
     return (
         <>
             <div className="flex flex-row items-center gap-x-1">
-                <SearchSelect idPrefix={`${idPrefix}-month`} pixelWidth={100} regex={/^[A-Za-z]*$/} otherEnabled={false} placeholderText="Month" defaultText={defaultMonth || ""} options={[
-                    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-                ]} />
-                <p className="w-[5px] text-lg font-semibold"></p>
-                <input id={`${idPrefix}-day-field`} className="max-w-[40px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="DD" value={inputDayText} onChange={handleDayChange} />
-                <p className="w-[5px] text-lg font-semibold"></p>
-                <input id={`${idPrefix}-year-field`} className="max-w-[80px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="YYYY" value={inputYearText} onChange={handleYearChange} />
-                <p className="w-[5px] text-lg font-semibold"></p>
-                <input id={`${idPrefix}-hour-field`} className="max-w-[40px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="HH" value={inputHourText} onChange={handleHourChange}/>
-                <p className="text-lg font-semibold">:</p>
-                <input id={`${idPrefix}-minute-field`} className="max-w-[40px] px-1 text-lg rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 focus:outline-none bg-white dark:bg-black" type="text" placeholder="MM" value={inputMinuteText} onChange={handleMinuteChange}/>
-                <p className="w-[5px] text-lg font-semibold"></p>
-                <SearchSelect idPrefix={`${idPrefix}-AMPM`} pixelWidth={40} regex={/^$|^[AP]$|^[AP]M$/} otherEnabled={false} defaultText="AM" options={["AM", "PM"]} />
+                <div className="hidden">
+                    <input type="text" value={inputDateTime} id={idPrefix + "-datetime-field"}/>
+                </div>
+
+                <SearchSelect
+                    idPrefix={`${idPrefix}-month`}
+                    pixelWidth={115}
+                    regex={/^[A-Za-z]*$/}
+                    otherEnabled={false}
+                    placeholderText="Month"
+                    defaultText={defaultMonth || ""}
+                    options={[
+                        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+                    ]}
+                    exteriorHandleChange={handleChangeMonth}
+                />
+                <TextInput
+                    idPrefix={`${idPrefix}-day`}
+                    pixelWidth={45}
+                    regex={/^$|^[123456789]$|^1[0-9]$|^2[0-9]$|^3[01]$/}
+                    placeholderText="Day"
+                    defaultText={defaultDay || ""}
+                    exteriorHandleChange={handleChangeDay}
+                />
+                <MainContentText>,</MainContentText>
+                <TextInput
+                    idPrefix={`${idPrefix}-year`}
+                    pixelWidth={60}
+                    regex={/^$|^[123456789][0-9]*$/}
+                    placeholderText="Year"
+                    defaultText={defaultYear || ""}
+                    exteriorHandleChange={handleChangeYear}
+                />
+                <MainContentText>at</MainContentText>
+                <TextInput
+                    idPrefix={`${idPrefix}-hour`}
+                    pixelWidth={45}
+                    regex={/^$|^[123456789]$|^1[012]$/}
+                    placeholderText="HH"
+                    defaultText={defaultHour || ""}
+                    exteriorHandleChange={handleChangeHour}
+                />
+                <MainContentText>:</MainContentText>
+                <TextInput
+                    idPrefix={`${idPrefix}-minute`}
+                    pixelWidth={45}
+                    regex={/^$|^[012345][0-9]?$/}
+                    placeholderText="MM"
+                    defaultText={defaultMinute || ""}
+                    exteriorHandleChange={handleChangeMinute}
+                />
+                <SearchSelect
+                    idPrefix={`${idPrefix}-AMPM`}
+                    pixelWidth={45}
+                    regex={/^$|^[AP]$|^[AP]M$/}
+                    otherEnabled={false}
+                    defaultText="AM"
+                    options={[
+                        "AM", "PM"
+                    ]}
+                    exteriorHandleChange={handleChangeAMPM}
+                />
             </div>
         </>
     )

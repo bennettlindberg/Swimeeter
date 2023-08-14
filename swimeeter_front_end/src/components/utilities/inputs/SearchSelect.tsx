@@ -8,7 +8,8 @@ export function SearchSelect({
     defaultText,
     pixelWidth,
     options,
-    idPrefix
+    idPrefix,
+    exteriorHandleChange
 }: {
     regex: RegExp,
     otherEnabled: boolean,
@@ -16,7 +17,8 @@ export function SearchSelect({
     defaultText?: string,
     pixelWidth: number,
     options: string[],
-    idPrefix: string
+    idPrefix: string,
+    exteriorHandleChange?: (input: any) => void
 }) {
     // * initialize state variables
     const [inputText, setInputText] = useState<string>(defaultText || "");
@@ -93,6 +95,13 @@ export function SearchSelect({
             setInputText(options[0]);
         }
     }
+
+    // * execute exteriorHandleChange when input changes
+    useEffect(() => {
+        if (exteriorHandleChange) {
+            exteriorHandleChange(inputText);
+        }
+    }, [inputText]);
 
     // * update state if DOM doesn't change
     useEffect(() => setInputText(defaultText || ""), [defaultText])

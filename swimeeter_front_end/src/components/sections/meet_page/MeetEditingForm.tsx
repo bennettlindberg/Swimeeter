@@ -57,7 +57,7 @@ export function MeetEditingForm() {
                             }}
                         />,
                         validator: (name: string) => {
-                            if (name.length > 1) {
+                            if (name.length > 0) {
                                 return true;
                             } else {
                                 return {

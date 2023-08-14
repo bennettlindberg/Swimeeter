@@ -93,7 +93,7 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
             rawData.last_name = lastNameField.value;
 
             const middleInitialsField = document.getElementById(idPrefix + "-middle_initials-text-field") as HTMLInputElement;
-            rawData.middle_initials = middleInitialsField.value;
+            rawData.middle_initials = middleInitialsField.value.trim();
 
             const prefixField = document.getElementById(idPrefix + "-prefix-text-field") as HTMLInputElement;
             rawData.prefix = prefixField.value;
@@ -397,14 +397,14 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                 label={<InputLabel inputId={idPrefix + "-middle_initials-text-field"} text="Middle initials" />}
                 optional={true}
                 field={<TextInput
-                    regex={/^[A-Z ]*$/}
+                    regex={/^([A-Z] )*$|^([A-Z] )*[A-Z]?$/}
                     placeholderText="Middle initials"
                     pixelWidth={300}
                     idPrefix={idPrefix + "-middle_initials"}
                 />}
                 createInfo={{
                     title: "MIDDLE INITIALS",
-                    description: "The middle initials field should contain a space-separated list of uppercase middle initials.",
+                    description: "The middle initials field should contain a space-separated list of the account owner's uppercase middle initials.",
                     permitted_values: "Empty, or any string at least 1 character long containing space-separated uppercase alphabetic characters."
                 }}
             />
@@ -421,7 +421,7 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                 createInfo={{
                     title: "PREFIX",
                     description: "The prefix field should contain any special prefixes included in the account owner's name.",
-                    common_values: "\"St.\", \"Sir.\" This field is not intended for \"Mr.\", \"Mrs.\", and \"Ms.\" prefixes.",
+                    common_values: "\"St.,\" \"Sir.\" This field is not intended for \"Mr.,\" \"Mrs.,\" and \"Ms.\" prefixes.",
                     permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
                 }}
             />
@@ -438,7 +438,7 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                 createInfo={{
                     title: "SUFFIX",
                     description: "The suffix field should contain any special suffixes included in the account owner's name.",
-                    common_values: "\"Jr.\", \"Sr.\", \"III\"",
+                    common_values: "\"Jr.,\" \"Sr.,\" \"III.\"",
                     permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
                 }}
             />

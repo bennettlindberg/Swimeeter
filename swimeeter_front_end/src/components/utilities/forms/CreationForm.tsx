@@ -114,10 +114,9 @@ export function CreationForm({
     }[],
     modelSelectFields: {
         queryParamTitle: string,
-        idSuffix: string,
-        type: string,
+        idSuffix?: string,
         baseInfo: InfoType,
-        viewInfo?: InfoType
+        viewInfo?: InfoType,
         label: JSX.Element,
         optional: boolean,
         placeholderText: string,
@@ -127,11 +126,9 @@ export function CreationForm({
         }
         modelInfo: {
             modelName: string,
-            specific_to: number,
+            specific_to: string,
             apiRoute: string,
-            id_params: {
-                meet_id: number
-            }
+            id_params: Object
         }
     }[],
     destructiveKeepNewInfo: DestructiveType,
@@ -232,6 +229,23 @@ export function CreationForm({
                 destructive: destructiveSubmitInfo
             });
             return;
+        }
+
+        // * ensure all model selections are made
+        for (const modelSelectInput of modelSelectFields) {
+            if (modelIdSelections[modelSelectInput.queryParamTitle] === -1 
+                || modelIdSelections[modelSelectInput.queryParamTitle] === undefined) {
+                // ? invalid model selection
+                const fieldName = modelSelectInput.modelInfo.modelName;
+                formDispatch({
+                    type: "SAVE_FAILURE",
+                    error: {
+                        title: `${fieldName} FIELD ERROR`,
+                        description: `The ${fieldName.toLowerCase()} field was provided an invalid value. The ${fieldName.toLowerCase()} field must be provided the name of a valid ${fieldName.toLowerCase()} in this meet.`,
+                        recommendation: `Alter the ${fieldName.toLowerCase()} to conform to the requirements of the ${fieldName.toLowerCase()} field.`
+                    }
+                });
+            }
         }
 
         // * retrieve raw data
@@ -362,6 +376,7 @@ export function CreationForm({
                             modelInfo={modelSelectInput.modelInfo}
                             label={modelSelectInput.label}
                             baseInfo={modelSelectInput.baseInfo}
+                            viewInfo={modelSelectInput.viewInfo}
                             placeholderText={modelSelectInput.placeholderText}
                             defaultSelection={modelSelectInput.defaultSelection}
                             setModelSelection={(selection: {
