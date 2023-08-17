@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { useLocation } from "react-router-dom";
 
 import { CreationForm } from "../../utilities/forms/CreationForm.tsx";
 import { CreationFormGroup } from "../../utilities/forms/CreationFormGroup.tsx";
@@ -11,6 +12,15 @@ import { DateTimeInput } from "../../utilities/inputs/DateTimeInput.tsx";
 export function SessionCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
     // * initialize id
     const idPrefix = useId();
+
+    // * initialize location
+    const location = useLocation();
+    let defaultPool: {name: string, pool_id: number} | undefined = undefined;
+    try {
+        defaultPool = location.state.defaultPool;
+    } catch {
+        defaultPool = undefined;
+    }
 
     return (
         <>
@@ -147,8 +157,8 @@ export function SessionCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                         optional: false,
                         placeholderText: "Pool",
                         defaultSelection: {
-                            text: "",
-                            model_id: -1
+                            text: defaultPool ? defaultPool.name : "",
+                            model_id: defaultPool ? defaultPool.pool_id : -1
                         },
                         modelInfo: {
                             modelName: "POOL",

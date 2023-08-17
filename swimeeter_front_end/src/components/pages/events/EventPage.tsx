@@ -10,6 +10,7 @@ import { generateEventName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
+import { EventEditingForm } from "../../sections/event_page/EventEditingForm.tsx";
 
 // * create event context
 export const EventContext = createContext<{
@@ -199,10 +200,7 @@ export function EventPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    {/* {eventData.fields.is_relay
-                                        ? <EventRelayEditingForm />
-                                        : <EventIndivEditingForm />
-                                    } */}
+                                    <EventEditingForm />
                                 </>
                             )
                         },

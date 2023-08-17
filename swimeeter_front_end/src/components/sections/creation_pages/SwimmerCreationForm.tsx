@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { useLocation } from "react-router-dom";
 
 import { CreationForm } from "../../utilities/forms/CreationForm.tsx";
 import { CreationFormGroup } from "../../utilities/forms/CreationFormGroup.tsx";
@@ -10,6 +11,15 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
     // * initialize id
     const idPrefix = useId();
+
+    // * initialize location
+    const location = useLocation();
+    let defaultTeam: {name: string, team_id: number} | undefined = undefined;
+    try {
+        defaultTeam = location.state.defaultTeam;
+    } catch {
+        defaultTeam = undefined;
+    }
 
     return (
         <>
@@ -245,8 +255,8 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                         optional: false,
                         placeholderText: "Team",
                         defaultSelection: {
-                            text: "",
-                            model_id: -1
+                            text: defaultTeam ? defaultTeam.name : "",
+                            model_id: defaultTeam ? defaultTeam.team_id : -1
                         },
                         modelInfo: {
                             modelName: "TEAM",

@@ -298,6 +298,17 @@ class Event_view(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
+            if (
+                request.data["is_relay"]
+                and request.data["stroke"] == "Medley"
+                and request.data["swimmers_per_entry"] != 4
+            ):
+                # ? invalid number of swimmers per entry for a medley relay
+                return Response(
+                    "swimmers per entry of medley relay is not 4",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
             handle_duplicates = vh.handle_duplicates(
@@ -377,8 +388,8 @@ class Event_view(APIView):
                 edited_event.stroke = request.data["stroke"]
             if "distance" in request.data:
                 edited_event.distance = request.data["distance"]
-            if "is_relay" in request.data:
-                edited_event.is_relay = request.data["is_relay"]
+            # if "is_relay" in request.data:
+            #     edited_event.is_relay = request.data["is_relay"]
             if "swimmers_per_entry" in request.data:
                 edited_event.swimmers_per_entry = request.data["swimmers_per_entry"]
             if "stage" in request.data:
@@ -393,12 +404,29 @@ class Event_view(APIView):
                 # ~ requested order number
                 requested_order_number = request.data["order_in_session"]
 
-            if edited_event.competing_max_age < edited_event.competing_min_age:
+            if (
+                edited_event.competing_max_age != None
+                and edited_event.competing_min_age != None
+                and edited_event.competing_max_age
+                < edited_event.competing_min_age
+            ):
                 # ? invalid age range -> max less than min
                 return Response(
                     "maximum age less than minimum age",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+
+            if (
+                edited_event.is_relay
+                and edited_event.stroke == "Medley"
+                and edited_event.swimmers_per_entry != 4
+            ):
+                # ? invalid number of swimmers per entry for a medley relay
+                return Response(
+                    "swimmers per entry of medley relay is not 4",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
 
             # @ update foreign keys
             session_id = vh.get_query_param(request, "session_id")
@@ -487,7 +515,7 @@ class Event_view(APIView):
                 current_highest_order_number + 1,
             )  # cap order number at end
 
-        # * move event order numbers backward -> self moved forward
+        # * move event order numbers -> new session
         if session_changed:
             order_shifted_events = Event.objects.filter(
                 session_id=edited_event.session_id,
@@ -498,6 +526,7 @@ class Event_view(APIView):
                 event.order_in_session += 1
                 event.save()
 
+        # * move event order numbers backward -> self moved forward
         elif previous_order_number < requested_order_number:
             order_shifted_events = Event.objects.filter(
                 session_id=edited_event.session_id,

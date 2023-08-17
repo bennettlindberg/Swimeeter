@@ -317,12 +317,12 @@ export function SwimmerEditingForm() {
                     impact: "Swimmers with the same name, age, gender, and team as this one will be deleted.",
                     type: "duplicate_keep_new"
                 }}
-                // destructiveSubmitInfo={{
-                //     title: "POTENTIALLY DESTRUCTIVE ACTION",
-                //     description: "TEST",
-                //     impact: "TEST.",
-                //     type: "destructive_submission"
-                // }}
+                destructiveSubmitInfo={{
+                    title: "POTENTIALLY DESTRUCTIVE ACTION",
+                    description: "Modifying the values of certain fields of this swimmer may cause the invalidation and deletion of the swimmer's entries and those entries' events' seeding. Are you sure you want to continue?",
+                    impact: "Entries for which the modified participant is ineligible to compete in the entry's event will be deleted. For each deleted entry, the entry's event's seeding (if any) will be deleted as well.",
+                    type: "destructive_submission"
+                }}
                 duplicateInfo={{
                     title: "UNHANDLED DUPLICATE SWIMMERS EXIST",
                     description: "One or more swimmers with the same name, age, gender, and team exist in your account. How would you like to resolve the duplicate data conflict?",

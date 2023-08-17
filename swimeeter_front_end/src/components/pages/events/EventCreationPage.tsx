@@ -10,7 +10,7 @@ import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 import { PageButton } from "../../utilities/general/PageButton.tsx";
 
-import { EventIndivCreationForm } from "../../sections/creation_pages/EventIndivCreationForm.tsx";
+import { EventCreationForm } from "../../sections/creation_pages/EventCreationForm.tsx";
 
 // ~ component
 export function EventCreationPage() {
@@ -30,6 +30,7 @@ export function EventCreationPage() {
     }
     if (event_type !== "individual" && event_type !== "relay") {
         navigate("/errors/unknown");
+        return;
     }
 
     // ? redirect to log in if logged out
@@ -68,10 +69,10 @@ export function EventCreationPage() {
             }
         }
         retrieveTreeData();
-    }, []);
+    }, [event_type]);
 
     // * update tab title
-    useEffect(() => setTabTitle(`Create ${event_type === "individual" ? "an Individual" : "a Relay"} Event | Swimeeter`), []);
+    useEffect(() => setTabTitle(`Create ${event_type === "individual" ? "an Individual" : "a Relay"} Event | Swimeeter`), [event_type]);
 
     // * create main content section refs
     const createEventRef = useRef<HTMLHeadingElement>(null);
@@ -87,10 +88,7 @@ export function EventCreationPage() {
                         ref: createEventRef,
                         content: (
                             <>
-                                {event_type === "individual"
-                                    ? <EventIndivCreationForm meet_id_INT={meet_id_INT} />
-                                    : <></> //<EventRelayCreationForm meet_id_INT={meet_id_INT} />
-                                }
+                                <EventCreationForm meet_id_INT={meet_id_INT} event_type={event_type} />
                             </>
                         )
                     }
@@ -109,7 +107,7 @@ export function EventCreationPage() {
                     </>,
                     <>
                         <SideBarText>
-                            After creating your new event, you'll be able to add individual and relay entries associated with this event to your meet.
+                            After creating your new event, you'll be able to add entries associated with this event to your meet.
                         </SideBarText>
                     </>,
                     <>

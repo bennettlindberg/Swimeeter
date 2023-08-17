@@ -11,6 +11,7 @@ import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
 import { PoolEditingForm } from "../../sections/pool_page/PoolEditingForm.tsx";
+import { PoolSessionsTable } from "../../sections/pool_page/PoolSessionsTable.tsx";
 
 // * create pool context
 export const PoolContext = createContext<{
@@ -204,7 +205,7 @@ export function PoolPage() {
                             ref: sessionsRef,
                             content: (
                                 <>
-                                    {/* <PoolSessionsTable /> */}
+                                    <PoolSessionsTable />
                                 </>
                             )
                         },
