@@ -344,7 +344,7 @@ export function SwimmerEditingForm() {
                         matchString: "user is not logged in",
                         error: {
                             title: "AUTHORIZATION ERROR",
-                            description: "You are not currently logged into an account. Log into an account before modifying this swimmer.",
+                            description: "You are not currently logged into an account. Log into the host account account before modifying this swimmer.",
                             recommendation: "Log into an account using the log in button found in the navigation bar."
                         }
                     },

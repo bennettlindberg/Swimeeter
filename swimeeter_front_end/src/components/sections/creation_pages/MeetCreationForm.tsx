@@ -142,7 +142,7 @@ export function MeetCreationForm() {
                             />}
                             info={{
                                 title: "BEGIN TIME",
-                                description: "The begin time field contains the overall beginning time of the meet. The value of this field is read-only as it is determined automatically by the beginning times of the meet's sessions.",
+                                description: "The begin time field contains the overall beginning time of the meet in your local timezone. The value of this field is read-only as it is determined automatically by the beginning times of the meet's sessions.",
                             }}
                         />,
                     },
@@ -163,7 +163,7 @@ export function MeetCreationForm() {
                             />}
                             info={{
                                 title: "END TIME",
-                                description: "The end time field contains the overall ending time of the meet. The value of this field is read-only as it is determined automatically by the ending times of the meet's sessions.",
+                                description: "The end time field contains the overall ending time of the meet in your local timezone. The value of this field is read-only as it is determined automatically by the ending times of the meet's sessions.",
                             }}
                         />,
                     }

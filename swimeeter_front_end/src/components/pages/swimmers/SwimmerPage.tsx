@@ -12,7 +12,6 @@ import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
 import { SwimmerEditingForm } from "../../sections/swimmer_page/SwimmerEditingForm.tsx";
-import { DateTimeInput } from "../../utilities/inputs/DateTimeInput.tsx";
 
 // * create swimmer context
 export const SwimmerContext = createContext<{
@@ -221,7 +220,6 @@ export function SwimmerPage() {
                             ref: indivEntriesRef,
                             content: (
                                 <>
-                                    <DateTimeInput idPrefix=""></DateTimeInput>
                                     {/* <SwimmerIndivEntriesTable /> */}
                                 </>
                             )

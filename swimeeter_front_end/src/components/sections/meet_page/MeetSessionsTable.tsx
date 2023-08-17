@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { MeetContext } from "../../pages/meets/MeetPage.tsx";
 import { Meet, Session } from "../../utilities/helpers/modelTypes.ts";
+import { generateLocalTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -21,14 +22,22 @@ export function MeetSessionsTable() {
 
     // * define table row generator
     function tableRowGenerator(item: Session) {
-        return (
-            <TableRow handleClick={() => navigate(`/meets/${meetData.pk}/sessions/${item.pk}`)} entries={[
-                item.fields.name,
-                item.fields.begin_time.toLocaleTimeString(),
-                item.fields.end_time.toLocaleTimeString(),
-                item.fields.pool.fields.name
-            ]} />
-        )
+        let begin_time = "N/A";
+        if (item.fields.begin_time) {
+            begin_time = generateLocalTimeString(item.fields.begin_time);
+        }
+
+        let end_time = "N/A";
+        if (item.fields.end_time) {
+            end_time = generateLocalTimeString(item.fields.end_time);
+        }
+
+        return <TableRow handleClick={() => navigate(`/meets/${meetData.pk}/sessions/${item.pk}`)} entries={[
+            item.fields.name,
+            begin_time,
+            end_time,
+            item.fields.pool.fields.name
+        ]} />
     }
 
     return (
@@ -54,6 +63,7 @@ export function MeetSessionsTable() {
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no session were found."
+            loadMoreText="Load more sessions"
             isMeetHost={isMeetHost}
         />
     )

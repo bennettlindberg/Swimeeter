@@ -90,26 +90,42 @@ class Event_view(APIView):
                 # @ apply search filtering
                 search__stroke = vh.get_query_param(request, "search__stroke")
                 if isinstance(search__stroke, str):
-                    events_of_session = events_of_session.filter(stroke__istartswith=search__stroke)
+                    events_of_session = events_of_session.filter(
+                        stroke__istartswith=search__stroke
+                    )
 
                 search__distance = vh.get_query_param(request, "search__distance")
                 if isinstance(search__distance, str):
                     search__distance = int(search__distance)
-                    events_of_session = events_of_session.filter(distance=search__distance)
+                    events_of_session = events_of_session.filter(
+                        distance=search__distance
+                    )
 
-                search__competing_min_age = vh.get_query_param(request, "search__competing_min_age")
+                search__competing_min_age = vh.get_query_param(
+                    request, "search__competing_min_age"
+                )
                 if isinstance(search__competing_min_age, str):
                     search__competing_min_age = int(search__competing_min_age)
-                    events_of_session = events_of_session.filter(competing_min_age=search__competing_min_age)
+                    events_of_session = events_of_session.filter(
+                        competing_min_age=search__competing_min_age
+                    )
 
-                search__competing_max_age = vh.get_query_param(request, "search__competing_max_age")
+                search__competing_max_age = vh.get_query_param(
+                    request, "search__competing_max_age"
+                )
                 if isinstance(search__competing_max_age, str):
                     search__competing_max_age = int(search__competing_max_age)
-                    events_of_session = events_of_session.filter(competing_max_age=search__competing_max_age)
+                    events_of_session = events_of_session.filter(
+                        competing_max_age=search__competing_max_age
+                    )
 
-                search__competing_gender = vh.get_query_param(request, "search__competing_gender")
+                search__competing_gender = vh.get_query_param(
+                    request, "search__competing_gender"
+                )
                 if isinstance(search__competing_gender, str):
-                    events_of_session = events_of_session.filter(competing_gender__istartswith=search__competing_gender)
+                    events_of_session = events_of_session.filter(
+                        competing_gender__istartswith=search__competing_gender
+                    )
 
                 # * only retrieve request range of values
                 events_of_session = events_of_session[lower_bound:upper_bound]
@@ -153,30 +169,48 @@ class Event_view(APIView):
                 # @ apply search filtering
                 search__stroke = vh.get_query_param(request, "search__stroke")
                 if isinstance(search__stroke, str):
-                    events_of_meet = events_of_meet.filter(stroke__istartswith=search__stroke)
+                    events_of_meet = events_of_meet.filter(
+                        stroke__istartswith=search__stroke
+                    )
 
                 search__distance = vh.get_query_param(request, "search__distance")
                 if isinstance(search__distance, str):
                     search__distance = int(search__distance)
                     events_of_meet = events_of_meet.filter(distance=search__distance)
 
-                search__competing_min_age = vh.get_query_param(request, "search__competing_min_age")
+                search__competing_min_age = vh.get_query_param(
+                    request, "search__competing_min_age"
+                )
                 if isinstance(search__competing_min_age, str):
                     search__competing_min_age = int(search__competing_min_age)
-                    events_of_meet = events_of_meet.filter(competing_min_age=search__competing_min_age)
+                    events_of_meet = events_of_meet.filter(
+                        competing_min_age=search__competing_min_age
+                    )
 
-                search__competing_max_age = vh.get_query_param(request, "search__competing_max_age")
+                search__competing_max_age = vh.get_query_param(
+                    request, "search__competing_max_age"
+                )
                 if isinstance(search__competing_max_age, str):
                     search__competing_max_age = int(search__competing_max_age)
-                    events_of_meet = events_of_meet.filter(competing_max_age=search__competing_max_age)
+                    events_of_meet = events_of_meet.filter(
+                        competing_max_age=search__competing_max_age
+                    )
 
-                search__competing_gender = vh.get_query_param(request, "search__competing_gender")
+                search__competing_gender = vh.get_query_param(
+                    request, "search__competing_gender"
+                )
                 if isinstance(search__competing_gender, str):
-                    events_of_meet = events_of_meet.filter(competing_gender__istartswith=search__competing_gender)
+                    events_of_meet = events_of_meet.filter(
+                        competing_gender__istartswith=search__competing_gender
+                    )
 
-                search__session_name = vh.get_query_param(request, "search__session_name")
+                search__session_name = vh.get_query_param(
+                    request, "search__session_name"
+                )
                 if isinstance(search__session_name, str):
-                    events_of_meet = events_of_meet.filter(session__name__istartswith=search__session_name)
+                    events_of_meet = events_of_meet.filter(
+                        session__name__istartswith=search__session_name
+                    )
 
                 # * only retrieve request range of values
                 events_of_meet = events_of_meet[lower_bound:upper_bound]
@@ -220,7 +254,9 @@ class Event_view(APIView):
         # * create new event
         try:
             # ~ highest order number
-            current_highest_order_number = Event.objects.filter(session_id=session_id).count()
+            current_highest_order_number = Event.objects.filter(
+                session_id=session_id
+            ).count()
 
             # * generate order number for new event
             if "order_in_session" in request.data:
@@ -250,7 +286,12 @@ class Event_view(APIView):
                 session_id=session_id,
             )
 
-            if request.data["competing_max_age"] < request.data["competing_min_age"]:
+            if (
+                request.data["competing_max_age"] != None
+                and request.data["competing_min_age"] != None
+                and request.data["competing_max_age"]
+                < request.data["competing_min_age"]
+            ):
                 # ? invalid age range -> max less than min
                 return Response(
                     "maximum age less than minimum age",
@@ -259,7 +300,9 @@ class Event_view(APIView):
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Event", new_event)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Event", new_event
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -319,7 +362,9 @@ class Event_view(APIView):
             return check_is_host
 
         # ~ order number variables
-        current_highest_order_number = Event.objects.filter(session_id=event_of_id.session_id).count()
+        current_highest_order_number = Event.objects.filter(
+            session_id=event_of_id.session_id
+        ).count()
         previous_order_number = event_of_id.order_in_session
         requested_order_number = event_of_id.order_in_session
 
@@ -359,22 +404,26 @@ class Event_view(APIView):
             session_id = vh.get_query_param(request, "session_id")
             if isinstance(session_id, str):
                 session_id = int(session_id)
-                
-                if (session_id != edited_event.session_id):
+
+                if session_id != edited_event.session_id:
                     session_of_id = vh.get_model_of_id("Session", session_id)
                     # ? no session of session_id exists
                     if isinstance(session_of_id, Response):
                         return session_of_id
-                    
+
                     edited_event.session_id = session_id
                     session_changed = True
 
                     # ~ highest order number
-                    current_highest_order_number = Event.objects.filter(session_id=session_id).count()
+                    current_highest_order_number = Event.objects.filter(
+                        session_id=session_id
+                    ).count()
 
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
-            handle_duplicates = vh.handle_duplicates(duplicate_handling, "Event", edited_event)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Event", edited_event
+            )
             # ? error handling duplicates
             if isinstance(handle_duplicates, Response):
                 return handle_duplicates
@@ -393,7 +442,7 @@ class Event_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         # * delete newly incompatible entries and invalidate event seeding
         seeding_needs_invalidation = False
 
@@ -401,7 +450,9 @@ class Event_view(APIView):
             entries_of_event = Relay_entry.objects.filter(event_id=edited_event.pk)
             for entry in entries_of_event:
                 for swimmer in entry.swimmers.all():
-                    check_compatibility = vh.validate_swimmer_against_event(swimmer, edited_event)
+                    check_compatibility = vh.validate_swimmer_against_event(
+                        swimmer, edited_event
+                    )
                     # ? swimmer and event are not compatible
                     if isinstance(check_compatibility, Response):
                         entry.delete()
@@ -410,7 +461,9 @@ class Event_view(APIView):
         else:
             entries_of_event = Individual_entry.objects.filter(event_id=edited_event.pk)
             for entry in entries_of_event:
-                check_compatibility = vh.validate_swimmer_against_event(entry.swimmer, edited_event)
+                check_compatibility = vh.validate_swimmer_against_event(
+                    entry.swimmer, edited_event
+                )
                 # ? swimmer and event are not compatible
                 if isinstance(check_compatibility, Response):
                     entry.delete()
@@ -422,7 +475,7 @@ class Event_view(APIView):
             # ? internal error invalidating event seeding
             if isinstance(invalidate_hs_data, Response):
                 return invalidate_hs_data
-            
+
         # ~ calculate true requested order number
         if requested_order_number == "start":
             requested_order_number = 1
@@ -435,7 +488,7 @@ class Event_view(APIView):
             )  # cap order number at end
 
         # * move event order numbers backward -> self moved forward
-        if (session_changed):
+        if session_changed:
             order_shifted_events = Event.objects.filter(
                 session_id=edited_event.session_id,
                 order_in_session__gte=requested_order_number,
@@ -445,7 +498,7 @@ class Event_view(APIView):
                 event.order_in_session += 1
                 event.save()
 
-        elif (previous_order_number < requested_order_number):
+        elif previous_order_number < requested_order_number:
             order_shifted_events = Event.objects.filter(
                 session_id=edited_event.session_id,
                 order_in_session__gt=previous_order_number,
@@ -457,7 +510,7 @@ class Event_view(APIView):
                 event.save()
 
         # * move event order numbers forward -> self moved backward
-        elif (previous_order_number > requested_order_number):
+        elif previous_order_number > requested_order_number:
             order_shifted_events = Event.objects.filter(
                 session_id=edited_event.session_id,
                 order_in_session__lt=previous_order_number,

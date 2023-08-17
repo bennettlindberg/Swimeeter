@@ -60,13 +60,14 @@ export function SearchSelect({
 
     // * define onBlur event handler
     function handleLostFocus(event: any) {
-        // $ early return if non-standard input allowed
-        if (otherEnabled) {
+        // $ ignore if clicked on drop down option
+        if (event.relatedTarget && event.relatedTarget.id.split("-")[0] === internalIdPrefix) {
             return;
         }
 
-        // $ ignore if clicked on drop down option
-        if (event.relatedTarget && event.relatedTarget.id.split("-")[0] === internalIdPrefix) {
+        // $ early return if non-standard input allowed
+        if (otherEnabled) {
+            setOptionsShown(false);
             return;
         }
 

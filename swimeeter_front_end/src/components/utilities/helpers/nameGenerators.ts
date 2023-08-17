@@ -75,13 +75,13 @@ export function generateSwimmerName(swimmer: Swimmer) {
 }
 
 export function generateEventName(event: Event) {
-    let eventName = event.fields.competing_gender + "s ";
+    let eventName = event.fields.competing_gender + " ";
 
     if (event.fields.competing_min_age && event.fields.competing_max_age) {
         if (event.fields.competing_min_age === event.fields.competing_max_age) {
-            eventName += event.fields.competing_min_age + " Only ";
+            eventName += event.fields.competing_min_age + " Years Old ";
         } else {
-            eventName += event.fields.competing_min_age + "-" + event.fields.competing_max_age + " ";
+            eventName += event.fields.competing_min_age + "-" + event.fields.competing_max_age + " Years Old ";
         }
     } else if (event.fields.competing_min_age) {
         eventName += event.fields.competing_min_age + " & Over ";
@@ -157,4 +157,145 @@ export function generateSeedTimeString(hundredths: number) {
     }
 
     return seed_string;
+}
+
+export function generateLocalTimeElements(UTCDate: string) {
+    // * produce UTC offset string
+    let UTCOffsetString = "";
+    const rawOffsetMinutes = new Date().getTimezoneOffset();
+
+    UTCOffsetString += rawOffsetMinutes > 0 ? "-" : "+";
+
+    const offsetHours = Math.floor(Math.abs(rawOffsetMinutes) / 60);
+    UTCOffsetString += (offsetHours < 10 ? "0" : "") + offsetHours + ":";
+
+    const offsetMinutes = Math.abs(rawOffsetMinutes) % 60;
+    UTCOffsetString += (offsetMinutes < 10 ? "0" : "") + offsetMinutes;
+
+    // * produce local ISO format date string
+    let trueLocalString = UTCDate.substring(0, UTCDate.length - 1);
+    trueLocalString += UTCOffsetString;
+
+    // $ determine if daylight savings time is active
+    const noDSTLocalDate = new Date(trueLocalString);
+
+    const localDate = new Date(UTCDate);
+    if (noDSTLocalDate.getHours() !== parseInt(trueLocalString.substring(11, 13))) {
+        localDate.setTime(localDate.getTime() + 60*60*1000);
+    }
+
+    // ~ get month
+    let month = "January"
+    switch (localDate.getMonth()) {
+        case 0:
+            month = "January";
+            break;
+
+        case 1:
+            month = "February";
+            break;
+
+        case 2:
+            month = "March";
+            break;
+
+        case 3:
+            month = "April";
+            break;
+
+        case 4:
+            month = "May";
+            break;
+
+        case 5:
+            month = "June";
+            break;
+
+        case 6:
+            month = "July";
+            break;
+
+        case 7:
+            month = "August";
+            break;
+
+        case 8:
+            month = "September";
+            break;
+
+        case 9:
+            month = "October";
+            break;
+
+        case 10:
+            month = "November";
+            break;
+
+        case 11:
+            month = "December";
+            break;
+    }
+
+    // ~ get day
+    const day = "" + localDate.getDate();
+
+    // ~ get year
+    const year = "" + localDate.getFullYear();
+
+    // ~ get minutes
+    const minutes = (localDate.getMinutes() < 10 ? "0" : "") + localDate.getMinutes();
+
+    // ~ get hours and AMPM
+    const hour_INT = localDate.getHours();
+    let hours = "12";
+    let AMPM = "AM";
+    if (hour_INT === 0) {
+        hours = "12";
+        AMPM = "AM";
+    } else if (hour_INT > 0 && hour_INT < 12) {
+        hours = "" + hour_INT;
+        AMPM = "AM";
+    } else if (hour_INT === 12) {
+        hours = "12";
+        AMPM = "PM";
+    } else {
+        hours = "" + (hour_INT - 12);
+        AMPM = "PM";
+    }
+
+    return {
+        month: month,
+        day: day,
+        year: year,
+        hours: hours,
+        minutes: minutes,
+        AMPM: AMPM
+    }
+}
+
+export function generateLocalTimeString(UTCDate: string) {
+    const elements = generateLocalTimeElements(UTCDate);
+
+    // * build final local time string
+    return `${elements.month} ${elements.day}, ${elements.year} at ${elements.hours}:${elements.minutes} ${elements.AMPM}`;
+}
+
+export function generateCompetitorsString(gender: string, minAge: number | null, maxAge: number | null) {
+    let competitorsString = gender + " ";
+    
+    if (minAge && maxAge) {
+        if (minAge === maxAge) {
+            competitorsString += `${minAge} Years Old`
+        } else {
+            competitorsString += `${minAge}-${maxAge} Years Old`;
+        }
+    } else if (minAge) {
+        competitorsString += `${minAge} & Under`;
+    } else if (maxAge) {
+        competitorsString += `${maxAge} & Over`;
+    } else {
+        competitorsString += "Open";
+    }
+
+    return competitorsString;
 }

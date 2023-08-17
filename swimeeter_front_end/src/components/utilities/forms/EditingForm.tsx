@@ -196,6 +196,20 @@ export function EditingForm({
             } else {
                 inputElement.readOnly = formState.mode === "view";
             }
+
+            // ! handle "view" vs. "edit" versions of datetime fields
+            if (new RegExp("datetime").test(formInput.idSuffix)) {
+                const viewElement = document.getElementById(idPrefix + formInput.idSuffix + "-view") as HTMLInputElement;
+                const editElement = document.getElementById(idPrefix + formInput.idSuffix + "-edit") as HTMLInputElement;
+
+                if (formState.mode === "edit") {
+                    viewElement.readOnly = true;
+                    editElement.readOnly = false;
+                } else {
+                    viewElement.readOnly = false;
+                    editElement.readOnly = true;
+                }
+            }
         }
 
         for (const modelSelectInput of modelSelectFields) {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { MeetContext } from "../../pages/meets/MeetPage.tsx";
 import { Meet, Event } from "../../utilities/helpers/modelTypes.ts";
+import { generateCompetitorsString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -21,24 +22,8 @@ export function MeetEventsTable() {
 
     // * define table row generator
     function tableRowGenerator(item: Event) {
-        function generateCompetitorsString(gender: string, minAge: number | null, maxAge: number | null) {
-            let competitorsString = "";
-            
-            if (minAge && maxAge) {
-                competitorsString = `${minAge}-${maxAge}`;
-            } else if (minAge) {
-                competitorsString = `${minAge} & Under`;
-            } else if (maxAge) {
-                competitorsString = `${maxAge} & Over`;
-            } else {
-                competitorsString = "Open";
-            }
-
-            return competitorsString + " " + gender;
-        }
-
         return (
-            <TableRow handleClick={() => navigate(`/meets/${meetData.pk}/events/${item.pk}`)} entries={[
+            <TableRow handleClick={() => navigate(`/meets/${meetData.pk}/events/${item.fields.is_relay ? "relay" : "individual"}/${item.pk}`)} entries={[
                 `${item.fields.distance}`,
                 item.fields.stroke,
                 generateCompetitorsString(item.fields.competing_gender, item.fields.competing_min_age, item.fields.competing_max_age),
@@ -58,7 +43,8 @@ export function MeetEventsTable() {
             searchType="EVENT_OF_MEET"
             tableBarItems={[]}
             tableBarHostItems={[
-                <PageButton color="orange" text="Create an event" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${meetData.pk}/events/create`)} />
+                <PageButton color="orange" text="Create an indiv. event" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${meetData.pk}/events/individual/create`)} />,
+                <PageButton color="orange" text="Create a relay event" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${meetData.pk}/events/relay/create`)} />
             ]}
             tableCols={[
                 <col span={1} className="w-auto" />,
@@ -72,6 +58,7 @@ export function MeetEventsTable() {
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no events were found."
+            loadMoreText="Load more events"
             isMeetHost={isMeetHost}
         />
     )

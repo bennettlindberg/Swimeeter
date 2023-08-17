@@ -113,11 +113,11 @@ const router = createBrowserRouter([
 
             // * EVENTS
             {
-                path: "meets/:meet_id/events/:event_id",
+                path: "meets/:meet_id/events/:event_type/:event_id",
                 element: <EventPage />,
             },
             {
-                path: "meets/:meet_id/events/create",
+                path: "meets/:meet_id/events/:event_type/create",
                 element: <EventCreationPage />,
             },
 

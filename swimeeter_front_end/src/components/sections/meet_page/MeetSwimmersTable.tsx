@@ -76,6 +76,7 @@ export function MeetSwimmersTable() {
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no swimmers were found."
+            loadMoreText="Load more swimmers"
             isMeetHost={isMeetHost}
         />
     )

@@ -5,35 +5,36 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function DateTimeInput({
-    defaultHour,
-    defaultMinute,
-    defaultDay,
-    defaultMonth,
-    defaultYear,
+    defaults,
+    rawTimeString,
     idPrefix
 }: {
-    defaultHour?: string,
-    defaultMinute?: string,
-    defaultDay?: string,
-    defaultMonth?: string,
-    defaultYear?: string,
+    defaults?: {
+        hours?: string,
+        minutes?: string,
+        day?: string,
+        month?: string,
+        year?: string,
+        AMPM?: string
+    },
+    rawTimeString?: string,
     idPrefix: string
 }) {
     // * initialize navigation
     const navigate = useNavigate();
 
     // * initialize state variables
-    const [inputMonth, setInputMonth] = useState<string>("");
-    const [inputDay, setInputDay] = useState<string>("");
-    const [inputYear, setInputYear] = useState<string>("");
-    const [inputHour, setInputHour] = useState<string>("");
-    const [inputMinute, setInputMinute] = useState<string>("");
-    const [inputAMPM, setInputAMPM] = useState<string>("");
+    const [inputMonth, setInputMonth] = useState<string>((defaults && defaults.month) || "");
+    const [inputDay, setInputDay] = useState<string>((defaults && defaults.day) || "");
+    const [inputYear, setInputYear] = useState<string>((defaults && defaults.year) || "");
+    const [inputHours, setInputHours] = useState<string>((defaults && defaults.hours) || "");
+    const [inputMinutes, setInputMinutes] = useState<string>((defaults && defaults.minutes) || "");
+    const [inputAMPM, setInputAMPM] = useState<string>((defaults && defaults.AMPM) || "AM");
     const [inputDateTime, setInputDateTime] = useState<string>("");
 
     // * define onChange event handlers
     function handleChangeMonth(month: string) {
-        const monthConversions: {[key: string]: string} = {
+        const monthConversions: { [key: string]: string } = {
             January: "01",
             February: "02",
             March: "03",
@@ -45,24 +46,10 @@ export function DateTimeInput({
             September: "09",
             October: "10",
             November: "11",
-            December: "12"           
+            December: "12"
         };
 
         setInputMonth(monthConversions[month] || "");
-
-        // // * check date validity
-        // if (inputDay && inputYear) {
-        //     try {
-        //         const testDate = new Date(`${inputYear}-${monthConversions[month]}-${inputDay}`);
-
-        //         if (isNaN(testDate.getTime())) {
-        //             setInputDay("");
-        //             (document.getElementById(`${idPrefix}-day-text-field`) as HTMLInputElement).value = "";
-        //         }
-        //     } catch {
-        //         navigate("/errors/unknown");
-        //     }
-        // }
     }
 
     function handleChangeDay(day: string) {
@@ -79,12 +66,12 @@ export function DateTimeInput({
         setInputYear(year || "");
     }
 
-    function handleChangeHour(hour: string) {
-        setInputHour(hour || "");
+    function handleChangeHours(hours: string) {
+        setInputHours(hours || "");
     }
 
-    function handleChangeMinute(minute: string) {
-        setInputMinute(minute || "");
+    function handleChangeMinutes(minutes: string) {
+        setInputMinutes(minutes || "");
     }
 
     function handleChangeAMPM(AMPM: string) {
@@ -93,39 +80,50 @@ export function DateTimeInput({
 
     // * define inputDateTime formatter
     useEffect(() => {
-        if (!inputMonth || !inputDay || !inputYear || !inputHour || !inputMinute || !inputAMPM) {
+        if (!inputMonth || !inputDay || !inputYear || !inputHours || !inputMinutes || !inputAMPM) {
             setInputDateTime("");
         }
 
-        let adjustedHour = inputHour;
+        let adjustedHours = inputHours;
         try {
-            if (inputAMPM === "PM" && inputHour !== "12") {
-                adjustedHour = "" + (parseInt(inputHour) + 12);
-            } else if (inputAMPM === "AM" && inputHour === "12") {
-                adjustedHour = "00";
+            if (inputAMPM === "PM" && inputHours !== "12") {
+                adjustedHours = "" + (parseInt(inputHours) + 12);
+            } else if (inputAMPM === "AM" && inputHours === "12") {
+                adjustedHours = "00";
             }
         } catch {
-            // * error adjusting hour
+            // * error adjusting hours
             setInputDateTime("");
         }
 
-        setInputDateTime(`${inputYear}-${inputMonth}-${inputDay}T${adjustedHour}:${inputMinute}`);
-    }, [inputMonth, inputDay, inputYear, inputHour, inputMinute, inputAMPM]);
+        // * produce UTC offset string
+        let UTCOffsetString = "";
+        const rawOffsetMinutes = new Date().getTimezoneOffset();
+
+        UTCOffsetString += rawOffsetMinutes > 0 ? "-" : "+";
+
+        const offsetHours = Math.floor(Math.abs(rawOffsetMinutes) / 60);
+        UTCOffsetString += (offsetHours < 10 ? "0" : "") + offsetHours + ":";
+
+        const offsetMinutes = Math.abs(rawOffsetMinutes) % 60;
+        UTCOffsetString += (offsetMinutes < 10 ? "0" : "") + offsetMinutes;
+
+        setInputDateTime(`${inputYear}-${inputMonth}-${inputDay}T${adjustedHours}:${inputMinutes}${UTCOffsetString}`);
+    }, [inputMonth, inputDay, inputYear, inputHours, inputMinutes, inputAMPM]);
 
     return (
         <>
-            <div className="flex flex-row items-center gap-x-1">
-                <div className="hidden">
-                    <input type="text" value={inputDateTime} id={idPrefix + "-datetime-field"}/>
-                </div>
+            <input className="hidden" type="text" value={inputDateTime} id={idPrefix + "-datetime-field"}/>
 
+            <input className="hidden peer/edit" id={idPrefix + "-datetime-field-edit"}/>
+            <div className="peer-read-only/edit:hidden flex flex-row items-center gap-x-1">
                 <SearchSelect
                     idPrefix={`${idPrefix}-month`}
                     pixelWidth={115}
                     regex={/^[A-Za-z]*$/}
                     otherEnabled={false}
                     placeholderText="Month"
-                    defaultText={defaultMonth || ""}
+                    defaultText={(defaults && defaults.month) || ""}
                     options={[
                         "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
                     ]}
@@ -136,7 +134,7 @@ export function DateTimeInput({
                     pixelWidth={45}
                     regex={/^$|^[123456789]$|^1[0-9]$|^2[0-9]$|^3[01]$/}
                     placeholderText="Day"
-                    defaultText={defaultDay || ""}
+                    defaultText={(defaults && defaults.day) || ""}
                     exteriorHandleChange={handleChangeDay}
                 />
                 <MainContentText>,</MainContentText>
@@ -145,39 +143,44 @@ export function DateTimeInput({
                     pixelWidth={60}
                     regex={/^$|^[123456789][0-9]*$/}
                     placeholderText="Year"
-                    defaultText={defaultYear || ""}
+                    defaultText={(defaults && defaults.year) || ""}
                     exteriorHandleChange={handleChangeYear}
                 />
                 <MainContentText>at</MainContentText>
                 <TextInput
-                    idPrefix={`${idPrefix}-hour`}
+                    idPrefix={`${idPrefix}-hours`}
                     pixelWidth={45}
                     regex={/^$|^[123456789]$|^1[012]$/}
                     placeholderText="HH"
-                    defaultText={defaultHour || ""}
-                    exteriorHandleChange={handleChangeHour}
+                    defaultText={(defaults && defaults.hours) || ""}
+                    exteriorHandleChange={handleChangeHours}
                 />
                 <MainContentText>:</MainContentText>
                 <TextInput
-                    idPrefix={`${idPrefix}-minute`}
+                    idPrefix={`${idPrefix}-minutes`}
                     pixelWidth={45}
                     regex={/^$|^[012345][0-9]?$/}
                     placeholderText="MM"
-                    defaultText={defaultMinute || ""}
-                    exteriorHandleChange={handleChangeMinute}
+                    defaultText={(defaults && defaults.minutes) || ""}
+                    exteriorHandleChange={handleChangeMinutes}
                 />
                 <SearchSelect
                     idPrefix={`${idPrefix}-AMPM`}
                     pixelWidth={45}
                     regex={/^$|^[AP]$|^[AP]M$/}
                     otherEnabled={false}
-                    defaultText="AM"
+                    defaultText={(defaults && defaults.AMPM) || "AM"}
                     options={[
                         "AM", "PM"
                     ]}
                     exteriorHandleChange={handleChangeAMPM}
                 />
             </div>
+
+            <input className="hidden peer/view" id={idPrefix + "-datetime-field-view"}/>
+            <p className="peer-read-only/view:hidden w-[300px] text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-slate-400 focus:dark:border-slate-500 focus:outline-none bg-slate-100 dark:bg-slate-800">
+                {rawTimeString}
+            </p>
         </>
     )
 }

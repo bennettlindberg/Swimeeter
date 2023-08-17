@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { Host, Meet } from "../../utilities/helpers/modelTypes.ts";
+import { generateLocalTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -11,37 +12,24 @@ export function PublicMeetsTable() {
     // * initialize navigation
     const navigate = useNavigate();
 
-    // * define host name generator
-    function generateHostName(host: Host) {
-        let accountName = "";
-
-        if (host.fields.prefix !== "") {
-            accountName += host.fields.prefix + " ";
-        }
-
-        accountName += host.fields.first_name + " ";
-
-        if (host.fields.middle_initials !== "") {
-            accountName += host.fields.middle_initials + " ";
-        }
-
-        accountName += host.fields.last_name;
-
-        if (host.fields.suffix !== "") {
-            accountName += " " + host.fields.suffix;
-        }
-
-        return accountName;
-    }
-
     // * define table row generator
     function tableRowGenerator(item: Meet) {
+        let begin_time = "N/A";
+        if (item.fields.begin_time) {
+            begin_time = generateLocalTimeString(item.fields.begin_time);
+        }
+
+        let end_time = "N/A";
+        if (item.fields.end_time) {
+            end_time = generateLocalTimeString(item.fields.end_time);
+        }
+
         return (
             <TableRow handleClick={() => navigate(`/meets/${item.pk}`)} entries={[
                 item.fields.name,
-                item.fields.begin_time?.toDateString() || "N/A",
-                item.fields.end_time?.toDateString() || "N/A",
-                generateHostName(item.fields.host)
+                begin_time,
+                end_time,
+                item.fields.is_public ? "Public" : "Private"
             ]} />
         )
     }
@@ -68,6 +56,7 @@ export function PublicMeetsTable() {
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no meets were found."
+            loadMoreText="Load more meets"
             isMeetHost={true}
         />
     )

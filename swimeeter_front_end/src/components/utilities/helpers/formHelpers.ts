@@ -1,5 +1,9 @@
 import { createContext } from "react";
 
+// * define context
+export const FormContext = createContext(false);
+
+// * define helpers
 export function convertRawData<RawType, FormattedType>(
     value: RawType,
     pairs: {
@@ -14,6 +18,3 @@ export function convertRawData<RawType, FormattedType>(
     }
     return undefined;
 }
-
-// * define context
-export const FormContext = createContext(false);

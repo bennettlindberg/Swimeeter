@@ -50,6 +50,7 @@ export function MeetTeamsTable() {
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no teams were found."
+            loadMoreText="Load more teams"
             isMeetHost={isMeetHost}
         />
     )

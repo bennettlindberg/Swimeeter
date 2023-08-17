@@ -65,6 +65,7 @@ export function DataTable({
     tableHeaderTitles,
     tableRowGenerator,
     noneFoundText,
+    loadMoreText,
     isMeetHost
 }: {
     apiRoute: string,
@@ -94,6 +95,7 @@ export function DataTable({
     tableHeaderTitles: string[],
     tableRowGenerator: (x: any) => JSX.Element,
     noneFoundText: string,
+    loadMoreText: string,
     isMeetHost: boolean
 }) {
     // * initialize navigation, and id
@@ -639,8 +641,10 @@ export function DataTable({
                 <div className="flex flex-row gap-x-2 items-end">
                     <FilterForm type={searchType} idPrefix={idPrefix} handleSearch={handleSearchSubmit} />
                     <div className="flex-auto"></div>
-                    {tableBarItems}
-                    {isMeetHost && tableBarHostItems}
+                    <div className="flex flex-col gap-y-2 items-end">
+                        {tableBarItems}
+                        {isMeetHost && tableBarHostItems}
+                    </div>
                 </div>
             </div>
             <TableGrid>
@@ -663,7 +667,7 @@ export function DataTable({
             }
             {!tableState.loadedAllData &&
                 <div className="flex flex-row justify-center">
-                    <PageButton color="yellow" text="Load more meets" icon="LIST_DOWN" handleClick={handleLoadMore} />
+                    <PageButton color="yellow" text={loadMoreText} icon="LIST_DOWN" handleClick={handleLoadMore} />
                 </div>
             }
         </>

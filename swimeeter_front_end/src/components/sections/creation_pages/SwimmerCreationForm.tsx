@@ -277,8 +277,13 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                     keep_new: true,
                 }}
                 rawDataInit={{
-                    name: "",
-                    acronym: "",
+                    first_name: "",
+                    last_name: "",
+                    middle_initials: "",
+                    prefix: "",
+                    suffix: "",
+                    age: -1,
+                    gender: ""
                 }}
                 apiRoute="/api/v1/swimmers/"
                 modelPageRoute={`meets/${meet_id_INT}/swimmers`}

@@ -20,8 +20,8 @@ export type Meet = {
     pk: number,
     fields: {
         name: string,
-        begin_time: Date | null,
-        end_time: Date | null,
+        begin_time: string | null,
+        end_time: string | null,
         is_public: boolean,
         host: Host
     }
@@ -32,8 +32,8 @@ export type MeetShallow = {
     pk: number,
     fields: {
         name: string,
-        begin_time: Date | null,
-        end_time: Date | null,
+        begin_time: string | null,
+        end_time: string | null,
         is_public: boolean,
         host: number
     }
@@ -80,8 +80,8 @@ export type Session = {
     pk: number,
     fields: {
         name: string,
-        begin_time: Date,
-        end_time: Date,
+        begin_time: string,
+        end_time: string,
         meet: MeetShallow,
         pool: PoolShallow
     }
@@ -92,8 +92,8 @@ export type SessionShallow = {
     pk: number,
     fields: {
         name: string,
-        begin_time: Date,
-        end_time: Date,
+        begin_time: string,
+        end_time: string,
         meet: number,
         pool: number
     }

@@ -3,7 +3,7 @@ import { useContext, useId } from "react";
 import { MeetContext } from "../../pages/meets/MeetPage.tsx";
 import { Meet } from "../../utilities/helpers/modelTypes.ts";
 import { convertRawData } from "../../utilities/helpers/formHelpers.ts";
-import { generateHostName } from "../../utilities/helpers/nameGenerators.ts";
+import { generateHostName, generateLocalTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { EditingForm } from "../../utilities/forms/EditingForm.tsx";
 import { EditingFormGroup } from "../../utilities/forms/EditingFormGroup.tsx";
@@ -153,13 +153,13 @@ export function MeetEditingForm() {
                             field={<TextInput
                                 regex={/^.*$/}
                                 placeholderText="Begin time"
-                                defaultText={meetData.fields.begin_time ? meetData.fields.begin_time.toLocaleTimeString() : "N/A"}
+                                defaultText={meetData.fields.begin_time ? generateLocalTimeString(meetData.fields.begin_time) : "N/A"}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-begin_time"}
                             />}
                             info={{
                                 title: "BEGIN TIME",
-                                description: "The begin time field contains the overall beginning time of the meet. The value of this field is read-only as it is determined automatically by the beginning times of the meet's sessions.",
+                                description: "The begin time field contains the overall beginning time of the meet in your local timezone. The value of this field is read-only as it is determined automatically by the beginning times of the meet's sessions.",
                             }}
                         />,
                     },
@@ -174,13 +174,13 @@ export function MeetEditingForm() {
                             field={<TextInput
                                 regex={/^.*$/}
                                 placeholderText="End time"
-                                defaultText={meetData.fields.end_time ? meetData.fields.end_time.toLocaleTimeString() : "N/A"}
+                                defaultText={meetData.fields.end_time ? generateLocalTimeString(meetData.fields.end_time) : "N/A"}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-end_time"}
                             />}
                             info={{
                                 title: "END TIME",
-                                description: "The end time field contains the overall ending time of the meet. The value of this field is read-only as it is determined automatically by the ending times of the meet's sessions.",
+                                description: "The end time field contains the overall ending time of the meet in your local timezone. The value of this field is read-only as it is determined automatically by the ending times of the meet's sessions.",
                             }}
                         />,
                     }

@@ -162,6 +162,12 @@ export function CreationForm({
             if (formInput.readOnly) {
                 inputElement.readOnly = true;
             }
+
+            // ! disable "view" version of datetime fields
+            if (new RegExp("datetime").test(formInput.idSuffix)) {
+                const viewElement = document.getElementById(idPrefix + formInput.idSuffix + "-view") as HTMLInputElement;
+                viewElement.readOnly = true;
+            }
         }
     }, []);
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { AppContext, UserState } from "../../../App.tsx";
 import { Meet } from "../../utilities/helpers/modelTypes.ts";
+import { generateLocalTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -16,11 +17,21 @@ export function MyMeetsTable() {
 
     // * define table row generator
     function tableRowGenerator(item: Meet) {
+        let begin_time = "N/A";
+        if (item.fields.begin_time) {
+            begin_time = generateLocalTimeString(item.fields.begin_time);
+        }
+
+        let end_time = "N/A";
+        if (item.fields.end_time) {
+            end_time = generateLocalTimeString(item.fields.end_time);
+        }
+
         return (
             <TableRow handleClick={() => navigate(`/meets/${item.pk}`)} entries={[
                 item.fields.name,
-                item.fields.begin_time?.toDateString() || "N/A",
-                item.fields.end_time?.toDateString() || "N/A",
+                begin_time,
+                end_time,
                 item.fields.is_public ? "Public" : "Private"
             ]} />
         )
@@ -49,6 +60,7 @@ export function MyMeetsTable() {
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no meets were found."
+            loadMoreText="Load more meets"
             isMeetHost={true}
         />
     )

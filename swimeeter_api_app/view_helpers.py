@@ -114,7 +114,7 @@ def get_all_duplicates(model_type, model_object):
 
             case "Event":
                 return Event.objects.filter(
-                    session__meet_id=model_object.session__meet_id,
+                    session__meet_id=model_object.session.meet_id,
                     stroke=model_object.stroke,
                     distance=model_object.distance,
                     is_relay=model_object.is_relay,
@@ -357,23 +357,23 @@ def get_swimmer_name(swimmer_object: Swimmer):
 
 
 def get_event_name(event_object: Event):
-    event_name = event_object.competing_gender + "s "
+    event_name = event_object.competing_gender + " "
 
     if event_object.competing_min_age and event_object.competing_max_age:
         if event_object.competing_min_age == event_object.competing_max_age:
-            event_name += event_object.competing_min_age + " Only "
+            event_name += str(event_object.competing_min_age) + " Years Old "
         else:
             event_name += (
-                event_object.competing_min_age + "-" + event_object.competing_max_age + " "
+                str(event_object.competing_min_age) + "-" + str(event_object.competing_max_age) + " Years Old "
             )
     elif event_object.competing_min_age:
-        event_name += event_object.competing_min_age + " & Over "
+        event_name += str(event_object.competing_min_age) + " & Over "
     elif event_object.competing_max_age:
-        event_name += event_object.competing_max_age + " & Under "
+        event_name += str(event_object.competing_max_age) + " & Under "
     else:
-        event_object += "Open "
+        event_name += "Open "
 
-    event_name += event_object.distance + " " + event_object.stroke + " "
+    event_name += str(event_object.distance) + " " + event_object.stroke + " "
 
     if event_object.is_relay:
         event_name += "Relay "
@@ -490,7 +490,7 @@ def get_relationship_tree(model_type, model_object):
                     "EVENT": {
                         "title": get_event_name(model_object),
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.session.meet.id}/events/{model_object.id}",
+                        "route": f"/meets/{model_object.session.meet.id}/events/{'relay' if model_object.is_relay else 'individual'}/{model_object.id}",
                     },
                 }
 

@@ -267,7 +267,7 @@ class Session_view(APIView):
         if isinstance(session_of_id, Response):
             return session_of_id
 
-        check_is_host = vh.check_user_is_host(request, meet_of_id.host_id)
+        check_is_host = vh.check_user_is_host(request, session_of_id.meet.host_id)
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host

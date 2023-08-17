@@ -54,6 +54,7 @@ export function MeetPoolsTable() {
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no pools were found."
+            loadMoreText="Load more pools"
             isMeetHost={isMeetHost}
         />
     )
