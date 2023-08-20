@@ -17,6 +17,9 @@ from .models import (
 )
 from swimeeter_auth_app.models import Host
 
+import inflect
+
+p = inflect.engine()
 
 # ! GENERAL
 
@@ -364,7 +367,10 @@ def get_event_name(event_object: Event):
             event_name += str(event_object.competing_min_age) + " Years Old "
         else:
             event_name += (
-                str(event_object.competing_min_age) + "-" + str(event_object.competing_max_age) + " Years Old "
+                str(event_object.competing_min_age)
+                + "-"
+                + str(event_object.competing_max_age)
+                + " Years Old "
             )
     elif event_object.competing_min_age:
         event_name += str(event_object.competing_min_age) + " & Over "
@@ -395,10 +401,31 @@ def get_seed_time_string(hundredths: int):
 
     seed_string = ""
 
-    for amountTuple in [(hours, ":"), (minutes, ":"), (seconds, "."), (hundredths, "")]:
-        if amountTuple[0] > 0 and amountTuple[0] < 10:
-            seed_string += "0"
-        seed_string += str(amountTuple[0]) + amountTuple[1]
+    # * hours
+    if hours == 0:
+        pass
+    else:
+        seed_string += str(hours) + ":"
+
+    # * minutes
+    if minutes == 0 and seed_string == "":
+        pass
+    elif minutes < 10 and seed_string != "":
+        seed_string += "0" + str(minutes) + ":"
+    else:
+        seed_string += str(minutes) + ":"
+
+    # * seconds
+    if seconds < 10 and seed_string != "":
+        seed_string += "0" + str(seconds) + "."
+    else:
+        seed_string += str(seconds) + "."
+
+    # * hundredths
+    if hundredths < 10:
+        seed_string += "0" + str(hundredths)
+    else:
+        seed_string += str(hundredths)
 
     return seed_string
 
@@ -420,10 +447,15 @@ def get_relay_entry_name(relay_entry_object: Relay_entry):
     entry_name = ""
 
     swimmers_list = list(relay_entry_object.swimmers)
-    for i in range(len(swimmers_list) - 1):
-        entry_name += swimmers_list[i].first_name + ", "
 
-    entry_name += "and "
+    if len(swimmers_list) == 1:
+        pass
+    elif len(swimmers_list) == 2:
+        entry_name += swimmers_list[0].first_name + " and "
+    else:
+        for i in range(len(swimmers_list) - 1):
+            entry_name += swimmers_list[i].first_name + ", "
+        entry_name += "and "
 
     if relay_entry_object.swimmers.last.first_name.endswith("s"):
         entry_name += relay_entry_object.swimmers.last.first_name + "' "
@@ -525,33 +557,43 @@ def get_relationship_tree(model_type, model_object):
             case "Individual_entry":
                 return {
                     "MEET": {
-                        "title": model_object.event.meet.name,
-                        "id": model_object.event.meet.id,
-                        "route": f"/meets/{model_object.event.meet.id}",
+                        "title": model_object.event.session.meet.name,
+                        "id": model_object.event.session.meet.id,
+                        "route": f"/meets/{model_object.event.session.meet.id}",
+                    },
+                    "SESSION": {
+                        "title": model_object.event.session.name,
+                        "id": model_object.event.session.id,
+                        "route": f"/meets/{model_object.event.session.meet.id}/sessions/{model_object.event.session.id}",
                     },
                     "EVENT": {
                         "title": get_event_name(model_object.event),
                         "id": model_object.event.id,
-                        "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}",
+                        "route": f"/meets/{model_object.event.session.meet.id}/events/individual/{model_object.event.id}",
                     },
                     "INDIVIDUAL_ENTRY": {
                         "title": get_individual_entry_name(model_object),
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.event.meet.id}/individual_entries/{model_object.id}",
+                        "route": f"/meets/{model_object.event.session.meet.id}/individual_entries/{model_object.id}",
                     },
                 }
 
             case "Relay_entry":
                 return {
                     "MEET": {
-                        "title": model_object.event.meet.name,
-                        "id": model_object.event.meet.id,
-                        "route": f"/meets/{model_object.event.meet.id}",
+                        "title": model_object.event.session.meet.name,
+                        "id": model_object.event.session.meet.id,
+                        "route": f"/meets/{model_object.event.session.meet.id}",
+                    },
+                    "SESSION": {
+                        "title": model_object.event.session.name,
+                        "id": model_object.event.session.id,
+                        "route": f"/meets/{model_object.event.session.meet.id}/sessions/{model_object.event.session.id}",
                     },
                     "EVENT": {
                         "title": get_event_name(model_object.event),
                         "id": model_object.event.id,
-                        "route": f"/meets/{model_object.event.meet.id}/events/{model_object.event.id}",
+                        "route": f"/meets/{model_object.event.session.meet.id}/events/relay/{model_object.event.id}",
                     },
                     "RELAY_ENTRY": {
                         "title": get_relay_entry_name(model_object),
@@ -597,20 +639,47 @@ def check_swimmers_against_others(swimmer_ids):
 
 
 def validate_swimmer_against_event(swimmer_object, event_object):
+    fulfilledAge = True
+    fulfilledGender = True
+
+    if (
+        event_object.competing_max_age is not None
+        and swimmer_object.age > event_object.competing_max_age
+    ) or (
+        event_object.competing_min_age is not None
+        and swimmer_object.age < event_object.competing_min_age
+    ):
+        fulfilledAge = False
+
     if (
         (
-            event_object.competing_max_age is not None
-            and swimmer_object.age > event_object.competing_max_age
+            (
+                event_object.competing_gender == "Men"
+                or event_object.competing_gender == "Boys"
+            )
+            and (
+                p.plural(swimmer_object.gender) != "Men"
+                and p.plural(swimmer_object.gender) != "Boys"
+            )
         )
         or (
-            event_object.competing_min_age is not None
-            and swimmer_object.age < event_object.competing_min_age
+            (
+                event_object.competing_gender == "Women"
+                or event_object.competing_gender == "Girls"
+            )
+            and (
+                p.plural(swimmer_object.gender) != "Women"
+                and p.plural(swimmer_object.gender) != "Girls"
+            )
         )
         or (
-            event_object.competing_gender != "Open"
-            and swimmer_object.gender != event_object.competing_gender
+            event_object.competing_gender != "Mixed"
+            and p.plural(swimmer_object.gender) != event_object.competing_gender
         )
     ):
+        fulfilledGender = False
+
+    if not fulfilledAge or not fulfilledGender:
         return Response(
             "swimmer and event are incompatible",
             status=status.HTTP_400_BAD_REQUEST,
@@ -859,7 +928,7 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     individual_JSON["fields"]["swimmer"] = get_JSON_single(
                         "Swimmer",
                         Swimmer.objects.get(id=individual_JSON["fields"]["swimmer"]),
-                        False,
+                        True,
                     )
                     individual_JSON["fields"]["event"] = get_JSON_single(
                         "Event",

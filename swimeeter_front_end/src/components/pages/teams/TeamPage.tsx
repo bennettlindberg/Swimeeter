@@ -11,6 +11,9 @@ import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
 import { TeamEditingForm } from "../../sections/team_page/TeamEditingForm.tsx";
+import { TeamSwimmersTable } from "../../sections/team_page/TeamSwimmersTable.tsx";
+import { TeamIndivEntriesTable } from "../../sections/team_page/TeamIndivEntriesTable.tsx";
+import { TeamRelayEntriesTable } from "../../sections/team_page/TeamRelayEntriesTable.tsx";
 
 // * create team context
 export const TeamContext = createContext<{
@@ -192,7 +195,7 @@ export function TeamPage() {
                             ref: swimmersRef,
                             content: (
                                 <>
-                                    {/* <TeamSwimmersTable /> */}
+                                    <TeamSwimmersTable />
                                 </>
                             )
                         },
@@ -202,7 +205,7 @@ export function TeamPage() {
                             ref: indivEntriesRef,
                             content: (
                                 <>
-                                    {/* <TeamIndivEntriesTable /> */}
+                                    <TeamIndivEntriesTable />
                                 </>
                             )
                         },
@@ -212,7 +215,7 @@ export function TeamPage() {
                             ref: relayEntriesRef,
                             content: (
                                 <>
-                                    {/* <TeamRelayEntriesTable /> */}
+                                    <TeamRelayEntriesTable />
                                 </>
                             )
                         },

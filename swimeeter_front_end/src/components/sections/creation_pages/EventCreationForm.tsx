@@ -174,7 +174,7 @@ export function EventCreationForm({ meet_id_INT, event_type }: { meet_id_INT: nu
                     description: "The competing gender field should contain the pluralized gender allowed to compete in the event being created.",
                     common_values: "Men, Women, Boys, Girls, Mixed",
                     permitted_values: "Any string. Although the most common values are provided as select options, you may provide any competing gender string.",
-                    warning: "\"Mixed\" events allow for any gender to compete. Both \"Men\" and \"Boys\" events allow for competitors with the genders \"Man\" and \"Boy\". Both \"Women\" and \"Girls\" events allow for competitors with the genders \"Woman\" and \"Girl\"."
+                    warning: "\"Mixed\" events allow for swimmers of any gender to compete. Both \"Men\" and \"Boys\" events allow for competitors with the genders \"Man\" and \"Boy\". Both \"Women\" and \"Girls\" events allow for competitors with the genders \"Woman\" and \"Girl\"."
                 }}
             />,
             validator: (gender: string) => {

@@ -428,7 +428,7 @@ class Individual_entry_view(APIView):
                 "swimmer and event meets do not match",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
+        
         check_compatibility = vh.validate_swimmer_against_event(
             swimmer_of_id, event_of_id
         )

@@ -10,7 +10,10 @@ import { generateEventName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
+
 import { EventEditingForm } from "../../sections/event_page/EventEditingForm.tsx";
+import { EventRelayEntriesTable } from "../../sections/event_page/EventRelayEntriesTable.tsx";
+import { EventIndivEntriesTable } from "../../sections/event_page/EventIndivEntriesTable.tsx";
 
 // * create event context
 export const EventContext = createContext<{
@@ -210,10 +213,10 @@ export function EventPage() {
                             ref: entriesRef,
                             content: (
                                 <>
-                                    {/* {eventData.fields.is_relay
+                                    {eventData.fields.is_relay
                                         ? <EventRelayEntriesTable />
                                         : <EventIndivEntriesTable />
-                                    } */}
+                                    }
                                 </>
                             )
                         },

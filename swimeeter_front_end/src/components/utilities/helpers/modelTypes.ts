@@ -198,7 +198,7 @@ export type IndividualEntry = {
         seed_time: number,
         heat_number: number | null,
         lane_number: number | null,
-        swimmer: SwimmerShallow,
+        swimmer: Swimmer,
         event: EventShallow
     }
 }

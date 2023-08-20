@@ -6,6 +6,7 @@ import { CreationFormGroup } from "../../utilities/forms/CreationFormGroup.tsx";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
+import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
 export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
@@ -210,38 +211,42 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                     },
                     {
                         title: "gender",
-                        idSuffix: "-gender-text-field",
+                        idSuffix: "-gender-select-field",
                         readOnly: false,
                         duplicateSensitive: true,
                         formGroup: <CreationFormGroup
-                            label={<InputLabel inputId={idPrefix + "-gender-text-field"} text="Gender" />}
-                            key={idPrefix + "-gender-text-field"}
+                            label={<InputLabel inputId={idPrefix + "-gender-select-field"} text="Gender" />}
+                            key={idPrefix + "-gender-select-field"}
                             optional={false}
-                            field={<TextInput
+                            field={<SearchSelect
                                 regex={/^.*$/}
+                                otherEnabled={true}
                                 placeholderText="Gender"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-gender"}
+                                options={["Man", "Woman"]}
                             />}
                             createInfo={{
                                 title: "GENDER",
                                 description: "The gender field should contain the gender of the swimmer being created.",
-                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
+                                common_values: "Man, Woman",
+                                permitted_values: "Any string. Although the most common values are provided as select options, you may provide any gender string.",
+                                warning: "\"Mixed\" events allow for swimmers of any gender to compete. Both \"Men\" and \"Boys\" events allow for competitors with the genders \"Man\" and \"Boy\". Both \"Women\" and \"Girls\" events allow for competitors with the genders \"Woman\" and \"Girl\"."
                             }}
                         />,
                         validator: (gender: string) => {
-                            if (gender.length > 0) {
-                                return true;
-                            } else {
+                            if (gender === "") {
                                 return {
                                     title: "GENDER FIELD ERROR",
-                                    description: "The swimmer gender field was left blank. Swimmer genders are required and must be at least 1 character in length.",
+                                    description: "The gender field was left blank. Swimmer genders are required and can be any string.",
                                     fields: "Gender",
-                                    recommendation: "Alter the entered gender to conform to the requirements of the field."
+                                    recommendation: "Alter the entered swimmer gender to conform to the requirements of the field."
                                 }
+                            } else {
+                                return true;
                             }
                         }
-                    },
+                    }
                 ]}
                 modelSelectFields={[
                     {

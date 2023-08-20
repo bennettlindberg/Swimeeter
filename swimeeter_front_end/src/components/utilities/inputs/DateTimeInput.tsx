@@ -2,7 +2,6 @@ import { SearchSelect } from "./SearchSelect";
 import { TextInput } from "./TextInput";
 import { MainContentText } from "../main_content/MainContentText";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 export function DateTimeInput({
     defaults,
@@ -20,9 +19,6 @@ export function DateTimeInput({
     rawTimeString?: string,
     idPrefix: string
 }) {
-    // * initialize navigation
-    const navigate = useNavigate();
-
     // * initialize state variables
     const [inputMonth, setInputMonth] = useState<string>((defaults && defaults.month) || "");
     const [inputDay, setInputDay] = useState<string>((defaults && defaults.day) || "");
@@ -160,7 +156,7 @@ export function DateTimeInput({
                     idPrefix={`${idPrefix}-minutes`}
                     pixelWidth={45}
                     regex={/^$|^[012345][0-9]?$/}
-                    placeholderText="MM"
+                    placeholderText="mm"
                     defaultText={(defaults && defaults.minutes) || ""}
                     exteriorHandleChange={handleChangeMinutes}
                 />

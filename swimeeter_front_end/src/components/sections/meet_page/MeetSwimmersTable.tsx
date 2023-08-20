@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { MeetContext } from "../../pages/meets/MeetPage.tsx";
 import { Meet, Swimmer } from "../../utilities/helpers/modelTypes.ts";
+import { generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -21,31 +22,9 @@ export function MeetSwimmersTable() {
 
     // * define table row generator
     function tableRowGenerator(item: Swimmer) {
-        function generateNameString(swimmer: Swimmer) {
-            let swimmerName = "";
-
-            if (swimmer.fields.prefix !== "") {
-                swimmerName += swimmer.fields.prefix + " ";
-            }
-
-            swimmerName += swimmer.fields.first_name + " ";
-
-            if (swimmer.fields.middle_initials !== "") {
-                swimmerName += swimmer.fields.middle_initials + " ";
-            }
-
-            swimmerName += swimmer.fields.last_name;
-
-            if (swimmer.fields.suffix !== "") {
-                swimmerName += " " + swimmer.fields.suffix;
-            }
-
-            return swimmerName;
-        }
-
         return (
             <TableRow handleClick={() => navigate(`/meets/${meetData.pk}/swimmers/${item.pk}`)} entries={[
-                generateNameString(item),
+                generateSwimmerName(item),
                 `${item.fields.age}`,
                 item.fields.gender,
                 item.fields.team.fields.name

@@ -160,11 +160,33 @@ class Event_view(APIView):
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
 
-                events_of_meet = Event.objects.filter(
-                    session__meet_id=meet_id
-                ).order_by(
-                    "stroke", "distance", "competing_min_age", "competing_gender"
-                )
+                event_type = vh.get_query_param(request, "event_type")
+                # ? no "event_type" param passed
+                if isinstance(event_type, str):
+                    if event_type != "individual" and event_type != "relay":
+                        return Response(
+                            "invalid event_type specification",
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
+                if event_type == "individual":
+                    events_of_meet = Event.objects.filter(
+                        session__meet_id=meet_id, is_relay=False
+                    ).order_by(
+                        "stroke", "distance", "competing_min_age", "competing_gender"
+                    )
+                elif event_type == "relay":
+                    events_of_meet = Event.objects.filter(
+                        session__meet_id=meet_id, is_relay=True
+                    ).order_by(
+                        "stroke", "distance", "competing_min_age", "competing_gender"
+                    )
+                else:
+                    events_of_meet = Event.objects.filter(
+                        session__meet_id=meet_id
+                    ).order_by(
+                        "stroke", "distance", "competing_min_age", "competing_gender"
+                    )
 
                 # @ apply search filtering
                 search__stroke = vh.get_query_param(request, "search__stroke")
@@ -381,6 +403,7 @@ class Event_view(APIView):
 
         # * update existing event
         session_changed = False
+        old_session_id = -1
         try:
             edited_event = Event.objects.get(id=event_id)
 
@@ -407,8 +430,7 @@ class Event_view(APIView):
             if (
                 edited_event.competing_max_age != None
                 and edited_event.competing_min_age != None
-                and edited_event.competing_max_age
-                < edited_event.competing_min_age
+                and edited_event.competing_max_age < edited_event.competing_min_age
             ):
                 # ? invalid age range -> max less than min
                 return Response(
@@ -427,7 +449,6 @@ class Event_view(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-
             # @ update foreign keys
             session_id = vh.get_query_param(request, "session_id")
             if isinstance(session_id, str):
@@ -439,8 +460,9 @@ class Event_view(APIView):
                     if isinstance(session_of_id, Response):
                         return session_of_id
 
-                    edited_event.session_id = session_id
                     session_changed = True
+                    old_session_id = edited_event.session_id
+                    edited_event.session_id = session_id
 
                     # ~ highest order number
                     current_highest_order_number = Event.objects.filter(
@@ -504,51 +526,77 @@ class Event_view(APIView):
             if isinstance(invalidate_hs_data, Response):
                 return invalidate_hs_data
 
-        # ~ calculate true requested order number
-        if requested_order_number == "start":
-            requested_order_number = 1
-        elif requested_order_number == "end":
-            requested_order_number = current_highest_order_number + 1
-        else:
-            requested_order_number = min(
-                requested_order_number,
-                current_highest_order_number + 1,
-            )  # cap order number at end
+        # $ move order numbers if...
+        match (session_changed):
+            # $ ...session changed
+            case True:
+                # ~ calculate true requested order number
+                if requested_order_number == "start":
+                    requested_order_number = 1
+                elif requested_order_number == "end":
+                    requested_order_number = current_highest_order_number + 1
+                else:
+                    requested_order_number = min(
+                        requested_order_number,
+                        current_highest_order_number + 1,
+                    )  # cap order number at end
 
-        # * move event order numbers -> new session
-        if session_changed:
-            order_shifted_events = Event.objects.filter(
-                session_id=edited_event.session_id,
-                order_in_session__gte=requested_order_number,
-            ).exclude(id=edited_event.pk)
+                # * move event order numbers backward -> old session
+                order_shifted_events = Event.objects.filter(
+                    session_id=old_session_id,
+                    order_in_session__gt=previous_order_number,
+                ).exclude(id=edited_event.pk)
 
-            for event in order_shifted_events:
-                event.order_in_session += 1
-                event.save()
+                for event in order_shifted_events:
+                    event.order_in_session -= 1
+                    event.save()
 
-        # * move event order numbers backward -> self moved forward
-        elif previous_order_number < requested_order_number:
-            order_shifted_events = Event.objects.filter(
-                session_id=edited_event.session_id,
-                order_in_session__gt=previous_order_number,
-                order_in_session__lte=requested_order_number,
-            ).exclude(id=edited_event.pk)
+                # * move event order numbers forward -> new session
+                order_shifted_events = Event.objects.filter(
+                    session_id=edited_event.session_id,
+                    order_in_session__gte=requested_order_number,
+                ).exclude(id=edited_event.pk)
 
-            for event in order_shifted_events:
-                event.order_in_session -= 1
-                event.save()
+                for event in order_shifted_events:
+                    event.order_in_session += 1
+                    event.save()
 
-        # * move event order numbers forward -> self moved backward
-        elif previous_order_number > requested_order_number:
-            order_shifted_events = Event.objects.filter(
-                session_id=edited_event.session_id,
-                order_in_session__lt=previous_order_number,
-                order_in_session__gte=requested_order_number,
-            ).exclude(id=edited_event.pk)
+            # $ ...session stayed the same
+            case False:
+                # ~ calculate true requested order number
+                if requested_order_number == "start":
+                    requested_order_number = 1
+                elif requested_order_number == "end":
+                    requested_order_number = current_highest_order_number
+                else:
+                    requested_order_number = min(
+                        requested_order_number,
+                        current_highest_order_number,
+                    )  # cap order number at end
 
-            for event in order_shifted_events:
-                event.order_in_session += 1
-                event.save()
+                # * move event order numbers backward -> self moved forward
+                if previous_order_number < requested_order_number:
+                    order_shifted_events = Event.objects.filter(
+                        session_id=edited_event.session_id,
+                        order_in_session__gt=previous_order_number,
+                        order_in_session__lte=requested_order_number,
+                    ).exclude(id=edited_event.pk)
+
+                    for event in order_shifted_events:
+                        event.order_in_session -= 1
+                        event.save()
+
+                # * move event order numbers forward -> self moved backward
+                elif previous_order_number > requested_order_number:
+                    order_shifted_events = Event.objects.filter(
+                        session_id=edited_event.session_id,
+                        order_in_session__lt=previous_order_number,
+                        order_in_session__gte=requested_order_number,
+                    ).exclude(id=edited_event.pk)
+
+                    for event in order_shifted_events:
+                        event.order_in_session += 1
+                        event.save()
 
         edited_event.order_in_session = requested_order_number
         edited_event.save()

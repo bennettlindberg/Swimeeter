@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -14,14 +14,14 @@ import { ModelSelectGenerator } from "./ModelSelectGenerator.tsx";
 
 // * define form types
 type FormState = {
-    mode: "view" | "edit"
+    mode: "view" | "edit" | "cancel"
     error: ErrorType | null,
     duplicate: DuplicateType | null,
     destructive: DestructiveType | null
 }
 
 type FormAction = {
-    type: "EDIT_CLICKED" | "SAVE_SUCCESS" | "CANCEL_CLICKED" | "DISMISS_ERROR" | "DISMISS_DUPLICATE_PANE" | "DISMISS_DESTRUCTIVE_PANE"
+    type: "EDIT_CLICKED" | "SAVE_SUCCESS" | "CANCEL_CLICKED" | "END_CANCEL" | "DISMISS_ERROR" | "DISMISS_DUPLICATE_PANE" | "DISMISS_DESTRUCTIVE_PANE"
 } | {
     type: "SAVE_FAILURE",
     error: ErrorType
@@ -46,6 +46,14 @@ function formReducer(state: FormState, action: FormAction) {
 
         case "SAVE_SUCCESS":
         case "CANCEL_CLICKED":
+            return {
+                error: null,
+                duplicate: null,
+                destructive: null,
+                mode: "cancel"
+            } as FormState;
+
+        case "END_CANCEL":
             return {
                 error: null,
                 duplicate: null,
@@ -183,11 +191,19 @@ export function EditingForm({
         duplicate: null,
         destructive: null,
     });
-    const [modelIdSelections, setModelIdSelections] = useState<{[key: string]: number}>({});
+    const [modelIdSelections, setModelIdSelections] = useState<{ [key: string]: number }>({});
     const navigate = useNavigate();
 
     // * disable applicable inputs if view only
     useEffect(() => {
+        // ! force form reset under cancel mode -> inputs do not exist
+        if (formState.mode === "cancel") {
+            formDispatch({
+                type: "END_CANCEL"
+            })
+            return;
+        }
+
         for (const formInput of formInputFields) {
             const inputElement = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
 
@@ -197,8 +213,8 @@ export function EditingForm({
                 inputElement.readOnly = formState.mode === "view";
             }
 
-            // ! handle "view" vs. "edit" versions of datetime fields
-            if (new RegExp("datetime").test(formInput.idSuffix)) {
+            // ! handle "view" vs. "edit" versions of datetime and duration fields
+            if (new RegExp("datetime").test(formInput.idSuffix) || new RegExp("duration").test(formInput.idSuffix)) {
                 const viewElement = document.getElementById(idPrefix + formInput.idSuffix + "-view") as HTMLInputElement;
                 const editElement = document.getElementById(idPrefix + formInput.idSuffix + "-edit") as HTMLInputElement;
 
@@ -250,8 +266,8 @@ export function EditingForm({
     }
 
     function handleDestructiveSelection(
-        selection: "continue" | "cancel", 
-        context: "duplicate_keep_new" | "destructive_submission" | "destructive_deletion" | "unknown", 
+        selection: "continue" | "cancel",
+        context: "duplicate_keep_new" | "destructive_submission" | "destructive_deletion" | "unknown",
         duplicate_handling?: "unhandled" | "keep_new" | "keep_both"
     ) {
         if (selection === "continue") {
@@ -341,7 +357,7 @@ export function EditingForm({
             }
         }
         if (ignoreDuplicates) {
-            duplicate_handling = "keep_both";
+            duplicate_handling = "keep_new";
         }
 
         // @ send new model data to the back-end
@@ -483,8 +499,13 @@ export function EditingForm({
         })
     }
 
+    // ! force form reset under cancel mode
+    if (formState.mode === "cancel") {
+        return <></>;
+    }
+
     return (
-        <DataForm>
+        <DataForm idPrefix={idPrefix + "-editing"}>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
             {formState.duplicate && <DuplicatePane handleClick={handleDuplicateSelection} info={formState.duplicate} />}
             {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}
@@ -493,7 +514,7 @@ export function EditingForm({
                 {formInputFields.map(formInput => formInput.formGroup)}
                 {modelSelectFields.map(modelSelectInput => {
                     return (
-                        <ModelSelectGenerator 
+                        <ModelSelectGenerator
                             formGroupType="editing"
                             optional={modelSelectInput.optional}
                             idPrefix={idPrefix}

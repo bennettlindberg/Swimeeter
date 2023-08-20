@@ -163,8 +163,8 @@ export function CreationForm({
                 inputElement.readOnly = true;
             }
 
-            // ! disable "view" version of datetime fields
-            if (new RegExp("datetime").test(formInput.idSuffix)) {
+            // ! disable "view" version of datetime and duration fields
+            if (new RegExp("datetime").test(formInput.idSuffix) || new RegExp("duration").test(formInput.idSuffix)) {
                 const viewElement = document.getElementById(idPrefix + formInput.idSuffix + "-view") as HTMLInputElement;
                 viewElement.readOnly = true;
             }

@@ -36,12 +36,14 @@ export type SwimmerTree = {
 
 export type IndividualEntryTree = {
     MEET: TreeItem,
+    SESSION: TreeItem,
     EVENT: TreeItem,
     INDIVIDUAL_ENTRY: TreeItem
 }
 
 export type RelayEntryTree = {
     MEET: TreeItem,
+    SESSION: TreeItem,
     EVENT: TreeItem,
     RELAY_ENTRY: TreeItem
 }

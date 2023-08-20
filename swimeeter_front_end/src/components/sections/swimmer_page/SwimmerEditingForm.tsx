@@ -8,6 +8,7 @@ import { EditingFormGroup } from "../../utilities/forms/EditingFormGroup.tsx";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
+import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
 export function SwimmerEditingForm() {
@@ -241,43 +242,47 @@ export function SwimmerEditingForm() {
                     },
                     {
                         title: "gender",
-                        idSuffix: "-gender-text-field",
+                        idSuffix: "-gender-select-field",
                         readOnly: false,
                         duplicateSensitive: true,
                         formGroup: <EditingFormGroup
-                            label={<InputLabel inputId={idPrefix + "-gender-text-field"} text="Gender" />}
-                            key={idPrefix + "-gender-text-field"}
+                            label={<InputLabel inputId={idPrefix + "-gender-select-field"} text="Gender" />}
+                            key={idPrefix + "-gender-select-field"}
                             optional={false}
-                            field={<TextInput
+                            field={<SearchSelect
                                 regex={/^.*$/}
+                                otherEnabled={true}
                                 placeholderText="Gender"
                                 defaultText={swimmerData.fields.gender}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-gender"}
+                                options={["Man", "Woman"]}
                             />}
                             editInfo={{
                                 title: "GENDER",
-                                description: "The gender field should contain the swimmer's gender.",
-                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
+                                description: "The gender field should contain the gender of the swimmer.",
+                                common_values: "Man, Woman",
+                                permitted_values: "Any string. Although the most common values are provided as select options, you may provide any gender string.",
+                                warning: "\"Mixed\" events allow for swimmers of any gender to compete. Both \"Men\" and \"Boys\" events allow for competitors with the genders \"Man\" and \"Boy\". Both \"Women\" and \"Girls\" events allow for competitors with the genders \"Woman\" and \"Girl\"."
                             }}
                             viewInfo={{
                                 title: "GENDER",
-                                description: "The gender field should contain the swimmer's gender.",
+                                description: "The gender field contains the gender of the swimmer.",
                             }}
                         />,
                         validator: (gender: string) => {
-                            if (gender.length > 0) {
-                                return true;
-                            } else {
+                            if (gender === "") {
                                 return {
                                     title: "GENDER FIELD ERROR",
-                                    description: "The swimmer gender field was left blank. Swimmer genders are required and must be at least 1 character in length.",
+                                    description: "The gender field was left blank. Swimmer genders are required and can be any string.",
                                     fields: "Gender",
-                                    recommendation: "Alter the entered gender to conform to the requirements of the field."
+                                    recommendation: "Alter the entered swimmer gender to conform to the requirements of the field."
                                 }
+                            } else {
+                                return true;
                             }
                         }
-                    },
+                    }
                 ]}
                 modelSelectFields={swimmerData.pk !== -1
                     ? [

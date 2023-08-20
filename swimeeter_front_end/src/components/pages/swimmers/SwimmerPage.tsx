@@ -12,6 +12,8 @@ import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
 import { SwimmerEditingForm } from "../../sections/swimmer_page/SwimmerEditingForm.tsx";
+import { SwimmerIndivEntriesTable } from "../../sections/swimmer_page/SwimmerIndivEntriesTable.tsx";
+import { SwimmerRelayEntriesTable } from "../../sections/swimmer_page/SwimmerRelayEntriesTable.tsx";
 
 // * create swimmer context
 export const SwimmerContext = createContext<{
@@ -220,7 +222,7 @@ export function SwimmerPage() {
                             ref: indivEntriesRef,
                             content: (
                                 <>
-                                    {/* <SwimmerIndivEntriesTable /> */}
+                                    <SwimmerIndivEntriesTable />
                                 </>
                             )
                         },
@@ -230,7 +232,7 @@ export function SwimmerPage() {
                             ref: relayEntriesRef,
                             content: (
                                 <>
-                                    {/* <SwimmerRelayEntriesTable /> */}
+                                    <SwimmerRelayEntriesTable />
                                 </>
                             )
                         },

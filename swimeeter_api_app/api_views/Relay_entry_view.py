@@ -145,7 +145,7 @@ class Relay_entry_view(APIView):
                     return check_meet_access
 
                 relay_entries_of_team = Relay_entry.objects.filter(
-                    swimmer__team_id=team_id
+                    swimmers__team_id=team_id
                 ).order_by(
                     "event__stroke",
                     "event__distance",

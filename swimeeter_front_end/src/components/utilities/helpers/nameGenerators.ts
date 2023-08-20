@@ -1,4 +1,4 @@
-import { Host, Event, IndividualEntry, RelayEntry, Swimmer } from "./modelTypes";
+import { Host, Event, IndividualEntry, RelayEntry, Swimmer, SwimmerShallow, EventShallow } from "./modelTypes";
 
 export function generateHostName(host: Host) {
     let hostName = "";
@@ -52,7 +52,7 @@ export function generateUserProfileName(user: {
     return userName;
 }
 
-export function generateSwimmerName(swimmer: Swimmer) {
+export function generateSwimmerName(swimmer: Swimmer | SwimmerShallow) {
     let swimmerName = "";
 
     if (swimmer.fields.prefix !== "") {
@@ -74,7 +74,7 @@ export function generateSwimmerName(swimmer: Swimmer) {
     return swimmerName;
 }
 
-export function generateEventName(event: Event) {
+export function generateEventName(event: Event | EventShallow) {
     let eventName = event.fields.competing_gender + " ";
 
     if (event.fields.competing_min_age && event.fields.competing_max_age) {
@@ -116,25 +116,97 @@ export function generateIndividualEntryName(individual_entry: IndividualEntry) {
     return entryName;
 }
 
+export function generateRelayParticipantNames(relay_entry: RelayEntry) {
+    let participantNames = "";
+
+    const swimmersList = relay_entry.fields.relay_assignments;
+    if (swimmersList.length === 1) {
+        return swimmersList[0].fields.swimmer.fields.first_name;
+    } else if (swimmersList.length === 2) {
+        return swimmersList[0].fields.swimmer.fields.first_name + " and " + swimmersList[1].fields.swimmer.fields.first_name;
+    } else {
+        for (let i = 0; i < swimmersList.length - 1; ++i) {
+            participantNames += swimmersList[i].fields.swimmer.fields.first_name + ", "
+        }
+        return participantNames + "and " + swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name;
+    }
+}
+
 export function generateRelayEntryName(relay_entry: RelayEntry) {
     let entryName = "";
 
     const swimmersList = relay_entry.fields.relay_assignments;
-    for (let i = 0; i < swimmersList.length - 1; ++i) {
-        entryName += swimmersList[i].fields.swimmer.fields.first_name + ", "
-    }
-
-    entryName += "and ";
-    
-    if (swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name.endsWith("s")) {
-        entryName += swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name + "' ";
+    if (swimmersList.length === 1) {
+        entryName = swimmersList[0].fields.swimmer.fields.first_name;
+    } else if (swimmersList.length === 2) {
+        entryName = swimmersList[0].fields.swimmer.fields.first_name + " and " + swimmersList[1].fields.swimmer.fields.first_name;
     } else {
-        entryName += swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name + "'s ";
+        for (let i = 0; i < swimmersList.length - 1; ++i) {
+            entryName += swimmersList[i].fields.swimmer.fields.first_name + ", "
+        }
+    
+        entryName += "and ";
+        
+        if (swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name.endsWith("s")) {
+            entryName += swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name + "' ";
+        } else {
+            entryName += swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name + "'s ";
+        }
     }
 
     entryName += generateSeedTimeString(relay_entry.fields.seed_time) + " Entry";
 
     return entryName;
+}
+
+export function generateSeedTimeElements(hundredths: number) {
+    const hours = Math.floor(hundredths / 360000);
+    hundredths %= 360000;
+
+    const minutes = Math.floor(hundredths / 6000);
+    hundredths %= 6000;
+
+    const seconds = Math.floor(hundredths / 100);
+    hundredths %= 100;
+
+    const defaults = {
+        hours: "",
+        minutes: "",
+        seconds: "",
+        decimal: ""
+    };
+
+    // * hours
+    if (hours === 0) {
+        ;
+    } else {
+        defaults.hours = "" + hours;
+    }
+
+    // * minutes
+    if (minutes === 0 && hours === 0) {
+        ;
+    } else if (minutes < 10 && hours !== 0) {
+        defaults.minutes = "0" + minutes;
+    } else {
+        defaults.minutes = "" + minutes;
+    }
+
+    // * seconds
+    if (seconds < 10 && (hours !== 0 || minutes !== 0)) {
+        defaults.seconds = "0" + seconds;
+    } else {
+        defaults.seconds = "" + seconds;
+    }
+
+    // * hundredths
+    if (hundredths < 10) {
+        defaults.decimal = "0" + hundredths;
+    } else {
+        defaults.decimal = "" + hundredths;
+    }
+
+    return defaults;
 }
 
 export function generateSeedTimeString(hundredths: number) {
@@ -149,11 +221,34 @@ export function generateSeedTimeString(hundredths: number) {
 
     let seed_string = "";
 
-    for (const amountTuple of [[hours, ':'], [minutes, ":"], [seconds, "."], [hundredths, ""]]) {
-        if (amountTuple[0] as number > 0 && amountTuple[0] as number < 10) {
-            seed_string += "0";
-        }
-        seed_string += (amountTuple[0] as number).toString() + amountTuple[1] as string;
+    // * hours
+    if (hours === 0) {
+        ;
+    } else {
+        seed_string += hours + ":";
+    }
+
+    // * minutes
+    if (minutes === 0 && seed_string === "") {
+        ;
+    } else if (minutes < 10 && seed_string !== "") {
+        seed_string += "0" + minutes + ":";
+    } else {
+        seed_string += minutes + ":";
+    }
+
+    // * seconds
+    if (seconds < 10 && seed_string !== "") {
+        seed_string += "0" + seconds + ".";
+    } else {
+        seed_string += seconds + ".";
+    }
+
+    // * hundredths
+    if (hundredths < 10) {
+        seed_string += "0" + hundredths;
+    } else {
+        seed_string += hundredths;
     }
 
     return seed_string;

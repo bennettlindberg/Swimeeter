@@ -9,6 +9,7 @@ import { convertStringParamToInt } from "../../utilities/helpers/helperFunctions
 
 import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
+
 import { SessionEditingForm } from "../../sections/session_page/SessionEditingForm.tsx";
 import { SessionEventsTable } from "../../sections/session_page/SessionEventsTable.tsx";
 
