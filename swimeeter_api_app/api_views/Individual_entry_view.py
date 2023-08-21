@@ -1,7 +1,7 @@
 from rest_framework.views import APIView, Response
 from rest_framework import status
 
-from ..models import Individual_entry
+from ..models import Individual_entry, Event
 from .. import view_helpers as vh
 
 from django.core.exceptions import ValidationError
@@ -404,6 +404,13 @@ class Individual_entry_view(APIView):
         # ? no event of event_id exists
         if isinstance(event_of_id, Response):
             return event_of_id
+        
+        # ? event is not an individual event
+        if event_of_id.is_relay:
+            return Response(
+                "event is not an individual event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         check_is_host = vh.check_user_is_host(request, event_of_id.session.meet.host_id)
         # ? user is not meet host
@@ -510,22 +517,81 @@ class Individual_entry_view(APIView):
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
-
+        
         seeding_needs_invalidation = False
-
+        event_changed = False
+        original_event_id = -1
         # * update existing individual_entry
         try:
             edited_individual_entry = Individual_entry.objects.get(
                 id=individual_entry_id
             )
+            original_event_id = edited_individual_entry.event.pk
 
-            if "seed_time" in request.data:
+            if "seed_time" in request.data and request.data["seed_time"] != edited_individual_entry.seed_time:
                 edited_individual_entry.seed_time = request.data["seed_time"]
                 seeding_needs_invalidation = True
 
-            # ! if FK changes are added, validate new swimmer against meet here
+            # @ handle FK event change
+            event_id = vh.get_query_param(request, "event_id")
+            if isinstance(event_id, str):
+                event_id = int(event_id)
 
-            # ! if FK changes are added, check for duplicates here
+                if event_id != edited_individual_entry.event.pk:
+                    event_changed = True
+                    seeding_needs_invalidation = True
+
+                event_of_id = vh.get_model_of_id("Event", event_id)
+                # ? no event of event_id exists
+                if isinstance(event_of_id, Response):
+                    return event_of_id
+                
+                # ? event is not an individual event
+                if event_of_id.is_relay:
+                    return Response(
+                        "event is not an individual event",
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                
+                edited_individual_entry.event = event_of_id
+
+            # @ handle FK swimmer change
+            swimmer_id = vh.get_query_param(request, "swimmer_id")
+            if isinstance(swimmer_id, str):
+                swimmer_id = int(swimmer_id)
+
+                if swimmer_id != edited_individual_entry.swimmer.pk:
+                    seeding_needs_invalidation = True
+
+                swimmer_of_id = vh.get_model_of_id("Swimmer", swimmer_id)
+                # ? no swimmer of swimmer_id exists
+                if isinstance(swimmer_of_id, Response):
+                    return swimmer_of_id
+                
+                edited_individual_entry.swimmer = swimmer_of_id
+
+            # ? swimmer and event meets do not match
+            if edited_individual_entry.swimmer.meet_id != edited_individual_entry.event.session.meet_id:
+                return Response(
+                    "swimmer and event meets do not match",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            
+            check_compatibility = vh.validate_swimmer_against_event(
+                edited_individual_entry.swimmer, edited_individual_entry.event
+            )
+            # ? swimmer and event are not compatible
+            if isinstance(check_compatibility, Response):
+                return check_compatibility
+
+            # * handle any duplicates
+            duplicate_handling = vh.get_entry_duplicate_handling(request)
+            handle_duplicates = vh.handle_duplicates(
+                duplicate_handling, "Individual_entry", edited_individual_entry
+            )
+            # ? error handling duplicates
+            if isinstance(handle_duplicates, Response):
+                return handle_duplicates
 
             edited_individual_entry.full_clean()
             edited_individual_entry.save()
@@ -550,6 +616,14 @@ class Individual_entry_view(APIView):
             # ? internal error invalidating event seeding
             if isinstance(invalidate_hs_data, Response):
                 return invalidate_hs_data
+            
+            if event_changed:
+                invalidate_hs_data = vh.invalidate_event_seeding(
+                    Event.objects.get(id=original_event_id)
+                )
+                # ? internal error invalidating event seeding
+                if isinstance(invalidate_hs_data, Response):
+                    return invalidate_hs_data
 
         # * get individual_entry JSON
         edited_individual_entry_JSON = vh.get_JSON_single(

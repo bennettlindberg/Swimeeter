@@ -651,33 +651,27 @@ def validate_swimmer_against_event(swimmer_object, event_object):
     ):
         fulfilledAge = False
 
-    if (
-        (
-            (
-                event_object.competing_gender == "Men"
-                or event_object.competing_gender == "Boys"
-            )
-            and (
+    match event_object.competing_gender:
+        case "Men" | "Boys":
+            if (
                 p.plural(swimmer_object.gender) != "Men"
                 and p.plural(swimmer_object.gender) != "Boys"
-            )
-        )
-        or (
-            (
-                event_object.competing_gender == "Women"
-                or event_object.competing_gender == "Girls"
-            )
-            and (
+            ):
+                fulfilledGender = False
+
+        case "Women" | "Girls":
+            if (
                 p.plural(swimmer_object.gender) != "Women"
                 and p.plural(swimmer_object.gender) != "Girls"
-            )
-        )
-        or (
-            event_object.competing_gender != "Mixed"
-            and p.plural(swimmer_object.gender) != event_object.competing_gender
-        )
-    ):
-        fulfilledGender = False
+            ):
+                fulfilledGender = False
+
+        case "Mixed":
+            pass
+
+        case _:
+            if p.plural(swimmer_object.gender) != event_object.competing_gender:
+                fulfilledGender = False
 
     if not fulfilledAge or not fulfilledGender:
         return Response(

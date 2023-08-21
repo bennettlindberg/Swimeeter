@@ -219,7 +219,7 @@ export function IndividualEntryEditingForm() {
                 ]}
                 idPrefix={idPrefix}
                 queryParams={{
-                    meet_id: individualEntryData.fields.swimmer.fields.meet.pk
+                    "individual_entry_id": individualEntryData.pk
                 }}
                 submitText="Save individual entry"
                 editText="Edit individual entry"

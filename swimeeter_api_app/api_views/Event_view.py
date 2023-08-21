@@ -272,7 +272,7 @@ class Event_view(APIView):
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
-
+        
         # * create new event
         try:
             # ~ highest order number
@@ -301,18 +301,18 @@ class Event_view(APIView):
                 swimmers_per_entry=request.data["swimmers_per_entry"],
                 stage=request.data["stage"],
                 competing_gender=request.data["competing_gender"],
-                competing_max_age=request.data["competing_max_age"],
-                competing_min_age=request.data["competing_min_age"],
+                competing_max_age = request.data.get("competing_max_age", None),
+                competing_min_age = request.data.get("competing_min_age", None),
                 order_in_session=order_number,
                 # total_heats => null,
                 session_id=session_id,
             )
 
             if (
-                request.data["competing_max_age"] != None
-                and request.data["competing_min_age"] != None
-                and request.data["competing_max_age"]
-                < request.data["competing_min_age"]
+                new_event.competing_max_age != None
+                and new_event.competing_min_age != None
+                and new_event.competing_max_age
+                < new_event.competing_min_age
             ):
                 # ? invalid age range -> max less than min
                 return Response(
@@ -330,7 +330,7 @@ class Event_view(APIView):
                     "swimmers per entry of medley relay is not 4",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
+            
             # * handle any duplicates
             duplicate_handling = vh.get_duplicate_handling(request)
             handle_duplicates = vh.handle_duplicates(
@@ -354,6 +354,8 @@ class Event_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        print("4")
 
         # * move event order numbers forward
         if "order_in_session" in request.data:
@@ -419,13 +421,12 @@ class Event_view(APIView):
                 edited_event.stage = request.data["stage"]
             if "competing_gender" in request.data:
                 edited_event.competing_gender = request.data["competing_gender"]
-            if "competing_max_age" in request.data:
-                edited_event.competing_max_age = request.data["competing_max_age"]
-            if "competing_min_age" in request.data:
-                edited_event.competing_min_age = request.data["competing_min_age"]
             if "order_in_session" in request.data:
                 # ~ requested order number
                 requested_order_number = request.data["order_in_session"]
+
+            edited_event.competing_max_age = request.data.get("competing_max_age", None)
+            edited_event.competing_min_age = request.data.get("competing_min_age", None)
 
             if (
                 edited_event.competing_max_age != None

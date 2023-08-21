@@ -33,7 +33,7 @@ export function EditingFormGroup({ label, field, editInfo, viewInfo, optional }:
                         info={editMode ? editInfo : viewInfo}
                     />}
 
-                <div className="flex flex-row gap-x-2 items-center w-[300px]">
+                <div className="flex flex-row gap-x-2 items-center">
                     {userState.preferences.data_entry_information &&
                         <IconButton color="primary" icon="CIRCLE_INFO" handleClick={(event: any) => {
                             event.preventDefault();
@@ -41,13 +41,13 @@ export function EditingFormGroup({ label, field, editInfo, viewInfo, optional }:
                         }}
                         />}
                     {label}
-                    <div className="flex-auto"></div>
                     {editMode && (
                         optional
                             ? <p className="text-sm font-semibold underline decoration-[2px] decoration-sky-400 dark:decoration-blue-500 rounded-md text-sky-400 dark:text-blue-500">OPTIONAL</p>
                             : <p className="text-sm font-semibold underline decoration-[2px] decoration-purple-400 dark:decoration-purple-500 text-purple-400 dark:text-purple-500">REQUIRED</p>
                     )}
                 </div>
+
                 {field}
             </div>
         </>

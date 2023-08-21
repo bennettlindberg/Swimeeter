@@ -27,19 +27,34 @@ class Pool(models.Model):
 
     # * address info fields
     street_address = models.CharField(
-        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
+        max_length=255,
+        default="",
+        blank=True,
+        validators=[validators.MinLengthValidator(1)],
     )
     city = models.CharField(
-        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
+        max_length=255,
+        default="",
+        blank=True,
+        validators=[validators.MinLengthValidator(1)],
     )
     state = models.CharField(
-        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
+        max_length=255,
+        default="",
+        blank=True,
+        validators=[validators.MinLengthValidator(1)],
     )
     country = models.CharField(
-        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
+        max_length=255,
+        default="",
+        blank=True,
+        validators=[validators.MinLengthValidator(1)],
     )
     zipcode = models.CharField(
-        max_length=255, default="", blank=True, validators=[validators.MinLengthValidator(1)]
+        max_length=255,
+        default="",
+        blank=True,
+        validators=[validators.MinLengthValidator(1)],
     )
 
     # * pool specification fields
@@ -63,7 +78,7 @@ class Session(models.Model):
         max_length=255, validators=[validators.MinLengthValidator(1)]
     )
     begin_time = models.DateTimeField()
-    end_time = models.DateTimeField()  # front-end check end_time >= begin_time
+    end_time = models.DateTimeField()
 
     # * association fields
     meet = models.ForeignKey(Meet, on_delete=models.CASCADE, related_name="sessions")
@@ -84,9 +99,7 @@ class Event(models.Model):
 
     # * competitor info fields
     competing_gender = models.CharField(max_length=255)
-    competing_max_age = models.PositiveSmallIntegerField(
-        null=True, blank=True
-    )  # front-end check for max >= min
+    competing_max_age = models.PositiveSmallIntegerField(null=True, blank=True)
     competing_min_age = models.PositiveSmallIntegerField(null=True, blank=True)
 
     # * heat sheet fields

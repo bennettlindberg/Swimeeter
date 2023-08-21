@@ -29,7 +29,7 @@ export function NeutralFormGroup({ label, field, info }: {
                         info={info}
                     />}
 
-                <div className="flex flex-row gap-x-2 items-center w-[300px]">
+                <div className="flex flex-row gap-x-2 items-center">
                     {userState.preferences.data_entry_information &&
                         <IconButton color="primary" icon="CIRCLE_INFO" handleClick={(event: any) => {
                             event.preventDefault();
@@ -38,7 +38,7 @@ export function NeutralFormGroup({ label, field, info }: {
                         />}
                     {label}
                 </div>
-
+                
                 {field}
             </div>
         </>

@@ -371,6 +371,13 @@ class Relay_entry_view(APIView):
         # ? no event of event_id exists
         if isinstance(event_of_id, Response):
             return event_of_id
+        
+        # ? event is not a relay event
+        if not event_of_id.is_relay:
+            return Response(
+                "event is not a relay event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         check_is_host = vh.check_user_is_host(request, event_of_id.session.meet.host_id)
         # ? user is not meet host
@@ -588,6 +595,31 @@ class Relay_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        event_changed = False
+        original_event = relay_entry_of_id.event
+        # @ handle FK event change
+        event_id = vh.get_query_param(request, "event_id")
+        if isinstance(event_id, str):
+            event_id = int(event_id)
+
+            if event_id != relay_entry_of_id.event.pk:
+                event_changed = True
+                seeding_needs_invalidation = True
+
+            event_of_id = vh.get_model_of_id("Event", event_id)
+            # ? no event of event_id exists
+            if isinstance(event_of_id, Response):
+                return event_of_id
+            
+            # ? event is not a relay event
+            if not event_of_id.is_relay:
+                return Response(
+                    "event is not a relay event",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            
+            relay_entry_of_id.event = event_of_id
 
         # ? relay has incorrect number of swimmers
         if len(swimmer_ids) != relay_entry_of_id.event.swimmers_per_entry:
@@ -701,7 +733,7 @@ class Relay_entry_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        Relay_assignment.objects.filter(relay_event_id=edited_relay_entry.pk).exclude(
+        Relay_assignment.objects.filter(relay_entry_id=edited_relay_entry.pk).exclude(
             id__in=new_assignment_ids
         ).delete()
 
@@ -716,6 +748,14 @@ class Relay_entry_view(APIView):
             # ? internal error invalidating event seeding
             if isinstance(invalidate_hs_data, Response):
                 return invalidate_hs_data
+            
+            if event_changed:
+                invalidate_hs_data = vh.invalidate_event_seeding(
+                    original_event
+                )
+                # ? internal error invalidating event seeding
+                if isinstance(invalidate_hs_data, Response):
+                    return invalidate_hs_data
 
         # * get relay_entry JSON
         edited_relay_entry_JSON = vh.get_JSON_single(

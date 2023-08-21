@@ -63,7 +63,11 @@ export function DateTimeInput({
     }
 
     function handleChangeHours(hours: string) {
-        setInputHours(hours || "");
+        if (hours.length === 1) {
+            setInputHours("0" + hours);
+        } else {
+            setInputHours(hours || "");
+        }
     }
 
     function handleChangeMinutes(minutes: string) {

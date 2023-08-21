@@ -33,9 +33,9 @@ export function ModelSearchSelect({
     const [inputSelection, setInputSelection] = useState<{
         text: string,
         model_id: number
-    }>(defaultSelection || {
-        text: "",
-        model_id: -1
+    }>({
+        text: defaultSelection ? defaultSelection.text : "",
+        model_id: defaultSelection ? defaultSelection.model_id : -1
     });
     const [matchingOptions, setMatchingOptions] = useState<{
         text: string,
@@ -123,10 +123,16 @@ export function ModelSearchSelect({
     }
 
     // * update state if DOM doesn't change
-    useEffect(() => setInputSelection(defaultSelection || {
-        text: "",
-        model_id: -1
-    }), [defaultSelection]);
+    useEffect(() => {
+        setInputSelection(defaultSelection || {
+            text: "",
+            model_id: -1
+        });
+        setModelSelection(defaultSelection || {
+            text: "",
+            model_id: -1
+        });
+    }, [defaultSelection]);
 
     return (
         <>
