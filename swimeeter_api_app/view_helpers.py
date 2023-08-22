@@ -154,7 +154,7 @@ def get_all_duplicates(model_type, model_object):
             case "Relay_entry":
                 return Relay_entry.objects.filter(
                     event_id=model_object.event_id,
-                    swimmers__in=model_object.swimmers,
+                    swimmers__in=model_object.swimmers.all(),
                 ).exclude(id=model_object.pk)
 
             case "Relay_assignment":
@@ -446,7 +446,7 @@ def get_individual_entry_name(individual_entry_object: Individual_entry):
 def get_relay_entry_name(relay_entry_object: Relay_entry):
     entry_name = ""
 
-    swimmers_list = list(relay_entry_object.swimmers)
+    swimmers_list = list(relay_entry_object.swimmers.all())
 
     if len(swimmers_list) == 1:
         pass
@@ -457,10 +457,10 @@ def get_relay_entry_name(relay_entry_object: Relay_entry):
             entry_name += swimmers_list[i].first_name + ", "
         entry_name += "and "
 
-    if relay_entry_object.swimmers.last.first_name.endswith("s"):
-        entry_name += relay_entry_object.swimmers.last.first_name + "' "
+    if swimmers_list[-1].first_name.endswith("s"):
+        entry_name += swimmers_list[-1].first_name + "' "
     else:
-        entry_name += relay_entry_object.swimmers.last.first_name + "'s "
+        entry_name += swimmers_list[-1].first_name + "'s "
 
     entry_name += get_seed_time_string(relay_entry_object.seed_time) + " Entry"
 
@@ -598,7 +598,7 @@ def get_relationship_tree(model_type, model_object):
                     "RELAY_ENTRY": {
                         "title": get_relay_entry_name(model_object),
                         "id": model_object.id,
-                        "route": f"/meets/{model_object.event.meet.id}/relay_entries/{model_object.id}",
+                        "route": f"/meets/{model_object.event.session.meet.id}/relay_entries/{model_object.id}",
                     },
                 }
 
@@ -984,7 +984,7 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     individual_JSON["fields"]["swimmer"] = get_JSON_single(
                         "Swimmer",
                         Swimmer.objects.get(id=individual_JSON["fields"]["swimmer"]),
-                        False,
+                        True,
                     )
 
             return collective_JSON

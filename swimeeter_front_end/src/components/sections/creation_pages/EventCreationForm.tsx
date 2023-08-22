@@ -201,7 +201,7 @@ export function EventCreationForm({ meet_id_INT, event_type }: { meet_id_INT: nu
                 optional={true}
                 field={<TextInput
                     regex={/^([123456789]([0-9]*))?$/}
-                    placeholderText="Competing min age"
+                    placeholderText="None"
                     pixelWidth={300}
                     idPrefix={idPrefix + "-competing_min_age"}
                 />}
@@ -251,7 +251,7 @@ export function EventCreationForm({ meet_id_INT, event_type }: { meet_id_INT: nu
                 optional={true}
                 field={<TextInput
                     regex={/^([123456789]([0-9]*))?$/}
-                    placeholderText="Competing max age"
+                    placeholderText="None"
                     pixelWidth={300}
                     idPrefix={idPrefix + "-competing_max_age"}
                 />}
@@ -302,7 +302,7 @@ export function EventCreationForm({ meet_id_INT, event_type }: { meet_id_INT: nu
                 field={<SearchSelect
                     regex={/^(F(i(r(s(t?)?)?)?)?)$|^(L(a(s(t?)?)?)?)$|^([123456789]([0-9]*))?$/}
                     otherEnabled={true}
-                    placeholderText="Order"
+                    placeholderText="Order number"
                     pixelWidth={300}
                     idPrefix={idPrefix + "-order_in_session"}
                     options={["First", "Last"]}

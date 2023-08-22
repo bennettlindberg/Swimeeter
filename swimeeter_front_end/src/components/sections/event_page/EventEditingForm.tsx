@@ -219,7 +219,7 @@ export function EventEditingForm() {
                 optional={true}
                 field={<TextInput
                     regex={/^([123456789]([0-9]*))?$/}
-                    placeholderText="Competing min age"
+                    placeholderText="None"
                     defaultText={`${eventData.fields.competing_min_age || ""}`}
                     pixelWidth={300}
                     idPrefix={idPrefix + "-competing_min_age"}
@@ -274,7 +274,7 @@ export function EventEditingForm() {
                 optional={true}
                 field={<TextInput
                     regex={/^([123456789]([0-9]*))?$/}
-                    placeholderText="Competing max age"
+                    placeholderText="None"
                     defaultText={`${eventData.fields.competing_max_age || ""}`}
                     pixelWidth={300}
                     idPrefix={idPrefix + "-competing_max_age"}
@@ -330,7 +330,7 @@ export function EventEditingForm() {
                 field={<SearchSelect
                     regex={/^(F(i(r(s(t?)?)?)?)?)$|^(L(a(s(t?)?)?)?)$|^([123456789]([0-9]*))?$/}
                     otherEnabled={true}
-                    placeholderText="Order"
+                    placeholderText="Order number"
                     defaultText={`${eventData.fields.order_in_session}`}
                     pixelWidth={300}
                     idPrefix={idPrefix + "-order_in_session"}

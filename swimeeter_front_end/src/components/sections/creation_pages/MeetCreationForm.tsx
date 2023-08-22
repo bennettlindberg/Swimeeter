@@ -119,7 +119,7 @@ export function MeetCreationForm() {
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-host"}
                             />}
-                            info={{
+                            baseInfo={{
                                 title: "HOST",
                                 description: "The host field contains the name of the account that created and owns the meet. The value of this field is read-only as it must contain the currently logged-in user.",
                             }}
@@ -135,12 +135,11 @@ export function MeetCreationForm() {
                             key={idPrefix + "-begin_time-text-field"}
                             field={<TextInput
                                 regex={/^.*$/}
-                                placeholderText="Begin time"
-                                defaultText="N/A"
+                                placeholderText="N/A"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-begin_time"}
                             />}
-                            info={{
+                            baseInfo={{
                                 title: "BEGIN TIME",
                                 description: "The begin time field contains the overall beginning time of the meet in your local timezone. The value of this field is read-only as it is determined automatically by the beginning times of the meet's sessions.",
                             }}
@@ -156,12 +155,11 @@ export function MeetCreationForm() {
                             key={idPrefix + "-end_time-text-field"}
                             field={<TextInput
                                 regex={/^.*$/}
-                                placeholderText="End time"
-                                defaultText="N/A"
+                                placeholderText="N/A"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-end_time"}
                             />}
-                            info={{
+                            baseInfo={{
                                 title: "END TIME",
                                 description: "The end time field contains the overall ending time of the meet in your local timezone. The value of this field is read-only as it is determined automatically by the ending times of the meet's sessions.",
                             }}

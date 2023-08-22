@@ -505,7 +505,7 @@ export function EditingForm({
     }
 
     return (
-        <DataForm idPrefix={idPrefix + "-editing"}>
+        <DataForm>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
             {formState.duplicate && <DuplicatePane handleClick={handleDuplicateSelection} info={formState.duplicate} />}
             {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}

@@ -192,7 +192,7 @@ export function LogInForm({ forwardTo }: { forwardTo?: string }) {
                     pixelWidth={300}
                     idPrefix={idPrefix + "-email"}
                 />}
-                info={{
+                baseInfo={{
                     title: "EMAIL",
                     description: "The email field should contain the email address used to create the account. This field cannot be changed after account creation.",
                     permitted_values: "Any email address containing alphanumeric strings, a single @ symbol, no consecutive periods, and no periods at the start or end of alphanumeric strings.",
@@ -209,7 +209,7 @@ export function LogInForm({ forwardTo }: { forwardTo?: string }) {
                     idPrefix={idPrefix + "-password"}
                     isPassword={true}
                 />}
-                info={{
+                baseInfo={{
                     title: "PASSWORD",
                     description: "The password field should contain the current password associated with the account. This field can be changed after account creation.",
                     permitted_values: "Any string at least 8 characters long containing at least one uppercase character (A-Z), one lowercase character (a-z), one number (0-9), and one special character (~`! @#$%^&*()_-+={[}]|\\:;\"\'<,>.?/)."

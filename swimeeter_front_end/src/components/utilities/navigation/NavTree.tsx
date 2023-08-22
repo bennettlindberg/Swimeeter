@@ -52,8 +52,8 @@ export function NavTree() {
                         {formattedNavTreeItems}
                         <div className="w-0" id="nav-tree-end"></div>
                     </div>
-                    <div className="absolute z-10 left-0 top-0 h-full w-8 bg-gradient-to-r rounded-md from-slate-100 dark:from-slate-800"></div>
-                    <div className="absolute z-10 right-0 top-0 h-full w-8 bg-gradient-to-l rounded-md from-slate-100 dark:from-slate-800"></div>
+                    <div className="absolute z-5 left-0 top-0 h-full w-8 bg-gradient-to-r rounded-md from-slate-100 dark:from-slate-800"></div>
+                    <div className="absolute z-5 right-0 top-0 h-full w-8 bg-gradient-to-l rounded-md from-slate-100 dark:from-slate-800"></div>
                 </div>
             </div>
             <div className="h-7"></div>

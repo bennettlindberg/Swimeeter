@@ -290,6 +290,7 @@ export function ProfileForm() {
                     optional={false}
                     field={<TextInput
                         regex={/^[A-Za-z\'\-]*$/}
+                        placeholderText="First name"
                         defaultText={userState.profile?.first_name}
                         pixelWidth={300}
                         idPrefix={idPrefix + "-first_name"}
@@ -310,6 +311,7 @@ export function ProfileForm() {
                     optional={false}
                     field={<TextInput
                         regex={/^[A-Za-z\'\-]*$/}
+                        placeholderText="Last name"
                         defaultText={userState.profile?.last_name}
                         pixelWidth={300}
                         idPrefix={idPrefix + "-last_name"}
@@ -330,6 +332,7 @@ export function ProfileForm() {
                     optional={true}
                     field={<TextInput
                         regex={/^([A-Z] )*$|^([A-Z] )*[A-Z]?$/}
+                        placeholderText="None"
                         defaultText={userState.profile?.middle_initials}
                         pixelWidth={300}
                         idPrefix={idPrefix + "-middle_initials"}
@@ -350,6 +353,7 @@ export function ProfileForm() {
                     optional={true}
                     field={<TextInput
                         regex={/^[A-Za-z\'\-\.]*$/}
+                        placeholderText="None"
                         defaultText={userState.profile?.prefix}
                         pixelWidth={300}
                         idPrefix={idPrefix + "-prefix"}
@@ -371,6 +375,7 @@ export function ProfileForm() {
                     optional={true}
                     field={<TextInput
                         regex={/^[A-Za-z\'\-\.]*$/}
+                        placeholderText="None"
                         defaultText={userState.profile?.suffix}
                         pixelWidth={300}
                         idPrefix={idPrefix + "-suffix"}

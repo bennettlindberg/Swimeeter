@@ -136,9 +136,13 @@ export function MeetEditingForm() {
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-host"}
                             />}
-                            info={{
+                            baseInfo={{
                                 title: "HOST",
                                 description: "The host field contains the name of the account that created and owns the meet. The value of this field is read-only as it cannot be changed after meet creation.",
+                            }}
+                            viewInfo={{
+                                title: "HOST",
+                                description: "The host field contains the name of the account that created and owns the meet.",
                             }}
                         />,
                     },
@@ -152,14 +156,18 @@ export function MeetEditingForm() {
                             key={idPrefix + "-begin_time-text-field"}
                             field={<TextInput
                                 regex={/^.*$/}
-                                placeholderText="Begin time"
-                                defaultText={meetData.fields.begin_time ? generateLocalTimeString(meetData.fields.begin_time) : "N/A"}
+                                placeholderText="N/A"
+                                defaultText={meetData.fields.begin_time ? generateLocalTimeString(meetData.fields.begin_time) : ""}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-begin_time"}
                             />}
-                            info={{
+                            baseInfo={{
                                 title: "BEGIN TIME",
                                 description: "The begin time field contains the overall beginning time of the meet in your local timezone. The value of this field is read-only as it is determined automatically by the beginning times of the meet's sessions.",
+                            }}
+                            viewInfo={{
+                                title: "BEGIN TIME",
+                                description: "The begin time field contains the overall beginning time of the meet in your local timezone. The value of this field is equal to the earliest beginning time across all of the meet's sessions.",
                             }}
                         />,
                     },
@@ -173,14 +181,18 @@ export function MeetEditingForm() {
                             key={idPrefix + "-end_time-text-field"}
                             field={<TextInput
                                 regex={/^.*$/}
-                                placeholderText="End time"
-                                defaultText={meetData.fields.end_time ? generateLocalTimeString(meetData.fields.end_time) : "N/A"}
+                                placeholderText="N/A"
+                                defaultText={meetData.fields.end_time ? generateLocalTimeString(meetData.fields.end_time) : ""}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-end_time"}
                             />}
-                            info={{
+                            baseInfo={{
                                 title: "END TIME",
                                 description: "The end time field contains the overall ending time of the meet in your local timezone. The value of this field is read-only as it is determined automatically by the ending times of the meet's sessions.",
+                            }}
+                            viewInfo={{
+                                title: "END TIME",
+                                description: "The end time field contains the overall ending time of the meet in your local timezone. The value of this field is equal to the latest ending time across all of the meet's sessions.",
                             }}
                         />,
                     }

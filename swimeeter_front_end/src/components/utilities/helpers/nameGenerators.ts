@@ -133,6 +133,10 @@ export function generateRelayParticipantNames(relay_entry: RelayEntry) {
 }
 
 export function generateRelayEntryName(relay_entry: RelayEntry) {
+    if (relay_entry.pk === -1) {
+        return "";
+    }
+
     let entryName = "";
 
     const swimmersList = relay_entry.fields.relay_assignments;
@@ -144,14 +148,13 @@ export function generateRelayEntryName(relay_entry: RelayEntry) {
         for (let i = 0; i < swimmersList.length - 1; ++i) {
             entryName += swimmersList[i].fields.swimmer.fields.first_name + ", "
         }
-    
-        entryName += "and ";
-        
-        if (swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name.endsWith("s")) {
-            entryName += swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name + "' ";
-        } else {
-            entryName += swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name + "'s ";
-        }
+        entryName += "and " + swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name;
+    }
+
+    if (swimmersList[swimmersList.length - 1].fields.swimmer.fields.first_name.endsWith("s")) {
+        entryName += "' ";
+    } else {
+        entryName += "'s ";
     }
 
     entryName += generateSeedTimeString(relay_entry.fields.seed_time) + " Entry";

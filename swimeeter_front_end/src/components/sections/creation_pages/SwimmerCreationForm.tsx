@@ -105,7 +105,7 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                             optional={true}
                             field={<TextInput
                                 regex={/^([A-Z] )*$|^([A-Z] )*[A-Z]?$/}
-                                placeholderText="Middle initials"
+                                placeholderText="None"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-middle_initials"}
                             />}
@@ -130,7 +130,7 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                             optional={true}
                             field={<TextInput
                                 regex={/^[A-Za-z\'\-\.]*$/}
-                                placeholderText="Prefix"
+                                placeholderText="None"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-prefix"}
                             />}
@@ -153,7 +153,7 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                             optional={true}
                             field={<TextInput
                                 regex={/^[A-Za-z\'\-\.]*$/}
-                                placeholderText="Suffix"
+                                placeholderText="None"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-suffix"}
                             />}

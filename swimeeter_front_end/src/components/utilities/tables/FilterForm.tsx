@@ -69,7 +69,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Meet name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MEET NAME FIELD",
                             description: "The meet name field is used to filter meets by meet name. Only meets with names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -89,7 +89,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Host first name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "HOST FIRST NAME FIELD",
                             description: "The host first name field is used to filter meets by the first name of their host. Only meets with host first names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -109,7 +109,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Host last name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "HOST LAST NAME FIELD",
                             description: "The host last name field is used to filter meets by the last name of their host. Only meets with host last names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -138,7 +138,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Meet name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MEET NAME FIELD",
                             description: "The meet name field is used to filter meets by meet name. Only meets with names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -158,7 +158,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Visibility"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "VISIBILITY FIELD",
                             description: "The visibility field is used to filter meets by their visibility. Only meets with visibilities that exactly match the provided value will be shown in the table below.",
                             permitted_values: "Either \"Public\" or \"Private.\""
@@ -187,7 +187,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Session name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SESSION NAME FIELD",
                             description: "The session name field is used to filter sessions by sessions name. Only sessions with names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -216,7 +216,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Session name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SESSION NAME FIELD",
                             description: "The session name field is used to filter sessions by sessions name. Only sessions with names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -236,7 +236,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Pool name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "POOL NAME FIELD",
                             description: "The pool name field is used to filter sessions by pool name. Only sessions with pool names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -265,7 +265,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Pool name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "POOL NAME FIELD",
                             description: "The pool name field is used to filter pools by pool name. Only pools with names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -285,7 +285,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Number of lanes"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "NUMBER OF LANES FIELD",
                             description: "The number of lanes field is used to filter pools by their number of lanes. Only pools with the provided number of lanes will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -305,7 +305,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Side length"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SIDE LENGTH FIELD",
                             description: "The side length field is used to filter pools by their side length. Only pools with the provided side length will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -325,7 +325,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Measure unit"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MEASURE UNIT FIELD",
                             description: "The measure unit field is used to filter pools by length measuring units. Only pools with measure units that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -354,7 +354,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Team name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "TEAM NAME FIELD",
                             description: "The team name field is used to filter teams by team name. Only teams with names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -374,7 +374,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Team acronym"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "TEAM ACRONYM FIELD",
                             description: "The team acronym field is used to filter teams by team acronym. Only teams with acronyms that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -403,7 +403,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Distance"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "DISTANCE FIELD",
                             description: "The distance field is used to filter events by competition distance. Only events with the provided distance will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -423,7 +423,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Stroke"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "STROKE FIELD",
                             description: "The stroke field is used to filter events by competition stroke. Only events with strokes that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -443,7 +443,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Minimum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MINIMUM AGE FIELD",
                             description: "The minimum age field is used to filter events by competitor minimum age. Only events with the provided minimum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -463,7 +463,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Maximum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MAXIMUM AGE FIELD",
                             description: "The maximum age field is used to filter events by competitor maximum age. Only events with the provided maximum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -483,7 +483,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Gender"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "GENDER FIELD",
                             description: "The gender field is used to filter events by competitor gender. Only events with competing genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -503,7 +503,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Session name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SESSION NAME FIELD",
                             description: "The session name field is used to filter events by session name. Only events with session names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -532,7 +532,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Distance"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "DISTANCE FIELD",
                             description: "The distance field is used to filter events by competition distance. Only events with the provided distance will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -552,7 +552,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Stroke"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "STROKE FIELD",
                             description: "The stroke field is used to filter events by competition stroke. Only events with strokes that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -572,7 +572,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Minimum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MINIMUM AGE FIELD",
                             description: "The minimum age field is used to filter events by competitor minimum age. Only events with the provided minimum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -592,7 +592,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Maximum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MAXIMUM AGE FIELD",
                             description: "The maximum age field is used to filter events by competitor maximum age. Only events with the provided maximum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -612,7 +612,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Gender"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "GENDER FIELD",
                             description: "The gender field is used to filter events by competitor gender. Only events with competing genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -641,7 +641,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="First name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER FIRST NAME FIELD",
                             description: "The swimmer first name field is used to filter swimmers by their first name. Only swimmers with first names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -661,7 +661,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Last name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER LAST NAME FIELD",
                             description: "The swimmer last name field is used to filter swimmers by their last name. Only swimmers with last names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -681,7 +681,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "AGE FIELD",
                             description: "The age field is used to filter swimmers by their age. Only swimmers with the provided age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -701,7 +701,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Gender"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "GENDER FIELD",
                             description: "The gender field is used to filter swimmers by their gender. Only swimmers with genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -721,7 +721,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Team name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "TEAM NAME FIELD",
                             description: "The team name field is used to filter swimmers by team name. Only swimmers with team names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -741,7 +741,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Team acronym"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "TEAM ACRONYM FIELD",
                             description: "The team acronym field is used to filter swimmers by team acronym. Only swimmers with team acronyms that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -770,7 +770,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="First name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER FIRST NAME FIELD",
                             description: "The swimmer first name field is used to filter swimmers by their first name. Only swimmers with first names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -790,7 +790,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Last name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER LAST NAME FIELD",
                             description: "The swimmer last name field is used to filter swimmers by their last name. Only swimmers with last names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -810,7 +810,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "AGE FIELD",
                             description: "The age field is used to filter swimmers by their age. Only swimmers with the provided age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -830,7 +830,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Gender"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "GENDER FIELD",
                             description: "The gender field is used to filter swimmers by their gender. Only swimmers with genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -860,7 +860,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="First name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER FIRST NAME FIELD",
                             description: "The swimmer first name field is used to filter individual entries by swimmer first name. Only individual entries with swimmer first names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -880,7 +880,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Last name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER LAST NAME FIELD",
                             description: "The swimmer last name field is used to filter individual entries by swimmer last name. Only individual entries with swimmer last names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -900,7 +900,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "AGE FIELD",
                             description: "The age field is used to filter individual entries by swimmer age. Only individual entries with the provided swimmer age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -920,7 +920,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Gender"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "GENDER FIELD",
                             description: "The gender field is used to filter individual entries by swimmer gender. Only individual entries with swimmer genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -940,7 +940,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Team name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "TEAM NAME FIELD",
                             description: "The team name field is used to filter individual entries by swimmer team name. Only individual entries with swimmer team names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -960,7 +960,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Team acronym"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "TEAM ACRONYM FIELD",
                             description: "The team acronym field is used to filter individual entries by swimmer team acronym. Only individual entries with swimmer team acronyms that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -989,7 +989,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Distance"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "DISTANCE FIELD",
                             description: "The distance field is used to filter individual entries by competition distance. Only individual entries with the provided event distance will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1009,7 +1009,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Stroke"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "STROKE FIELD",
                             description: "The stroke field is used to filter individual entries by event stroke. Only individual entries with event strokes that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1029,7 +1029,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Minimum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MINIMUM AGE FIELD",
                             description: "The minimum age field is used to filter individual entries by event minimum age. Only individual entries with the provided event minimum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1049,7 +1049,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Maximum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MAXIMUM AGE FIELD",
                             description: "The maximum age field is used to filter individual entries by event maximum age. Only individual entries with the provided event maximum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1069,7 +1069,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Gender"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "GENDER FIELD",
                             description: "The gender field is used to filter individual entries by event gender. Only individual entries with event competing genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1089,7 +1089,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Session name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SESSION NAME FIELD",
                             description: "The session name field is used to filter individual entries by event session name. Only individual entries with event session names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1118,7 +1118,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Event distance"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "EVENT DISTANCE FIELD",
                             description: "The distance field is used to filter individual entries by competition distance. Only individual entries with the provided event distance will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1138,7 +1138,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Event stroke"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "EVENT STROKE FIELD",
                             description: "The stroke field is used to filter individual entries by event stroke. Only individual entries with event strokes that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1158,7 +1158,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Event minimum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "EVENT MINIMUM AGE FIELD",
                             description: "The minimum age field is used to filter individual entries by event minimum age. Only individual entries with the provided event minimum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1178,7 +1178,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Event maximum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "EVENT MAXIMUM AGE FIELD",
                             description: "The maximum age field is used to filter individual entries by event maximum age. Only individual entries with the provided event maximum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1198,7 +1198,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Event gender"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "EVENT GENDER FIELD",
                             description: "The gender field is used to filter individual entries by event gender. Only individual entries with event competing genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1218,7 +1218,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Event session name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "EVENT SESSION NAME FIELD",
                             description: "The session name field is used to filter individual entries by event session name. Only individual entries with event session names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1238,7 +1238,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="First name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER FIRST NAME FIELD",
                             description: "The swimmer first name field is used to filter individual entries by swimmer first name. Only individual entries with swimmer first names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1258,7 +1258,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Last name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER LAST NAME FIELD",
                             description: "The swimmer last name field is used to filter individual entries by swimmer last name. Only individual entries with swimmer last names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1278,7 +1278,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Swimmer age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER AGE FIELD",
                             description: "The age field is used to filter individual entries by swimmer age. Only individual entries with the provided swimmer age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1298,7 +1298,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Swimmer gender"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SWIMMER GENDER FIELD",
                             description: "The gender field is used to filter individual entries by swimmer gender. Only individual entries with swimmer genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1328,7 +1328,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Team name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "TEAM NAME FIELD",
                             description: "The team name field is used to filter relay entries by participating team name. Only relay entries with team names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1348,7 +1348,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Team acronym"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "TEAM ACRONYM FIELD",
                             description: "The team acronym field is used to filter relay entries by participating team acronym. Only relay entries with team acronyms that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1368,7 +1368,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Participant first names"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "PARTICIPANT FIRST NAMES FIELD",
                             description: "The participant names field is used to filter relay entries by the first names of their swimmers. Only relay entries with swimmer first names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Participant names must be separated by a comma and a space. For example, relay participant names might look like: \"John, Jack, Jane, Jen\""
@@ -1398,7 +1398,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Distance"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "DISTANCE FIELD",
                             description: "The distance field is used to filter relay entries by competition distance. Only relay entries with the provided event distance will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1418,7 +1418,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Stroke"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "STROKE FIELD",
                             description: "The stroke field is used to filter relay entries by event stroke. Only relay entries with event strokes that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1438,7 +1438,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Minimum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MINIMUM AGE FIELD",
                             description: "The minimum age field is used to filter relay entries by event minimum age. Only relay entries with the provided event minimum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1458,7 +1458,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Maximum age"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "MAXIMUM AGE FIELD",
                             description: "The maximum age field is used to filter relay entries by event maximum age. Only relay entries with the provided event maximum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
@@ -1478,7 +1478,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Gender"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "GENDER FIELD",
                             description: "The gender field is used to filter relay entries by event gender. Only relay entries with event competing genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1498,7 +1498,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Session name"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "SESSION NAME FIELD",
                             description: "The session name field is used to filter relay entries by event session name. Only relay entries with event session names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
@@ -1518,7 +1518,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                                 placeholderText="Participant first names"
                             />
                         }
-                        info={{
+                        baseInfo={{
                             title: "PARTICIPANT FIRST NAMES FIELD",
                             description: "The participant names field is used to filter relay entries by the first names of their swimmers. Only relay entries with swimmer first names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Participant names must be separated by a comma and a space. For example, relay participant names might look like: \"John, Jack, Jane, Jen\""

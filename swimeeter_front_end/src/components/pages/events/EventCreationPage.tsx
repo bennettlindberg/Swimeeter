@@ -96,6 +96,16 @@ export function EventCreationPage() {
                 secondaryContent={[
                     <>
                         <SideBarText>
+                            After creating your new event, you'll be able to add entries associated with this event to your meet.
+                        </SideBarText>
+                    </>,
+                    <>
+                        <SideBarText>
+                            Every event must be associated with a session. If no sessions exist yet, first add a session to this meet before adding events.
+                        </SideBarText>
+                    </>,
+                    <>
+                        <SideBarText>
                             {`Looking to create ${event_type === "individual" ? "a relay" : "an individual"} event instead?`}
                             <PageButton 
                                 color="primary"
@@ -103,16 +113,6 @@ export function EventCreationPage() {
                                 icon="CIRCLE_PLUS"
                                 handleClick={() => {navigate(`/meets/${meet_id_INT}/events/${event_type === "individual" ? "relay" : "individual"}/create`)}}
                             />
-                        </SideBarText>
-                    </>,
-                    <>
-                        <SideBarText>
-                            After creating your new event, you'll be able to add entries associated with this event to your meet.
-                        </SideBarText>
-                    </>,
-                    <>
-                        <SideBarText>
-                            Every event must be associated with a session. If no sessions exist yet, first add a session to this meet before adding events.
                         </SideBarText>
                     </>
                 ]}

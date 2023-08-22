@@ -5,17 +5,20 @@ import { AppContext, UserState } from "../../../App.tsx";
 import { InfoPane } from "./InfoPane.tsx";
 import { InfoType } from "../helpers/formTypes.ts";
 import { IconButton } from "../general/IconButton.tsx";
+import { FormContext } from "../helpers/formHelpers.ts";
 
-export function NeutralFormGroup({ label, field, info }: {
+export function NeutralFormGroup({ label, field, baseInfo, viewInfo }: {
     label: JSX.Element,
     field: JSX.Element,
-    info: InfoType,
+    baseInfo: InfoType,
+    viewInfo?: InfoType
 }) {
     // * initialize state variables
     const [infoShown, setInfoShown] = useState<boolean>(false);
 
     // * initialize context
     const { userState }: { userState: UserState } = useContext(AppContext);
+    const editMode = useContext(FormContext);
 
     return (
         <>
@@ -26,7 +29,7 @@ export function NeutralFormGroup({ label, field, info }: {
                             event.preventDefault();
                             setInfoShown(false);
                         }}
-                        info={info}
+                        info={viewInfo && !editMode ? viewInfo : baseInfo}
                     />}
 
                 <div className="flex flex-row gap-x-2 items-center">

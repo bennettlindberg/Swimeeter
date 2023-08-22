@@ -116,7 +116,7 @@ export function SwimmerEditingForm() {
                             optional={true}
                             field={<TextInput
                                 regex={/^([A-Z] )*$|^([A-Z] )*[A-Z]?$/}
-                                placeholderText="Middle initials"
+                                placeholderText="None"
                                 defaultText={swimmerData.fields.middle_initials}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-middle_initials"}
@@ -146,7 +146,7 @@ export function SwimmerEditingForm() {
                             optional={true}
                             field={<TextInput
                                 regex={/^[A-Za-z\'\-\.]*$/}
-                                placeholderText="Prefix"
+                                placeholderText="None"
                                 defaultText={swimmerData.fields.prefix}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-prefix"}
@@ -174,7 +174,7 @@ export function SwimmerEditingForm() {
                             optional={true}
                             field={<TextInput
                                 regex={/^[A-Za-z\'\-\.]*$/}
-                                placeholderText="Suffix"
+                                placeholderText="None"
                                 defaultText={swimmerData.fields.suffix}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-suffix"}

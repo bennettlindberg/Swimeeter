@@ -92,23 +92,23 @@ export function IndividualEntryCreationPage() {
                 secondaryContent={[
                     <>
                         <SideBarText>
-                            {`Looking to create an entry for a relay event instead?`}
-                            <PageButton 
-                                color="primary"
-                                text={`Create a relay entry`}
-                                icon="CIRCLE_PLUS"
-                                handleClick={() => {navigate(`/meets/${meet_id_INT}/relay_entries/create`)}}
-                            />
-                        </SideBarText>
-                    </>,
-                    <>
-                        <SideBarText>
                             After creating your new entry, you'll be able to generate heat sheet seeding for the entry's event.
                         </SideBarText>
                     </>,
                     <>
                         <SideBarText>
                             Every individual entry must be associated with a swimmer and event. If no swimmers or events exist yet, first add swimmers and events to this meet before adding individual entries.
+                        </SideBarText>
+                    </>,
+                    <>
+                        <SideBarText>
+                            {`Looking to create an entry for a relay event instead?`}
+                            <PageButton
+                                color="primary"
+                                text={`Create a relay entry`}
+                                icon="CIRCLE_PLUS"
+                                handleClick={() => { navigate(`/meets/${meet_id_INT}/relay_entries/create`) }}
+                            />
                         </SideBarText>
                     </>
                 ]}

@@ -1,15 +1,10 @@
 export function DataForm({
-    children, 
-    idPrefix
+    children
 }: {
     children: React.ReactNode,
-    idPrefix?: string
 }) {
     return (
-        <form 
-        className="flex flex-col gap-y-3 relative"
-        id={idPrefix + "-form"}
-        >
+        <form className="flex flex-col gap-y-3 relative">
             {children}
         </form>
     )

@@ -6,6 +6,8 @@ import { CreationFormGroup } from "../../utilities/forms/CreationFormGroup.tsx";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { DurationInput } from "../../utilities/inputs/DurationInput.tsx";
+import { NeutralFormGroup } from "../../utilities/forms/NeutralFormGroup.tsx";
+import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 
 // ~ component
 export function IndividualEntryCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
@@ -52,7 +54,7 @@ export function IndividualEntryCreationForm({ meet_id_INT }: { meet_id_INT: numb
                         validator: (duration: string) => {
                             try {
                                 const duration_INT = parseInt(duration);
-                                if (duration_INT === 0) {
+                                if (duration_INT <= 0) {
                                     return {
                                         title: "SEED TIME FIELD ERROR",
                                         description: "The individual entry seed time field was given a zero time duration. Individual entry seed times must be valid non-zero durations in the form HH:mm:ss:SS.",
@@ -71,6 +73,46 @@ export function IndividualEntryCreationForm({ meet_id_INT }: { meet_id_INT: numb
                                 }
                             }
                         }
+                    },
+                    {
+                        title: "heat_number",
+                        idSuffix: "-heat_number-text-field",
+                        readOnly: true,
+                        duplicateSensitive: false,
+                        formGroup: <NeutralFormGroup
+                            label={<InputLabel inputId={idPrefix + "-heat_number-text-field"} text="Heat number" />}
+                            key={idPrefix + "-heat_number-text-field"}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="N/A"
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-heat_number"}
+                            />}
+                            baseInfo={{
+                                title: "HEAT NUMBER",
+                                description: "The heat number field contains the heat of the entry's seed placement. The value of this field is read-only as it is determined automatically by generating the heat sheet seeding for the entry's associated event.",
+                            }}
+                        />,
+                    },
+                    {
+                        title: "lane_number",
+                        idSuffix: "-lane_number-text-field",
+                        readOnly: true,
+                        duplicateSensitive: false,
+                        formGroup: <NeutralFormGroup
+                            label={<InputLabel inputId={idPrefix + "-lane_number-text-field"} text="Lane number" />}
+                            key={idPrefix + "-lane_number-text-field"}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="N/A"
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-lane_number"}
+                            />}
+                            baseInfo={{
+                                title: "LANE NUMBER",
+                                description: "The lane number field contains the lane of the entry's seed placement. The value of this field is read-only as it is determined automatically by generating the heat sheet seeding for the entry's associated event.",
+                            }}
+                        />,
                     }
                 ]}
                 modelSelectFields={[
@@ -204,9 +246,7 @@ export function IndividualEntryCreationForm({ meet_id_INT }: { meet_id_INT: numb
                     }
                 ]}
                 idPrefix={idPrefix}
-                queryParams={{
-                    meet_id: meet_id_INT
-                }}
+                queryParams={{}}
                 submitText="Create individual entry"
             />
         </>

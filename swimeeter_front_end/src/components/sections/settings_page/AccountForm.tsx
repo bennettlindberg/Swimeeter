@@ -268,7 +268,7 @@ export function AccountForm() {
                     pixelWidth={300}
                     idPrefix={idPrefix + "-email"}
                 />}
-                info={{
+                baseInfo={{
                     title: "EMAIL",
                     description: "The email field contains the email address associated with the account. The value of this field is read-only as it cannot be changed after account creation.",
                 }}
