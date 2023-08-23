@@ -209,6 +209,12 @@ class Relay_entry_view(APIView):
                         event__competing_gender__istartswith=search__competing_gender
                     )
 
+                search__stage = vh.get_query_param(request, "search__stage")
+                if isinstance(search__stage, str):
+                    relay_entries_of_team = relay_entries_of_team.filter(
+                        event__stage__istartswith=search__stage
+                    )
+
                 search__session_name = vh.get_query_param(
                     request, "search__session_name"
                 )
@@ -394,6 +400,12 @@ class Relay_entry_view(APIView):
                 if isinstance(search__competing_gender, str):
                     relay_entries_of_swimmer = relay_entries_of_swimmer.filter(
                         event__competing_gender__istartswith=search__competing_gender
+                    )
+
+                search__stage = vh.get_query_param(request, "search__stage")
+                if isinstance(search__stage, str):
+                    relay_entries_of_swimmer = relay_entries_of_swimmer.filter(
+                        event__stage__istartswith=search__stage
                     )
 
                 search__session_name = vh.get_query_param(

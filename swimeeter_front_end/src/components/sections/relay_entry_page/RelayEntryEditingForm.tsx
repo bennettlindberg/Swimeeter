@@ -212,7 +212,7 @@ export function RelayEntryEditingForm({ meet_id_INT }: {meet_id_INT: number}) {
         seed_relay_split: number
     }[]>(relayEntryData.fields.relay_assignments.map((assignment, mapIndex) => {
         return {
-            swimmer_id: assignment.pk,
+            swimmer_id: assignment.fields.swimmer.pk,
             swimmer_name: generateSwimmerName(assignment.fields.swimmer),
             order_in_relay: mapIndex + 1,
             seed_relay_split: assignment.fields.seed_relay_split
@@ -458,13 +458,13 @@ export function RelayEntryEditingForm({ meet_id_INT }: {meet_id_INT: number}) {
 
         // @ send new model data to the back-end
         try {
-            const response = await axios.post(
+            const response = await axios.put(
                 "/api/v1/relay_entries/",
                 formData,
                 {
                     params: {
                         duplicate_handling: duplicate_handling || "unhandled",
-                        event_id: eventSelection.event_id
+                        relay_entry_id: relayEntryData.pk
                     }
                 }
             );

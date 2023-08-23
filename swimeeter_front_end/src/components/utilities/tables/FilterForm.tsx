@@ -492,6 +492,26 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     <NeutralFormGroup
                         label={
                             <InputLabel
+                                inputId={idPrefix + "-stage-search-text-field"}
+                                text="Stage"
+                            />}
+                        field={
+                            <TextInput
+                                regex={/^.*$/}
+                                idPrefix={idPrefix + "-stage-search"}
+                                pixelWidth={200}
+                                placeholderText="Stage"
+                            />
+                        }
+                        baseInfo={{
+                            title: "STAGE FIELD",
+                            description: "The stage field is used to filter events by competition round. Only events with stages that begin with the provided value will be shown in the table below.",
+                            permitted_values: "Any string."
+                        }}
+                    />,
+                    <NeutralFormGroup
+                        label={
+                            <InputLabel
                                 inputId={idPrefix + "-session_name-search-text-field"}
                                 text="Session name"
                             />}
@@ -615,6 +635,26 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                         baseInfo={{
                             title: "GENDER FIELD",
                             description: "The gender field is used to filter events by competitor gender. Only events with competing genders that begin with the provided value will be shown in the table below.",
+                            permitted_values: "Any string."
+                        }}
+                    />,
+                    <NeutralFormGroup
+                        label={
+                            <InputLabel
+                                inputId={idPrefix + "-stage-search-text-field"}
+                                text="Stage"
+                            />}
+                        field={
+                            <TextInput
+                                regex={/^.*$/}
+                                idPrefix={idPrefix + "-stage-search"}
+                                pixelWidth={200}
+                                placeholderText="Stage"
+                            />
+                        }
+                        baseInfo={{
+                            title: "STAGE FIELD",
+                            description: "The stage field is used to filter events by competition round. Only events with stages that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
                         }}
                     />
@@ -1078,6 +1118,26 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     <NeutralFormGroup
                         label={
                             <InputLabel
+                                inputId={idPrefix + "-stage-search-text-field"}
+                                text="Stage"
+                            />}
+                        field={
+                            <TextInput
+                                regex={/^.*$/}
+                                idPrefix={idPrefix + "-stage-search"}
+                                pixelWidth={200}
+                                placeholderText="Stage"
+                            />
+                        }
+                        baseInfo={{
+                            title: "STAGE FIELD",
+                            description: "The stage field is used to filter individual entries by event competition round. Only individual entries with event stages that begin with the provided value will be shown in the table below.",
+                            permitted_values: "Any string."
+                        }}
+                    />,
+                    <NeutralFormGroup
+                        label={
+                            <InputLabel
                                 inputId={idPrefix + "-session_name-search-text-field"}
                                 text="Session name"
                             />}
@@ -1107,133 +1167,153 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-distance-search-text-field"}
+                                inputId={idPrefix + "-event-distance-search-text-field"}
                                 text="Event distance"
                             />}
                         field={
                             <TextInput
                                 regex={/^$|^[123456789][0-9]*$/}
-                                idPrefix={idPrefix + "-distance-search"}
+                                idPrefix={idPrefix + "-event-distance-search"}
                                 pixelWidth={200}
                                 placeholderText="Event distance"
                             />
                         }
                         baseInfo={{
                             title: "EVENT DISTANCE FIELD",
-                            description: "The distance field is used to filter individual entries by competition distance. Only individual entries with the provided event distance will be shown in the table below.",
+                            description: "The event distance field is used to filter individual entries by competition distance. Only individual entries with the provided event distance will be shown in the table below.",
                             permitted_values: "Any positive integer."
                         }}
                     />,
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-stroke-search-text-field"}
+                                inputId={idPrefix + "-event-stroke-search-text-field"}
                                 text="Event stroke"
                             />}
                         field={
                             <TextInput
                                 regex={/^.*$/}
-                                idPrefix={idPrefix + "-stroke-search"}
+                                idPrefix={idPrefix + "-event-stroke-search"}
                                 pixelWidth={200}
                                 placeholderText="Event stroke"
                             />
                         }
                         baseInfo={{
                             title: "EVENT STROKE FIELD",
-                            description: "The stroke field is used to filter individual entries by event stroke. Only individual entries with event strokes that begin with the provided value will be shown in the table below.",
+                            description: "The event stroke field is used to filter individual entries by event stroke. Only individual entries with event strokes that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
                         }}
                     />,
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-minimum_age-search-text-field"}
+                                inputId={idPrefix + "-event-minimum_age-search-text-field"}
                                 text="Event minimum age"
                             />}
                         field={
                             <TextInput
                                 regex={/^$|^[123456789][0-9]*$/}
-                                idPrefix={idPrefix + "-minimum_age-search"}
+                                idPrefix={idPrefix + "-event-minimum_age-search"}
                                 pixelWidth={200}
                                 placeholderText="Event minimum age"
                             />
                         }
                         baseInfo={{
                             title: "EVENT MINIMUM AGE FIELD",
-                            description: "The minimum age field is used to filter individual entries by event minimum age. Only individual entries with the provided event minimum competing age will be shown in the table below.",
+                            description: "The event minimum age field is used to filter individual entries by event minimum age. Only individual entries with the provided event minimum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
                         }}
                     />,
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-maximum_age-search-text-field"}
+                                inputId={idPrefix + "-event-maximum_age-search-text-field"}
                                 text="Event maximum age"
                             />}
                         field={
                             <TextInput
                                 regex={/^$|^[123456789][0-9]*$/}
-                                idPrefix={idPrefix + "-maximum_age-search"}
+                                idPrefix={idPrefix + "-event-maximum_age-search"}
                                 pixelWidth={200}
                                 placeholderText="Event maximum age"
                             />
                         }
                         baseInfo={{
                             title: "EVENT MAXIMUM AGE FIELD",
-                            description: "The maximum age field is used to filter individual entries by event maximum age. Only individual entries with the provided event maximum competing age will be shown in the table below.",
+                            description: "The event maximum age field is used to filter individual entries by event maximum age. Only individual entries with the provided event maximum competing age will be shown in the table below.",
                             permitted_values: "Any positive integer."
                         }}
                     />,
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-gender-search-text-field"}
+                                inputId={idPrefix + "-event-gender-search-text-field"}
                                 text="Event gender"
                             />}
                         field={
                             <TextInput
                                 regex={/^.*$/}
-                                idPrefix={idPrefix + "-gender-search"}
+                                idPrefix={idPrefix + "-event-gender-search"}
                                 pixelWidth={200}
                                 placeholderText="Event gender"
                             />
                         }
                         baseInfo={{
                             title: "EVENT GENDER FIELD",
-                            description: "The gender field is used to filter individual entries by event gender. Only individual entries with event competing genders that begin with the provided value will be shown in the table below.",
+                            description: "The event gender field is used to filter individual entries by event gender. Only individual entries with event competing genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
                         }}
                     />,
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-session_name-search-text-field"}
+                                inputId={idPrefix + "-event-stage-search-text-field"}
+                                text="Event stage"
+                            />}
+                        field={
+                            <TextInput
+                                regex={/^.*$/}
+                                idPrefix={idPrefix + "-event-stage-search"}
+                                pixelWidth={200}
+                                placeholderText="Event stage"
+                            />
+                        }
+                        baseInfo={{
+                            title: "EVENT STAGE FIELD",
+                            description: "The event stage field is used to filter individual entries by event competition round. Only individual entries with event stages that begin with the provided value will be shown in the table below.",
+                            permitted_values: "Any string."
+                        }}
+                    />,
+                    <NeutralFormGroup
+                        label={
+                            <InputLabel
+                                inputId={idPrefix + "-event-session_name-search-text-field"}
                                 text="Event session name"
                             />}
                         field={
                             <TextInput
                                 regex={/^.*$/}
-                                idPrefix={idPrefix + "-session_name-search"}
+                                idPrefix={idPrefix + "-event-session_name-search"}
                                 pixelWidth={200}
                                 placeholderText="Event session name"
                             />
                         }
                         baseInfo={{
                             title: "EVENT SESSION NAME FIELD",
-                            description: "The session name field is used to filter individual entries by event session name. Only individual entries with event session names that begin with the provided value will be shown in the table below.",
+                            description: "The event session name field is used to filter individual entries by event session name. Only individual entries with event session names that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
                         }}
                     />,
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-swimmer_first_name-search-text-field"}
+                                inputId={idPrefix + "-swimmer-first_name-search-text-field"}
                                 text="First name"
                             />}
                         field={
                             <TextInput
                                 regex={/^.*$/}
-                                idPrefix={idPrefix + "-swimmer_first_name-search"}
+                                idPrefix={idPrefix + "-swimmer-first_name-search"}
                                 pixelWidth={200}
                                 placeholderText="First name"
                             />
@@ -1247,13 +1327,13 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-swimmer_last_name-search-text-field"}
+                                inputId={idPrefix + "-swimmer-last_name-search-text-field"}
                                 text="Last name"
                             />}
                         field={
                             <TextInput
                                 regex={/^.*$/}
-                                idPrefix={idPrefix + "-swimmer_last_name-search"}
+                                idPrefix={idPrefix + "-swimmer-last_name-search"}
                                 pixelWidth={200}
                                 placeholderText="Last name"
                             />
@@ -1267,40 +1347,40 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-age-search-text-field"}
+                                inputId={idPrefix + "-swimmer-age-search-text-field"}
                                 text="Swimmer age"
                             />}
                         field={
                             <TextInput
                                 regex={/^$|^[123456789][0-9]*$/}
-                                idPrefix={idPrefix + "-age-search"}
+                                idPrefix={idPrefix + "-swimmer-age-search"}
                                 pixelWidth={200}
                                 placeholderText="Swimmer age"
                             />
                         }
                         baseInfo={{
                             title: "SWIMMER AGE FIELD",
-                            description: "The age field is used to filter individual entries by swimmer age. Only individual entries with the provided swimmer age will be shown in the table below.",
+                            description: "The swimmer age field is used to filter individual entries by swimmer age. Only individual entries with the provided swimmer age will be shown in the table below.",
                             permitted_values: "Any positive integer."
                         }}
                     />,
                     <NeutralFormGroup
                         label={
                             <InputLabel
-                                inputId={idPrefix + "-gender-search-text-field"}
+                                inputId={idPrefix + "-swimmer-gender-search-text-field"}
                                 text="Swimmer gender"
                             />}
                         field={
                             <TextInput
                                 regex={/^.*$/}
-                                idPrefix={idPrefix + "-gender-search"}
+                                idPrefix={idPrefix + "-swimmer-gender-search"}
                                 pixelWidth={200}
                                 placeholderText="Swimmer gender"
                             />
                         }
                         baseInfo={{
                             title: "SWIMMER GENDER FIELD",
-                            description: "The gender field is used to filter individual entries by swimmer gender. Only individual entries with swimmer genders that begin with the provided value will be shown in the table below.",
+                            description: "The swimmer gender field is used to filter individual entries by swimmer gender. Only individual entries with swimmer genders that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
                         }}
                     />
@@ -1481,6 +1561,26 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
                         baseInfo={{
                             title: "GENDER FIELD",
                             description: "The gender field is used to filter relay entries by event gender. Only relay entries with event competing genders that begin with the provided value will be shown in the table below.",
+                            permitted_values: "Any string."
+                        }}
+                    />,
+                    <NeutralFormGroup
+                        label={
+                            <InputLabel
+                                inputId={idPrefix + "-stage-search-text-field"}
+                                text="Stage"
+                            />}
+                        field={
+                            <TextInput
+                                regex={/^.*$/}
+                                idPrefix={idPrefix + "-stage-search"}
+                                pixelWidth={200}
+                                placeholderText="Stage"
+                            />
+                        }
+                        baseInfo={{
+                            title: "STAGE FIELD",
+                            description: "The stage field is used to filter relay entries by event competition round. Only relay entries with event stages that begin with the provided value will be shown in the table below.",
                             permitted_values: "Any string."
                         }}
                     />,

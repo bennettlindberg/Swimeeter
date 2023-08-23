@@ -17,6 +17,7 @@ from .models import (
 )
 from swimeeter_auth_app.models import Host
 
+import math
 import inflect
 
 p = inflect.engine()
@@ -446,8 +447,8 @@ def get_individual_entry_name(individual_entry_object: Individual_entry):
 def get_relay_entry_name(relay_entry_object: Relay_entry):
     entry_name = ""
 
-    swimmers_list = list(relay_entry_object.swimmers.all())
-
+    swimmers_list = [assignment.swimmer for assignment in relay_entry_object.relay_assignments.all().order_by("order_in_relay")]
+    
     if len(swimmers_list) == 1:
         pass
     elif len(swimmers_list) == 2:
@@ -706,6 +707,143 @@ def invalidate_event_seeding(event_object):
         return Response(
             "heat sheet invalidation failed",
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+# ! HEAT SHEET SEEDING
+
+
+def generate_event_seeding(options, event_object: Event):
+    # ~ options:
+    #   $ min_entries_per_heat: number
+    #   $ seeding_type: "standard" | "circle"
+    #   ! (circle seeding only) num_circle_seeded_heats: number | "All full heats"
+
+    # 25 25 25 6 --> need 20
+
+    # * get entries of event
+    if event_object.is_relay:
+        entries_list = list(Relay_entry.objects.filter(event_id=event_object.pk).order_by("-seed_time"))
+    else:
+        entries_list = list(Individual_entry.objects.filter(event_id=event_object.pk).order_by("-seed_time"))
+
+    # * calculate entries per lane
+    total_entries = entries_list.count()
+    lanes_per_heat = event_object.session.pool.lanes
+
+    heat_entry_counts = []
+
+    for i in range(total_entries // lanes_per_heat):
+        heat_entry_counts.append(lanes_per_heat)
+
+    first_heat_leftover = total_entries % lanes_per_heat
+    if first_heat_leftover != 0:
+        heat_entry_counts.insert(0, first_heat_leftover)
+
+    # ~ deal with minimum entries needed per heat
+    for i in range(1, len(heat_entry_counts)):
+        # * first heat already meets min requirement
+        needed_entries = options.min_entries_per_heat - heat_entry_counts[0]
+        if needed_entries <= 0:
+            break
+
+        # * no entries are available to carry over -> fail to meet min requirement
+        available_entries = heat_entry_counts[i] - options.min_entries_per_heat
+        if available_entries == 0:
+            break
+
+        # * enough entries available to meet min requirement
+        if needed_entries <= available_entries:
+            heat_entry_counts[0] += needed_entries
+            heat_entry_counts[i] -= needed_entries
+            break
+
+        # * not enough entries available, but at least some
+        heat_entry_counts[0] += available_entries
+        heat_entry_counts[i] -= available_entries
+
+    # * define standard lane order
+    standard_lane_order = []
+    current = math.ceil(lanes_per_heat / 2)
+    change = 1
+    while current >= 1 and current <= lanes_per_heat:
+        standard_lane_order.append(current)
+        current += change
+        change = -1 * (change + 1)
+
+    # $ assign heat and lanes using...
+    match (options.seeding_type):
+        # $ ...standard seeding
+        case "standard":
+            entry_index = 0
+
+            # * standard seed all heats
+            for heat_index in range(len(heat_entry_counts)):
+                for lane_index in range(heat_entry_counts[heat_index]):
+                    entries_list[entry_index].heat_number = heat_index + 1
+                    entries_list[entry_index].lane_number = standard_lane_order[lane_index]
+                    entry_index += 1
+
+        # $ ...circle seeding
+        case "circle":
+            # * determine heats that will be circle seeded
+            max_heat_entry_count = max(heat_entry_counts)
+            
+            can_circle_seed_heats = 0
+            for i in range(len(heat_entry_counts) - 1, -1, -1):
+                if heat_entry_counts[i] == max_heat_entry_count:
+                    can_circle_seed_heats += 1
+
+            will_circle_seed_heats = min(can_circle_seed_heats, options.num_circle_seeded_heats)
+
+            entry_index = 0
+
+            # * standard seed beginning heats
+            for heat_index in range(len(heat_entry_counts) - will_circle_seed_heats):
+                for lane_index in range(heat_entry_counts[heat_index]):
+                    entries_list[entry_index].heat_number = heat_index + 1
+                    entries_list[entry_index].lane_number = standard_lane_order[lane_index]
+                    entry_index += 1
+
+            # * circle seed ending heats
+            for lane_index in range(max_heat_entry_count - 1, -1, -1):
+                for heat_index in range(len(heat_entry_counts) - will_circle_seed_heats, len(heat_entry_counts)):
+                    entries_list[entry_index].heat_number = heat_index + 1
+                    entries_list[entry_index].lane_number = standard_lane_order[lane_index]
+                    entry_index += 1
+
+        # ? invalid seeding type
+        case _:
+            return Response(
+                "invalid seeding type",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+    event_object.total_heats = len(heat_entry_counts)
+
+    # * save event and entry seeding data
+    try:
+        event_object.full_clean()
+        event_object.save()
+
+        for entry in entries_list:
+            entry.full_clean()
+            entry.save()
+
+        return True
+    except:
+        event_object.total_heats = None
+        event_object.save()
+
+        for entry in entries_list:
+            entry.heat_number = None
+            entry.lane_number = None
+            entry.save()
+
+        # ? error saving event and entries
+        return Response(
+            "error saving event and entries",
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
 

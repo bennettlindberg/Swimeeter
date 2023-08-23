@@ -89,36 +89,57 @@ class Individual_entry_view(APIView):
 
                 individual_entries_of_event = Individual_entry.objects.filter(
                     event_id=event_id
-                ).order_by("swimmer__first_name", "swimmer__last_name", "swimmer__age", "swimmer__gender")
+                ).order_by(
+                    "swimmer__first_name",
+                    "swimmer__last_name",
+                    "swimmer__age",
+                    "swimmer__gender",
+                )
 
                 # @ apply search filtering
                 search__first_name = vh.get_query_param(request, "search__first_name")
                 if isinstance(search__first_name, str):
-                    individual_entries_of_event = individual_entries_of_event.filter(swimmer__first_name__istartswith=search__first_name)
+                    individual_entries_of_event = individual_entries_of_event.filter(
+                        swimmer__first_name__istartswith=search__first_name
+                    )
 
                 search__last_name = vh.get_query_param(request, "search__last_name")
                 if isinstance(search__last_name, str):
-                    individual_entries_of_event = individual_entries_of_event.filter(swimmer__last_name__istartswith=search__last_name)
+                    individual_entries_of_event = individual_entries_of_event.filter(
+                        swimmer__last_name__istartswith=search__last_name
+                    )
 
                 search__age = vh.get_query_param(request, "search__age")
                 if isinstance(search__age, str):
                     search__age = int(search__age)
-                    individual_entries_of_event = individual_entries_of_event.filter(swimmer__age=search__age)
+                    individual_entries_of_event = individual_entries_of_event.filter(
+                        swimmer__age=search__age
+                    )
 
                 search__gender = vh.get_query_param(request, "search__gender")
                 if isinstance(search__gender, str):
-                    individual_entries_of_event = individual_entries_of_event.filter(swimmer__gender__istartswith=search__gender)
+                    individual_entries_of_event = individual_entries_of_event.filter(
+                        swimmer__gender__istartswith=search__gender
+                    )
 
                 search__team_name = vh.get_query_param(request, "search__team_name")
                 if isinstance(search__team_name, str):
-                    individual_entries_of_event = individual_entries_of_event.filter(swimmer__team__name__istartswith=search__team_name)
+                    individual_entries_of_event = individual_entries_of_event.filter(
+                        swimmer__team__name__istartswith=search__team_name
+                    )
 
-                search__team_acronym = vh.get_query_param(request, "search__team_acronym")
+                search__team_acronym = vh.get_query_param(
+                    request, "search__team_acronym"
+                )
                 if isinstance(search__team_acronym, str):
-                    individual_entries_of_event = individual_entries_of_event.filter(swimmer__team__acronym__istartswith=search__team_acronym)
+                    individual_entries_of_event = individual_entries_of_event.filter(
+                        swimmer__team__acronym__istartswith=search__team_acronym
+                    )
 
                 # * only retrieve request range of values
-                individual_entries_of_event = individual_entries_of_event[lower_bound:upper_bound]
+                individual_entries_of_event = individual_entries_of_event[
+                    lower_bound:upper_bound
+                ]
 
                 # * get individual_entries JSON
                 individual_entries_JSON = vh.get_JSON_multiple(
@@ -164,53 +185,104 @@ class Individual_entry_view(APIView):
                 )
 
                 # @ apply search filtering
-                search__event_stroke = vh.get_query_param(request, "search__event_stroke")
+                search__event_stroke = vh.get_query_param(
+                    request, "search__event_stroke"
+                )
                 if isinstance(search__event_stroke, str):
-                    individual_entries_of_team = individual_entries_of_team.filter(event__stroke__istartswith=search__event_stroke)
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        event__stroke__istartswith=search__event_stroke
+                    )
 
-                search__event_distance = vh.get_query_param(request, "search__event_distance")
+                search__event_distance = vh.get_query_param(
+                    request, "search__event_distance"
+                )
                 if isinstance(search__event_distance, str):
                     search__event_distance = int(search__event_distance)
-                    individual_entries_of_team = individual_entries_of_team.filter(event__distance=search__event_distance)
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        event__distance=search__event_distance
+                    )
 
-                search__event_competing_min_age = vh.get_query_param(request, "search__event_competing_min_age")
+                search__event_competing_min_age = vh.get_query_param(
+                    request, "search__event_competing_min_age"
+                )
                 if isinstance(search__event_competing_min_age, str):
-                    search__event_competing_min_age = int(search__event_competing_min_age)
-                    individual_entries_of_team = individual_entries_of_team.filter(event__competing_min_age=search__event_competing_min_age)
+                    search__event_competing_min_age = int(
+                        search__event_competing_min_age
+                    )
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        event__competing_min_age=search__event_competing_min_age
+                    )
 
-                search__event_competing_max_age = vh.get_query_param(request, "search__event_competing_max_age")
+                search__event_competing_max_age = vh.get_query_param(
+                    request, "search__event_competing_max_age"
+                )
                 if isinstance(search__event_competing_max_age, str):
-                    search__event_competing_max_age = int(search__event_competing_max_age)
-                    individual_entries_of_team = individual_entries_of_team.filter(event__competing_max_age=search__event_competing_max_age)
+                    search__event_competing_max_age = int(
+                        search__event_competing_max_age
+                    )
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        event__competing_max_age=search__event_competing_max_age
+                    )
 
-                search__event_competing_gender = vh.get_query_param(request, "search__event_competing_gender")
+                search__event_competing_gender = vh.get_query_param(
+                    request, "search__event_competing_gender"
+                )
                 if isinstance(search__event_competing_gender, str):
-                    individual_entries_of_team = individual_entries_of_team.filter(event__competing_gender__istartswith=search__event_competing_gender)
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        event__competing_gender__istartswith=search__event_competing_gender
+                    )
 
-                search__event_session_name = vh.get_query_param(request, "search__event_session_name")
+                search__event_stage = vh.get_query_param(
+                    request, "search__event_stage"
+                )
+                if isinstance(search__event_stage, str):
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        event__stage__istartswith=search__event_stage
+                    )
+
+                search__event_session_name = vh.get_query_param(
+                    request, "search__event_session_name"
+                )
                 if isinstance(search__event_session_name, str):
-                    individual_entries_of_team = individual_entries_of_team.filter(event__session__name__istartswith=search__event_session_name)
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        event__session__name__istartswith=search__event_session_name
+                    )
 
-                search__swimmer_first_name = vh.get_query_param(request, "search__swimmer_first_name")
+                search__swimmer_first_name = vh.get_query_param(
+                    request, "search__swimmer_first_name"
+                )
                 if isinstance(search__swimmer_first_name, str):
-                    individual_entries_of_team = individual_entries_of_team.filter(swimmer__first_name__istartswith=search__swimmer_first_name)
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        swimmer__first_name__istartswith=search__swimmer_first_name
+                    )
 
-                search__swimmer_last_name = vh.get_query_param(request, "search__swimmer_last_name")
+                search__swimmer_last_name = vh.get_query_param(
+                    request, "search__swimmer_last_name"
+                )
                 if isinstance(search__swimmer_last_name, str):
-                    individual_entries_of_team = individual_entries_of_team.filter(swimmer__last_name__istartswith=search__swimmer_last_name)
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        swimmer__last_name__istartswith=search__swimmer_last_name
+                    )
 
                 search__swimmer_age = vh.get_query_param(request, "search__swimmer_age")
                 if isinstance(search__swimmer_age, str):
                     search__swimmer_age = int(search__swimmer_age)
-                    individual_entries_of_team = individual_entries_of_team.filter(swimmer__age=search__swimmer_age)
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        swimmer__age=search__swimmer_age
+                    )
 
-                search__swimmer_gender = vh.get_query_param(request, "search__swimmer_gender")
+                search__swimmer_gender = vh.get_query_param(
+                    request, "search__swimmer_gender"
+                )
                 if isinstance(search__swimmer_gender, str):
-                    individual_entries_of_team = individual_entries_of_team.filter(swimmer__gender__istartswith=search__swimmer_gender)
-
+                    individual_entries_of_team = individual_entries_of_team.filter(
+                        swimmer__gender__istartswith=search__swimmer_gender
+                    )
 
                 # * only retrieve request range of values
-                individual_entries_of_team = individual_entries_of_team[lower_bound:upper_bound]
+                individual_entries_of_team = individual_entries_of_team[
+                    lower_bound:upper_bound
+                ]
 
                 # * get individual_entries JSON
                 individual_entries_JSON = vh.get_JSON_multiple(
@@ -271,32 +343,47 @@ class Individual_entry_view(APIView):
                 # @ apply search filtering
                 search__first_name = vh.get_query_param(request, "search__first_name")
                 if isinstance(search__first_name, str):
-                    individual_entries_of_heat = individual_entries_of_heat.filter(swimmer__first_name__istartswith=search__first_name)
+                    individual_entries_of_heat = individual_entries_of_heat.filter(
+                        swimmer__first_name__istartswith=search__first_name
+                    )
 
                 search__last_name = vh.get_query_param(request, "search__last_name")
                 if isinstance(search__last_name, str):
-                    individual_entries_of_heat = individual_entries_of_heat.filter(swimmer__last_name__istartswith=search__last_name)
+                    individual_entries_of_heat = individual_entries_of_heat.filter(
+                        swimmer__last_name__istartswith=search__last_name
+                    )
 
                 search__age = vh.get_query_param(request, "search__age")
                 if isinstance(search__age, str):
                     search__age = int(search__age)
-                    individual_entries_of_heat = individual_entries_of_heat.filter(swimmer__age=search__age)
+                    individual_entries_of_heat = individual_entries_of_heat.filter(
+                        swimmer__age=search__age
+                    )
 
                 search__gender = vh.get_query_param(request, "search__gender")
                 if isinstance(search__gender, str):
-                    individual_entries_of_heat = individual_entries_of_heat.filter(swimmer__gender__istartswith=search__gender)
+                    individual_entries_of_heat = individual_entries_of_heat.filter(
+                        swimmer__gender__istartswith=search__gender
+                    )
 
                 search__team_name = vh.get_query_param(request, "search__team_name")
                 if isinstance(search__team_name, str):
-                    individual_entries_of_heat = individual_entries_of_heat.filter(swimmer__team__name__istartswith=search__team_name)
+                    individual_entries_of_heat = individual_entries_of_heat.filter(
+                        swimmer__team__name__istartswith=search__team_name
+                    )
 
-                search__team_acronym = vh.get_query_param(request, "search__team_acronym")
+                search__team_acronym = vh.get_query_param(
+                    request, "search__team_acronym"
+                )
                 if isinstance(search__team_acronym, str):
-                    individual_entries_of_heat = individual_entries_of_heat.filter(swimmer__team__acronym__istartswith=search__team_acronym)
+                    individual_entries_of_heat = individual_entries_of_heat.filter(
+                        swimmer__team__acronym__istartswith=search__team_acronym
+                    )
 
-                
                 # * only retrieve request range of values
-                individual_entries_of_heat = individual_entries_of_heat[lower_bound:upper_bound]
+                individual_entries_of_heat = individual_entries_of_heat[
+                    lower_bound:upper_bound
+                ]
 
                 # * get individual_entries JSON
                 individual_entries_JSON = vh.get_JSON_multiple(
@@ -344,33 +431,73 @@ class Individual_entry_view(APIView):
                 # @ apply search filtering
                 search__stroke = vh.get_query_param(request, "search__stroke")
                 if isinstance(search__stroke, str):
-                    individual_entries_of_swimmer = individual_entries_of_swimmer.filter(event__stroke__istartswith=search__stroke)
+                    individual_entries_of_swimmer = (
+                        individual_entries_of_swimmer.filter(
+                            event__stroke__istartswith=search__stroke
+                        )
+                    )
 
                 search__distance = vh.get_query_param(request, "search__distance")
                 if isinstance(search__distance, str):
                     search__distance = int(search__distance)
-                    individual_entries_of_swimmer = individual_entries_of_swimmer.filter(event__distance=search__distance)
+                    individual_entries_of_swimmer = (
+                        individual_entries_of_swimmer.filter(
+                            event__distance=search__distance
+                        )
+                    )
 
-                search__competing_min_age = vh.get_query_param(request, "search__competing_min_age")
+                search__competing_min_age = vh.get_query_param(
+                    request, "search__competing_min_age"
+                )
                 if isinstance(search__competing_min_age, str):
                     search__competing_min_age = int(search__competing_min_age)
-                    individual_entries_of_swimmer = individual_entries_of_swimmer.filter(event__competing_min_age=search__competing_min_age)
+                    individual_entries_of_swimmer = (
+                        individual_entries_of_swimmer.filter(
+                            event__competing_min_age=search__competing_min_age
+                        )
+                    )
 
-                search__competing_max_age = vh.get_query_param(request, "search__competing_max_age")
+                search__competing_max_age = vh.get_query_param(
+                    request, "search__competing_max_age"
+                )
                 if isinstance(search__competing_max_age, str):
                     search__competing_max_age = int(search__competing_max_age)
-                    individual_entries_of_swimmer = individual_entries_of_swimmer.filter(event__competing_max_age=search__competing_max_age)
+                    individual_entries_of_swimmer = (
+                        individual_entries_of_swimmer.filter(
+                            event__competing_max_age=search__competing_max_age
+                        )
+                    )
 
-                search__competing_gender = vh.get_query_param(request, "search__competing_gender")
+                search__competing_gender = vh.get_query_param(
+                    request, "search__competing_gender"
+                )
                 if isinstance(search__competing_gender, str):
-                    individual_entries_of_swimmer = individual_entries_of_swimmer.filter(event__competing_gender__istartswith=search__competing_gender)
+                    individual_entries_of_swimmer = individual_entries_of_swimmer.filter(
+                        event__competing_gender__istartswith=search__competing_gender
+                    )
 
-                search__session_name = vh.get_query_param(request, "search__session_name")
+                search__stage = vh.get_query_param(request, "search__stage")
+                if isinstance(search__stage, str):
+                    individual_entries_of_swimmer = (
+                        individual_entries_of_swimmer.filter(
+                            event__stage__istartswith=search__stage
+                        )
+                    )
+
+                search__session_name = vh.get_query_param(
+                    request, "search__session_name"
+                )
                 if isinstance(search__session_name, str):
-                    individual_entries_of_swimmer = individual_entries_of_swimmer.filter(event__session__name__istartswith=search__session_name)
+                    individual_entries_of_swimmer = (
+                        individual_entries_of_swimmer.filter(
+                            event__session__name__istartswith=search__session_name
+                        )
+                    )
 
                 # * only retrieve request range of values
-                individual_entries_of_swimmer = individual_entries_of_swimmer[lower_bound:upper_bound]
+                individual_entries_of_swimmer = individual_entries_of_swimmer[
+                    lower_bound:upper_bound
+                ]
 
                 # * get individual_entries JSON
                 individual_entries_JSON = vh.get_JSON_multiple(
@@ -404,7 +531,7 @@ class Individual_entry_view(APIView):
         # ? no event of event_id exists
         if isinstance(event_of_id, Response):
             return event_of_id
-        
+
         # ? event is not an individual event
         if event_of_id.is_relay:
             return Response(
@@ -435,7 +562,7 @@ class Individual_entry_view(APIView):
                 "swimmer and event meets do not match",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         check_compatibility = vh.validate_swimmer_against_event(
             swimmer_of_id, event_of_id
         )
@@ -517,7 +644,7 @@ class Individual_entry_view(APIView):
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host
-        
+
         seeding_needs_invalidation = False
         event_changed = False
         original_event_id = -1
@@ -528,7 +655,10 @@ class Individual_entry_view(APIView):
             )
             original_event_id = edited_individual_entry.event.pk
 
-            if "seed_time" in request.data and request.data["seed_time"] != edited_individual_entry.seed_time:
+            if (
+                "seed_time" in request.data
+                and request.data["seed_time"] != edited_individual_entry.seed_time
+            ):
                 edited_individual_entry.seed_time = request.data["seed_time"]
                 seeding_needs_invalidation = True
 
@@ -545,14 +675,14 @@ class Individual_entry_view(APIView):
                 # ? no event of event_id exists
                 if isinstance(event_of_id, Response):
                     return event_of_id
-                
+
                 # ? event is not an individual event
                 if event_of_id.is_relay:
                     return Response(
                         "event is not an individual event",
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-                
+
                 edited_individual_entry.event = event_of_id
 
             # @ handle FK swimmer change
@@ -567,16 +697,19 @@ class Individual_entry_view(APIView):
                 # ? no swimmer of swimmer_id exists
                 if isinstance(swimmer_of_id, Response):
                     return swimmer_of_id
-                
+
                 edited_individual_entry.swimmer = swimmer_of_id
 
             # ? swimmer and event meets do not match
-            if edited_individual_entry.swimmer.meet_id != edited_individual_entry.event.session.meet_id:
+            if (
+                edited_individual_entry.swimmer.meet_id
+                != edited_individual_entry.event.session.meet_id
+            ):
                 return Response(
                     "swimmer and event meets do not match",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            
+
             check_compatibility = vh.validate_swimmer_against_event(
                 edited_individual_entry.swimmer, edited_individual_entry.event
             )
@@ -616,7 +749,7 @@ class Individual_entry_view(APIView):
             # ? internal error invalidating event seeding
             if isinstance(invalidate_hs_data, Response):
                 return invalidate_hs_data
-            
+
             if event_changed:
                 invalidate_hs_data = vh.invalidate_event_seeding(
                     Event.objects.get(id=original_event_id)

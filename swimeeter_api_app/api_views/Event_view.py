@@ -127,6 +127,14 @@ class Event_view(APIView):
                         competing_gender__istartswith=search__competing_gender
                     )
 
+                search__stage = vh.get_query_param(
+                    request, "search__stage"
+                )
+                if isinstance(search__stage, str):
+                    events_of_session = events_of_session.filter(
+                        stage__istartswith=search__stage
+                    )
+
                 # * only retrieve request range of values
                 events_of_session = events_of_session[lower_bound:upper_bound]
 
@@ -224,6 +232,14 @@ class Event_view(APIView):
                 if isinstance(search__competing_gender, str):
                     events_of_meet = events_of_meet.filter(
                         competing_gender__istartswith=search__competing_gender
+                    )
+
+                search__stage = vh.get_query_param(
+                    request, "search__stage"
+                )
+                if isinstance(search__stage, str):
+                    events_of_meet = events_of_meet.filter(
+                        stage__istartswith=search__stage
                     )
 
                 search__session_name = vh.get_query_param(

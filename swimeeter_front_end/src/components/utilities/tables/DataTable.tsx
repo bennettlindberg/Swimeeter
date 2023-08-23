@@ -346,6 +346,9 @@ export function DataTable({
                     const genderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
                     const genderValue = genderField.value;
 
+                    const stageField = document.getElementById(idPrefix + "-stage-search-text-field") as HTMLInputElement;
+                    const stageValue = stageField.value;
+
                     const sessionNameField = document.getElementById(idPrefix + "-session_name-search-text-field") as HTMLInputElement;
                     const sessionNameValue = sessionNameField.value;
 
@@ -355,6 +358,7 @@ export function DataTable({
                         search__competing_min_age: minAgeValue === -1 ? undefined : minAgeValue,
                         search__competing_max_age: maxAgeValue === -1 ? undefined : maxAgeValue,
                         search__competing_gender: genderValue || undefined,
+                        search__stage: stageValue || undefined,
                         search__session_name: sessionNameValue || undefined
                     }
 
@@ -388,12 +392,16 @@ export function DataTable({
                     const genderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
                     const genderValue = genderField.value;
 
+                    const stageField = document.getElementById(idPrefix + "-stage-search-text-field") as HTMLInputElement;
+                    const stageValue = stageField.value;
+
                     const newSearchEntry = {
                         search__stroke: strokeValue || undefined,
                         search__distance: distanceValue === -1 ? undefined : distanceValue,
                         search__competing_min_age: minAgeValue === -1 ? undefined : minAgeValue,
                         search__competing_max_age: maxAgeValue === -1 ? undefined : maxAgeValue,
-                        search__competing_gender: genderValue || undefined
+                        search__competing_gender: genderValue || undefined,
+                        search__stage: stageValue || undefined
                     }
 
                     if (validateNewSearch(newSearchEntry, tableState.searchEntry)) {
@@ -489,34 +497,37 @@ export function DataTable({
 
             case "INDIVIDUAL_ENTRY_OF_TEAM": {
                 try {
-                    const eventStrokeField = document.getElementById(idPrefix + "-stroke-search-text-field") as HTMLInputElement;
+                    const eventStrokeField = document.getElementById(idPrefix + "-event-stroke-search-text-field") as HTMLInputElement;
                     const eventStrokeValue = eventStrokeField.value;
 
-                    const eventDistanceField = document.getElementById(idPrefix + "-distance-search-text-field") as HTMLInputElement;
+                    const eventDistanceField = document.getElementById(idPrefix + "-event-distance-search-text-field") as HTMLInputElement;
                     const eventDistanceValue = parseInt(eventDistanceField.value || "-1");
 
-                    const eventMinAgeField = document.getElementById(idPrefix + "-minimum_age-search-text-field") as HTMLInputElement;
+                    const eventMinAgeField = document.getElementById(idPrefix + "-event-minimum_age-search-text-field") as HTMLInputElement;
                     const eventMinAgeValue = parseInt(eventMinAgeField.value || "-1");
 
-                    const eventMaxAgeField = document.getElementById(idPrefix + "-maximum_age-search-text-field") as HTMLInputElement;
+                    const eventMaxAgeField = document.getElementById(idPrefix + "-event-maximum_age-search-text-field") as HTMLInputElement;
                     const eventMaxAgeValue = parseInt(eventMaxAgeField.value || "-1");
 
-                    const eventGenderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
+                    const eventGenderField = document.getElementById(idPrefix + "-event-gender-search-text-field") as HTMLInputElement;
                     const eventGenderValue = eventGenderField.value;
 
-                    const eventSessionNameField = document.getElementById(idPrefix + "-session_name-search-text-field") as HTMLInputElement;
+                    const eventStageField = document.getElementById(idPrefix + "-event-stage-search-text-field") as HTMLInputElement;
+                    const eventStageValue = eventStageField.value;
+
+                    const eventSessionNameField = document.getElementById(idPrefix + "-event-session_name-search-text-field") as HTMLInputElement;
                     const eventSessionNameValue = eventSessionNameField.value;
 
-                    const swimmerFirstNameField = document.getElementById(idPrefix + "-swimmer_first_name-search-text-field") as HTMLInputElement;
+                    const swimmerFirstNameField = document.getElementById(idPrefix + "-swimmer-first_name-search-text-field") as HTMLInputElement;
                     const swimmerFirstNameValue = swimmerFirstNameField.value;
 
-                    const swimmerLastNameField = document.getElementById(idPrefix + "-swimmer_last_name-search-text-field") as HTMLInputElement;
+                    const swimmerLastNameField = document.getElementById(idPrefix + "-swimmer-last_name-search-text-field") as HTMLInputElement;
                     const swimmerLastNameValue = swimmerLastNameField.value;
 
-                    const swimmerAgeField = document.getElementById(idPrefix + "-age-search-text-field") as HTMLInputElement;
+                    const swimmerAgeField = document.getElementById(idPrefix + "-swimmer-age-search-text-field") as HTMLInputElement;
                     const swimmerAgeValue = parseInt(swimmerAgeField.value || "-1");
 
-                    const swimmerGenderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
+                    const swimmerGenderField = document.getElementById(idPrefix + "-swimmer-gender-search-text-field") as HTMLInputElement;
                     const swimmerGenderValue = swimmerGenderField.value;
 
                     const newSearchEntry = {
@@ -525,6 +536,7 @@ export function DataTable({
                         search__event_competing_min_age: eventMinAgeValue === -1 ? undefined : eventMinAgeValue,
                         search__event_competing_max_age: eventMaxAgeValue === -1 ? undefined : eventMaxAgeValue,
                         search__event_competing_gender: eventGenderValue || undefined,
+                        search__event_stage: eventStageValue || undefined,
                         search__event_session_name: eventSessionNameValue || undefined,
                         search__swimmer_first_name: swimmerFirstNameValue || undefined,
                         search__swimmer_last_name: swimmerLastNameValue || undefined,
@@ -563,6 +575,9 @@ export function DataTable({
                     const genderField = document.getElementById(idPrefix + "-gender-search-text-field") as HTMLInputElement;
                     const genderValue = genderField.value;
 
+                    const stageField = document.getElementById(idPrefix + "-stage-search-text-field") as HTMLInputElement;
+                    const stageValue = stageField.value;
+
                     const sessionNameField = document.getElementById(idPrefix + "-session_name-search-text-field") as HTMLInputElement;
                     const sessionNameValue = sessionNameField.value;
 
@@ -575,6 +590,7 @@ export function DataTable({
                         search__competing_min_age: minAgeValue === -1 ? undefined : minAgeValue,
                         search__competing_max_age: maxAgeValue === -1 ? undefined : maxAgeValue,
                         search__competing_gender: genderValue || undefined,
+                        search__stage: stageValue || undefined,
                         search__session_name: sessionNameValue || undefined,
                         search__participant_names: participantNamesValue || undefined
                     }
@@ -638,10 +654,9 @@ export function DataTable({
     return (
         <>
             <div className="flex flex-col gap-y-2">
-                <div className="flex flex-row gap-x-2 items-end">
+                <div className="flex flex-row gap-x-2 justify-between items-end">
                     <FilterForm type={searchType} idPrefix={idPrefix} handleSearch={handleSearchSubmit} />
-                    <div className="flex-auto"></div>
-                    <div className="flex flex-col gap-y-2 items-end">
+                    <div className="flex flex-col gap-y-2 items-end flex-shrink-0">
                         {tableBarItems}
                         {isMeetHost && tableBarHostItems}
                     </div>
