@@ -87,14 +87,14 @@ class Relay_entry_view(APIView):
 
                 relay_entries_of_event = (
                     Relay_entry.objects.filter(event_id=event_id)
+                    .order_by("id")
+                    .distinct("id")
                     .order_by(
                         "swimmers__first_name",
                         "swimmers__last_name",
                         "swimmers__age",
                         "swimmers__gender",
                     )
-                    .order_by("id")
-                    .distinct("id")
                 )
 
                 # @ apply search filtering
@@ -290,9 +290,9 @@ class Relay_entry_view(APIView):
                     Relay_entry.objects.filter(
                         event_id=event_id, heat_number=heat_number
                     )
-                    .order_by("lane_number")
                     .order_by("id")
                     .distinct("id")
+                    .order_by("lane_number")
                 )
 
                 # @ apply search filtering

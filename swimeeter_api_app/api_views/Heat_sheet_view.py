@@ -1,10 +1,8 @@
 from rest_framework.views import APIView, Response
 from rest_framework import status
 
-from ..models import Event, Individual_entry, Relay_entry
+from ..models import Event
 from .. import view_helpers as vh
-
-from django.core.exceptions import ValidationError
 
 
 class Heat_sheet_view(APIView):
@@ -14,52 +12,68 @@ class Heat_sheet_view(APIView):
         if isinstance(specific_to, Response):
             return specific_to
 
-        upper_bound_str = vh.get_query_param(request, "upper_bound")
-        # ? no "upper_bound" param passed
-        if isinstance(upper_bound_str, Response):
-            upper_bound = None
-        else:
-            upper_bound = int(upper_bound_str)
-
-        lower_bound_str = vh.get_query_param(request, "lower_bound")
-        # ? no "lower_bound" param passed
-        if isinstance(lower_bound_str, Response):
-            lower_bound = None
-        else:
-            lower_bound = int(lower_bound_str)
-
-        # $ get event(s) specific too...
+        # $ get seeding data specific too...
         match specific_to:
-            # $ ...id
-            case "id":
-                event_id = vh.get_query_param(request, "event_id")
-                # ? no "event_id" param passed
-                if isinstance(event_id, Response):
-                    return event_id
+            # $ ...meet
+            case "meet":
+                meet_id = vh.get_query_param(request, "meet_id")
+                # ? no "meet_id" param passed
+                if isinstance(meet_id, Response):
+                    return meet_id
                 else:
-                    event_id = int(event_id)
+                    meet_id = int(meet_id)
 
-                event_of_id = vh.get_model_of_id("Event", event_id)
-                # ? no event of event_id exists
-                if isinstance(event_of_id, Response):
-                    return event_of_id
+                meet_of_id = vh.get_model_of_id("Meet", meet_id)
+                # ? no meet of meet_id exists
+                if isinstance(meet_of_id, Response):
+                    return meet_of_id
 
                 check_meet_access = vh.check_meet_access_allowed(
-                    request, event_of_id.session.meet
+                    request, meet_of_id
                 )
                 # ? private meet access not allowed
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
-
-                # * get event JSON
-                event_JSON = vh.get_JSON_single("Event", event_of_id, True)
-                # ? internal error generating JSON
-                if isinstance(event_JSON, Response):
-                    return event_JSON
+                
+                retrieved_seeding = vh.get_seeding_data("Meet", meet_of_id)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
                 else:
                     return Response(
-                        event_JSON,
-                        status=status.HTTP_200_OK,
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
+                    )
+
+            # $ ...pool
+            case "pool":
+                pool_id = vh.get_query_param(request, "pool_id")
+                # ? no "pool_id" param passed
+                if isinstance(pool_id, Response):
+                    return pool_id
+                else:
+                    pool_id = int(pool_id)
+
+                pool_of_id = vh.get_model_of_id("Pool", pool_id)
+                # ? no pool of pool_id exists
+                if isinstance(pool_of_id, Response):
+                    return pool_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, pool_of_id.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+                
+                retrieved_seeding = vh.get_seeding_data("Pool", pool_of_id)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
+                else:
+                    return Response(
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
                     )
 
             # $ ...session
@@ -82,186 +96,170 @@ class Heat_sheet_view(APIView):
                 # ? private meet access not allowed
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
-
-                events_of_session = Event.objects.filter(
-                    session_id=session_id
-                ).order_by("order_in_session")
-
-                # @ apply search filtering
-                search__stroke = vh.get_query_param(request, "search__stroke")
-                if isinstance(search__stroke, str):
-                    events_of_session = events_of_session.filter(
-                        stroke__istartswith=search__stroke
-                    )
-
-                search__distance = vh.get_query_param(request, "search__distance")
-                if isinstance(search__distance, str):
-                    search__distance = int(search__distance)
-                    events_of_session = events_of_session.filter(
-                        distance=search__distance
-                    )
-
-                search__competing_min_age = vh.get_query_param(
-                    request, "search__competing_min_age"
-                )
-                if isinstance(search__competing_min_age, str):
-                    search__competing_min_age = int(search__competing_min_age)
-                    events_of_session = events_of_session.filter(
-                        competing_min_age=search__competing_min_age
-                    )
-
-                search__competing_max_age = vh.get_query_param(
-                    request, "search__competing_max_age"
-                )
-                if isinstance(search__competing_max_age, str):
-                    search__competing_max_age = int(search__competing_max_age)
-                    events_of_session = events_of_session.filter(
-                        competing_max_age=search__competing_max_age
-                    )
-
-                search__competing_gender = vh.get_query_param(
-                    request, "search__competing_gender"
-                )
-                if isinstance(search__competing_gender, str):
-                    events_of_session = events_of_session.filter(
-                        competing_gender__istartswith=search__competing_gender
-                    )
-
-                search__stage = vh.get_query_param(
-                    request, "search__stage"
-                )
-                if isinstance(search__stage, str):
-                    events_of_session = events_of_session.filter(
-                        stage__istartswith=search__stage
-                    )
-
-                # * only retrieve request range of values
-                events_of_session = events_of_session[lower_bound:upper_bound]
-
-                # * get events JSON
-                events_JSON = vh.get_JSON_multiple("Event", events_of_session, True)
-                # ? internal error generating JSON
-                if isinstance(events_JSON, Response):
-                    return events_JSON
+                
+                retrieved_seeding = vh.get_seeding_data("Session", session_of_id)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
                 else:
                     return Response(
-                        events_JSON,
-                        status=status.HTTP_200_OK,
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
                     )
 
-            # $ ...meet
-            case "meet":
-                meet_id = vh.get_query_param(request, "meet_id")
-                # ? no "meet_id" param passed
-                if isinstance(meet_id, Response):
-                    return meet_id
+            # $ ...event
+            case "event":
+                event_id = vh.get_query_param(request, "event_id")
+                # ? no "event_id" param passed
+                if isinstance(event_id, Response):
+                    return event_id
                 else:
-                    meet_id = int(meet_id)
+                    event_id = int(event_id)
 
-                meet_of_id = vh.get_model_of_id("Meet", meet_id)
-                # ? no meet of meet_id exists
-                if isinstance(meet_of_id, Response):
-                    return meet_of_id
+                event_of_id = vh.get_model_of_id("Event", event_id)
+                # ? no event of event_id exists
+                if isinstance(event_of_id, Response):
+                    return event_of_id
 
-                check_meet_access = vh.check_meet_access_allowed(request, meet_of_id)
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, event_of_id.session.meet
+                )
                 # ? private meet access not allowed
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
-
-                event_type = vh.get_query_param(request, "event_type")
-                # ? no "event_type" param passed
-                if isinstance(event_type, str):
-                    if event_type != "individual" and event_type != "relay":
-                        return Response(
-                            "invalid event_type specification",
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
-
-                if event_type == "individual":
-                    events_of_meet = Event.objects.filter(
-                        session__meet_id=meet_id, is_relay=False
-                    ).order_by(
-                        "stroke", "distance", "competing_min_age", "competing_gender"
-                    )
-                elif event_type == "relay":
-                    events_of_meet = Event.objects.filter(
-                        session__meet_id=meet_id, is_relay=True
-                    ).order_by(
-                        "stroke", "distance", "competing_min_age", "competing_gender"
-                    )
-                else:
-                    events_of_meet = Event.objects.filter(
-                        session__meet_id=meet_id
-                    ).order_by(
-                        "stroke", "distance", "competing_min_age", "competing_gender"
-                    )
-
-                # @ apply search filtering
-                search__stroke = vh.get_query_param(request, "search__stroke")
-                if isinstance(search__stroke, str):
-                    events_of_meet = events_of_meet.filter(
-                        stroke__istartswith=search__stroke
-                    )
-
-                search__distance = vh.get_query_param(request, "search__distance")
-                if isinstance(search__distance, str):
-                    search__distance = int(search__distance)
-                    events_of_meet = events_of_meet.filter(distance=search__distance)
-
-                search__competing_min_age = vh.get_query_param(
-                    request, "search__competing_min_age"
-                )
-                if isinstance(search__competing_min_age, str):
-                    search__competing_min_age = int(search__competing_min_age)
-                    events_of_meet = events_of_meet.filter(
-                        competing_min_age=search__competing_min_age
-                    )
-
-                search__competing_max_age = vh.get_query_param(
-                    request, "search__competing_max_age"
-                )
-                if isinstance(search__competing_max_age, str):
-                    search__competing_max_age = int(search__competing_max_age)
-                    events_of_meet = events_of_meet.filter(
-                        competing_max_age=search__competing_max_age
-                    )
-
-                search__competing_gender = vh.get_query_param(
-                    request, "search__competing_gender"
-                )
-                if isinstance(search__competing_gender, str):
-                    events_of_meet = events_of_meet.filter(
-                        competing_gender__istartswith=search__competing_gender
-                    )
-
-                search__stage = vh.get_query_param(
-                    request, "search__stage"
-                )
-                if isinstance(search__stage, str):
-                    events_of_meet = events_of_meet.filter(
-                        stage__istartswith=search__stage
-                    )
-
-                search__session_name = vh.get_query_param(
-                    request, "search__session_name"
-                )
-                if isinstance(search__session_name, str):
-                    events_of_meet = events_of_meet.filter(
-                        session__name__istartswith=search__session_name
-                    )
-
-                # * only retrieve request range of values
-                events_of_meet = events_of_meet[lower_bound:upper_bound]
-
-                # * get events JSON
-                events_JSON = vh.get_JSON_multiple("Event", events_of_meet, True)
-                # ? internal error generating JSON
-                if isinstance(events_JSON, Response):
-                    return events_JSON
+                
+                retrieved_seeding = vh.get_seeding_data("Event", event_of_id)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
                 else:
                     return Response(
-                        events_JSON,
-                        status=status.HTTP_200_OK,
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
+                    )
+
+            # $ ...team
+            case "team":
+                team_id = vh.get_query_param(request, "team_id")
+                # ? no "team_id" param passed
+                if isinstance(team_id, Response):
+                    return team_id
+                else:
+                    team_id = int(team_id)
+
+                team_of_id = vh.get_model_of_id("Team", team_id)
+                # ? no team of team_id exists
+                if isinstance(team_of_id, Response):
+                    return team_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, team_of_id.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+                
+                retrieved_seeding = vh.get_seeding_data("Team", team_of_id)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
+                else:
+                    return Response(
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
+                    )
+
+            # $ ...swimmer
+            case "swimmer":
+                swimmer_id = vh.get_query_param(request, "swimmer_id")
+                # ? no "swimmer_id" param passed
+                if isinstance(swimmer_id, Response):
+                    return swimmer_id
+                else:
+                    swimmer_id = int(swimmer_id)
+
+                swimmer_of_id = vh.get_model_of_id("Swimmer", swimmer_id)
+                # ? no swimmer of swimmer_id exists
+                if isinstance(swimmer_of_id, Response):
+                    return swimmer_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, swimmer_of_id.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+                
+                retrieved_seeding = vh.get_seeding_data("Swimmer", swimmer_of_id)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
+                else:
+                    return Response(
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
+                    )
+
+            # $ ...relay entry
+            case "entry":
+                entry_id = vh.get_query_param(request, "entry_id")
+                # ? no "entry_id" param passed
+                if isinstance(entry_id, Response):
+                    return entry_id
+                else:
+                    entry_id = int(entry_id)
+
+                entry_of_id = vh.get_model_of_id("Relay_entry", entry_id)
+                # ? no entry of entry_id exists
+                if isinstance(entry_of_id, Response):
+                    return entry_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, entry_of_id.event.session.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+                
+                retrieved_seeding = vh.get_seeding_data("Relay_entry", entry_of_id)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
+                else:
+                    return Response(
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
+                    )
+                
+            # $ ...individual entry
+            case "entry":
+                entry_id = vh.get_query_param(request, "entry_id")
+                # ? no "entry_id" param passed
+                if isinstance(entry_id, Response):
+                    return entry_id
+                else:
+                    entry_id = int(entry_id)
+
+                entry_of_id = vh.get_model_of_id("Individual_entry", entry_id)
+                # ? no entry of entry_id exists
+                if isinstance(entry_of_id, Response):
+                    return entry_of_id
+
+                check_meet_access = vh.check_meet_access_allowed(
+                    request, entry_of_id.event.session.meet
+                )
+                # ? private meet access not allowed
+                if isinstance(check_meet_access, Response):
+                    return check_meet_access
+                
+                retrieved_seeding = vh.get_seeding_data("Individual_entry", entry_of_id)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
+                else:
+                    return Response(
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
                     )
 
             # ? invalid "specific_to" specification

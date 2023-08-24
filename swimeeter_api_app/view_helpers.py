@@ -447,8 +447,13 @@ def get_individual_entry_name(individual_entry_object: Individual_entry):
 def get_relay_entry_name(relay_entry_object: Relay_entry):
     entry_name = ""
 
-    swimmers_list = [assignment.swimmer for assignment in relay_entry_object.relay_assignments.all().order_by("order_in_relay")]
-    
+    swimmers_list = [
+        assignment.swimmer
+        for assignment in relay_entry_object.relay_assignments.all().order_by(
+            "order_in_relay"
+        )
+    ]
+
     if len(swimmers_list) == 1:
         pass
     elif len(swimmers_list) == 2:
@@ -723,9 +728,15 @@ def generate_event_seeding(options, event_object: Event):
 
     # * get entries of event
     if event_object.is_relay:
-        entries_list = list(Relay_entry.objects.filter(event_id=event_object.pk).order_by("-seed_time"))
+        entries_list = list(
+            Relay_entry.objects.filter(event_id=event_object.pk).order_by("-seed_time")
+        )
     else:
-        entries_list = list(Individual_entry.objects.filter(event_id=event_object.pk).order_by("-seed_time"))
+        entries_list = list(
+            Individual_entry.objects.filter(event_id=event_object.pk).order_by(
+                "-seed_time"
+            )
+        )
 
     # * calculate entries per lane
     total_entries = entries_list.count()
@@ -781,20 +792,24 @@ def generate_event_seeding(options, event_object: Event):
             for heat_index in range(len(heat_entry_counts)):
                 for lane_index in range(heat_entry_counts[heat_index]):
                     entries_list[entry_index].heat_number = heat_index + 1
-                    entries_list[entry_index].lane_number = standard_lane_order[lane_index]
+                    entries_list[entry_index].lane_number = standard_lane_order[
+                        lane_index
+                    ]
                     entry_index += 1
 
         # $ ...circle seeding
         case "circle":
             # * determine heats that will be circle seeded
             max_heat_entry_count = max(heat_entry_counts)
-            
+
             can_circle_seed_heats = 0
             for i in range(len(heat_entry_counts) - 1, -1, -1):
                 if heat_entry_counts[i] == max_heat_entry_count:
                     can_circle_seed_heats += 1
 
-            will_circle_seed_heats = min(can_circle_seed_heats, options.num_circle_seeded_heats)
+            will_circle_seed_heats = min(
+                can_circle_seed_heats, options.num_circle_seeded_heats
+            )
 
             entry_index = 0
 
@@ -802,23 +817,27 @@ def generate_event_seeding(options, event_object: Event):
             for heat_index in range(len(heat_entry_counts) - will_circle_seed_heats):
                 for lane_index in range(heat_entry_counts[heat_index]):
                     entries_list[entry_index].heat_number = heat_index + 1
-                    entries_list[entry_index].lane_number = standard_lane_order[lane_index]
+                    entries_list[entry_index].lane_number = standard_lane_order[
+                        lane_index
+                    ]
                     entry_index += 1
 
             # * circle seed ending heats
             for lane_index in range(max_heat_entry_count - 1, -1, -1):
-                for heat_index in range(len(heat_entry_counts) - will_circle_seed_heats, len(heat_entry_counts)):
+                for heat_index in range(
+                    len(heat_entry_counts) - will_circle_seed_heats,
+                    len(heat_entry_counts),
+                ):
                     entries_list[entry_index].heat_number = heat_index + 1
-                    entries_list[entry_index].lane_number = standard_lane_order[lane_index]
+                    entries_list[entry_index].lane_number = standard_lane_order[
+                        lane_index
+                    ]
                     entry_index += 1
 
         # ? invalid seeding type
         case _:
-            return Response(
-                "invalid seeding type",
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
+            return Response("invalid seeding type", status=status.HTTP_400_BAD_REQUEST)
+
     event_object.total_heats = len(heat_entry_counts)
 
     # * save event and entry seeding data
@@ -843,7 +862,504 @@ def generate_event_seeding(options, event_object: Event):
         # ? error saving event and entries
         return Response(
             "error saving event and entries",
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+def get_heat_seeding_data(event_object, heat_number):
+    heat_seeding_data = {"heat_number": heat_number, "lanes_data": []}
+
+    if event_object.is_relay:
+        entries_list = list(
+            Relay_entry.objects.filter(
+                event_id=event_object.pk, heat_number=heat_number
+            ).order_by("lane_number")
+        )
+
+        starting_lane_number = entries_list[0].lane_number
+        ending_lane_number = entries_list[-1].lane_number
+        total_lanes = event_object.session.pool.lanes
+
+        for i in range(1, starting_lane_number):
+            heat_seeding_data["lanes_data"].append(
+                {"lane_number": i, "entry_data": None}
+            )
+
+        lane_counter = starting_lane_number
+        for entry in entries_list:
+            heat_seeding_data["lanes_data"].append(
+                {
+                    "lane_number": lane_counter,
+                    "entry_data": {
+                        "entry_id": entry.pk,
+                        "entry_name": get_relay_entry_name(entry),
+                        "entry_team": list(entry.swimmers.all())[0].team.name,
+                        "entry_seed_time": entry.seed_time,
+                    },
+                }
+            )
+            lane_counter += 1
+
+        for i in range(ending_lane_number + 1, total_lanes + 1):
+            heat_seeding_data["lanes_data"].append(
+                {"lane_number": i, "entry_data": None}
+            )
+
+    else:
+        entries_list = list(
+            Individual_entry.objects.filter(
+                event_id=event_object.pk, heat_number=heat_number
+            ).order_by("lane_number")
+        )
+
+        starting_lane_number = entries_list[0].lane_number
+        ending_lane_number = entries_list[-1].lane_number
+        total_lanes = event_object.session.pool.lanes
+
+        for i in range(1, starting_lane_number):
+            heat_seeding_data["lanes_data"].append(
+                {"lane_number": i, "entry_data": None}
+            )
+
+        lane_counter = starting_lane_number
+        for entry in entries_list:
+            heat_seeding_data["lanes_data"].append(
+                {
+                    "lane_number": lane_counter,
+                    "entry_data": {
+                        "entry_id": entry.pk,
+                        "entry_name": get_swimmer_name(entry.swimmer),
+                        "entry_team": entry.swimmer.team.name,
+                        "entry_seed_time": entry.seed_time,
+                    },
+                }
+            )
+            lane_counter += 1
+
+        for i in range(ending_lane_number + 1, total_lanes + 1):
+            heat_seeding_data["lanes_data"].append(
+                {"lane_number": i, "entry_data": None}
+            )
+
+    return heat_seeding_data
+
+
+def generate_session_number_map(meet_object):
+    session_number_map = {}
+
+    sessions_list = list(
+        Session.objects.filter(meet_id=meet_object.pk).order_by(
+            "begin_time", "end_time", "name"
+        )
+    )
+
+    for i in range(len(sessions_list)):
+        session_number_map[sessions_list[i].pk] = i + 1
+
+    return session_number_map
+
+
+def get_seeding_data(model_type, model_object):
+    try:
+        session_number_map = {}
+
+        match (model_type):
+            case "Meet":
+                session_number_map = generate_session_number_map(model_object)
+
+                seeding_data = {
+                    "meet_id": model_object.pk,
+                    "meet_name": model_object.name,
+                    "sessions_data": [],
+                }
+
+                sessions_list = list(
+                    Session.objects.filter(meet_id=model_object.pk).order_by(
+                        "begin_time", "end_time", "name"
+                    )
+                )
+
+                for session in sessions_list:
+                    events_list = list(
+                        Event.objects.filter(session_id=session.pk).order_by(
+                            "order_in_session"
+                        )
+                    )
+
+                    events_data = []
+                    for event in events_list:
+                        if event.total_heats == None:
+                            events_data.append(
+                                {
+                                    "event_id": event.pk,
+                                    "event_name": get_event_name(event),
+                                    "event_number": event.order_in_session,
+                                    "heats_data": None,
+                                }
+                            )
+                            break
+
+                        num_heats = event.total_heats
+                        heats_data = []
+                        for i in range(1, num_heats + 1):
+                            heats_data.append(get_heat_seeding_data(event, i))
+
+                        events_data.append(
+                            {
+                                "event_id": event.pk,
+                                "event_name": get_event_name(event),
+                                "event_number": event.order_in_session,
+                                "heats_data": [],
+                            }
+                        )
+
+                    seeding_data["sessions_data"].append(
+                        {
+                            "session_id": session.pk,
+                            "session_name": session.name,
+                            "session_number": session_number_map[session.pk],
+                            "events_data": events_data,
+                        }
+                    )
+
+                return seeding_data
+
+            case "Pool":
+                session_number_map = generate_session_number_map(model_object.meet)
+
+                seeding_data = {
+                    "pool_id": model_object.pk,
+                    "pool_name": model_object.name,
+                    "sessions_data": [],
+                }
+
+                sessions_list = list(
+                    Session.objects.filter(pool_id=model_object.pk).order_by(
+                        "begin_time", "end_time", "name"
+                    )
+                )
+
+                for session in sessions_list:
+                    events_list = list(
+                        Event.objects.filter(session_id=session.pk).order_by(
+                            "order_in_session"
+                        )
+                    )
+
+                    events_data = []
+                    for event in events_list:
+                        if event.total_heats == None:
+                            events_data.append(
+                                {
+                                    "event_id": event.pk,
+                                    "event_name": get_event_name(event),
+                                    "event_number": event.order_in_session,
+                                    "heats_data": None,
+                                }
+                            )
+                            break
+
+                        num_heats = event.total_heats
+                        heats_data = []
+                        for i in range(1, num_heats + 1):
+                            heats_data.append(get_heat_seeding_data(event, i))
+
+                        events_data.append(
+                            {
+                                "event_id": event.pk,
+                                "event_name": get_event_name(event),
+                                "event_number": event.order_in_session,
+                                "heats_data": [],
+                            }
+                        )
+
+                    seeding_data["sessions_data"].append(
+                        {
+                            "session_id": session.pk,
+                            "session_name": session.name,
+                            "session_number": session_number_map[session.pk],
+                            "events_data": events_data,
+                        }
+                    )
+
+                return seeding_data
+
+            case "Team":
+                session_number_map = generate_session_number_map(model_object.meet)
+
+                seeding_data = {
+                    "team_id": model_object.pk,
+                    "team_name": model_object.name,
+                    "sessions_data": [],
+                }
+
+                # ! determine sessions with team members in them
+                sessions_query_set = Session.objects.filter(
+                    meet_id=model_object.meet.pk,
+                    events__individual_entries__swimmer__team__pk__contains=model_object.pk,
+                ) | Session.objects.filter(
+                    meet_id=model_object.meet.pk,
+                    events__relay_entries__swimmers__team__pk__contains=model_object.pk,
+                )
+                sessions_list = list(
+                    sessions_query_set.order_by("id")
+                    .distinct("id")
+                    .order_by("begin_time", "end_time", "name")
+                )
+
+                for session in sessions_list:
+                    # ! determine events with team members in them
+                    events_query_set = Event.objects.filter(
+                        session_id=session.pk,
+                        individual_entries__swimmer__team__pk__contains=model_object.pk,
+                    ) | Event.objects.filter(
+                        session_id=session.pk,
+                        relay_entries__swimmers__team__pk__contains=model_object.pk,
+                    )
+
+                    events_list = list(
+                        events_query_set.order_by("id")
+                        .distinct("id")
+                        .order_by("order_in_session")
+                    )
+
+                    events_data = []
+                    for event in events_list:
+                        if event.total_heats == None:
+                            events_data.append(
+                                {
+                                    "event_id": event.pk,
+                                    "event_name": get_event_name(event),
+                                    "event_number": event.order_in_session,
+                                    "heats_data": None,
+                                }
+                            )
+                            break
+
+                        num_heats = event.total_heats
+                        heats_data = []
+                        for i in range(1, num_heats + 1):
+                            # ! get heats with team members in them
+                            if event.is_relay:
+                                entries_of_team = Relay_entry.objects.filter(event_id=event.pk, heat_number=i, swimmers__team__pk__contains=model_object.pk)
+                            else:
+                                entries_of_team = Individual_entry.objects.filter(event_id=event.pk, heat_number=i, swimmer__team__pk=model_object.pk)
+
+                            if entries_of_team.count() > 0:
+                                heats_data.append(get_heat_seeding_data(event, i))
+
+                        events_data.append(
+                            {
+                                "event_id": event.pk,
+                                "event_name": get_event_name(event),
+                                "event_number": event.order_in_session,
+                                "heats_data": [],
+                            }
+                        )
+
+                    seeding_data["sessions_data"].append(
+                        {
+                            "session_id": session.pk,
+                            "session_name": session.name,
+                            "session_number": session_number_map[session.pk],
+                            "events_data": events_data,
+                        }
+                    )
+
+                return seeding_data
+
+            case "Swimmer":
+                session_number_map = generate_session_number_map(model_object.meet)
+
+                seeding_data = {
+                    "swimmer_id": model_object.pk,
+                    "swimmer_name": get_swimmer_name(model_object),
+                    "sessions_data": [],
+                }
+
+                # ! determine sessions with swimmer in them
+                sessions_query_set = Session.objects.filter(
+                    meet_id=model_object.meet.pk,
+                    events__individual_entries__swimmer__pk__contains=model_object.pk,
+                ) | Session.objects.filter(
+                    meet_id=model_object.meet.pk,
+                    events__relay_entries__swimmers__pk__contains=model_object.pk,
+                )
+                sessions_list = list(
+                    sessions_query_set.order_by("id")
+                    .distinct("id")
+                    .order_by("begin_time", "end_time", "name")
+                )
+
+                for session in sessions_list:
+                    # ! determine events with swimmer in them
+                    events_query_set = Event.objects.filter(
+                        session_id=session.pk,
+                        individual_entries__swimmer__pk__contains=model_object.pk,
+                    ) | Event.objects.filter(
+                        session_id=session.pk,
+                        relay_entries__swimmers__pk__contains=model_object.pk,
+                    )
+
+                    events_list = list(
+                        events_query_set.order_by("id")
+                        .distinct("id")
+                        .order_by("order_in_session")
+                    )
+
+                    events_data = []
+                    for event in events_list:
+                        if event.total_heats == None:
+                            events_data.append(
+                                {
+                                    "event_id": event.pk,
+                                    "event_name": get_event_name(event),
+                                    "event_number": event.order_in_session,
+                                    "heat_data": None,
+                                }
+                            )
+                            break
+
+                        # ! determine heat with swimmer in it
+                        if event.is_relay:
+                            swimmer_heat_num = Relay_entry.objects.get(event_id=event.pk, swimmers__pk__contains=model_object.pk).heat_number
+                        else:
+                            swimmer_heat_num = Individual_entry.objects.get(event_id=event.pk, swimmer_id=model_object.pk).heat_number
+
+                        events_data.append(
+                            {
+                                "event_id": event.pk,
+                                "event_name": get_event_name(event),
+                                "event_number": event.order_in_session,
+                                "heat_data": get_heat_seeding_data(event, swimmer_heat_num),
+                            }
+                        )
+
+                    seeding_data["sessions_data"].append(
+                        {
+                            "session_id": session.pk,
+                            "session_name": session.name,
+                            "session_number": session_number_map[session.pk],
+                            "events_data": events_data,
+                        }
+                    )
+
+                return seeding_data
+
+            case "Session":
+                session_number_map = generate_session_number_map(model_object.meet)
+
+                seeding_data = {
+                    "session_id": model_object.pk,
+                    "session_name": model_object.name,
+                    "session_number": session_number_map[model_object.pk],
+                    "events_data": [],
+                }
+
+                events_list = list(
+                    Event.objects.filter(session_id=model_object.pk).order_by(
+                        "order_in_session"
+                    )
+                )
+
+                events_data = []
+                for event in events_list:
+                    if event.total_heats == None:
+                        events_data.append(
+                            {
+                                "event_id": event.pk,
+                                "event_name": get_event_name(event),
+                                "event_number": event.order_in_session,
+                                "heats_data": None,
+                            }
+                        )
+                        break
+
+                    num_heats = event.total_heats
+                    heats_data = []
+                    for i in range(1, num_heats + 1):
+                        heats_data.append(get_heat_seeding_data(event, i))
+
+                    events_data.append(
+                        {
+                            "event_id": event.pk,
+                            "event_name": get_event_name(event),
+                            "event_number": event.order_in_session,
+                            "heats_data": [],
+                        }
+                    )
+
+                seeding_data["events_data"] = events_data
+
+                return seeding_data
+
+            case "Event":
+                if model_object.total_heats == None:
+                    return {
+                        "event_id": model_object.pk,
+                        "event_name": get_event_name(model_object),
+                        "event_number": model_object.order_in_session,
+                        "heats_data": None,
+                    }
+
+                seeding_data = {
+                    "event_id": model_object.pk,
+                    "event_name": get_event_name(model_object),
+                    "event_number": model_object.order_in_session,
+                    "heats_data": [],
+                }
+
+                num_heats = model_object.total_heats
+                heats_data = []
+                for i in range(1, num_heats + 1):
+                    heats_data.append(get_heat_seeding_data(model_object, i))
+
+                seeding_data["heats_data"] = heats_data
+
+                return seeding_data
+
+            case "Relay_entry":
+                if model_object.heat_number == None:
+                    return {
+                        "entry_id": model_object.pk,
+                        "entry_name": get_relay_entry_name(model_object),
+                        "heat_data": None,
+                    }
+
+                return {
+                    "entry_id": model_object.pk,
+                    "entry_name": get_relay_entry_name(model_object),
+                    "heat_data": get_heat_seeding_data(
+                        model_object.event, model_object.heat_number
+                    ),
+                }
+
+            case "Individual_entry":
+                if model_object.heat_number == None:
+                    return {
+                        "entry_id": model_object.pk,
+                        "entry_name": get_swimmer_name(model_object.swimmer),
+                        "heat_data": None,
+                    }
+
+                return {
+                    "entry_id": model_object.pk,
+                    "entry_name": get_swimmer_name(model_object.swimmer),
+                    "heat_data": get_heat_seeding_data(
+                        model_object.event, model_object.heat_number
+                    ),
+                }
+
+            # ? invalid "specific_to" specification
+            case _:
+                return Response(
+                    "invalid model type",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+    except:
+        return Response(
+            "error retrieving seeding data",
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
 
