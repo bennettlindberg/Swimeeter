@@ -301,12 +301,16 @@ class Heat_sheet_view(APIView):
                 if isinstance(generation_result, Response):
                     return generation_result
 
-                # * get event seeding JSON
-                # ! TODO
-                return Response(
-                    "success",
-                    status=status.HTTP_200_OK
-                )
+                # * retrieve updated meet seeding data
+                retrieved_seeding = vh.get_seeding_data("Meet", event_of_id.session.meet)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
+                else:
+                    return Response(
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
+                    )
 
             # $ ...a session
             case "session":
@@ -339,12 +343,58 @@ class Heat_sheet_view(APIView):
                     if isinstance(generation_result, Response):
                         return generation_result
 
-                # * get session seeding JSON
-                # ! TODO
-                return Response(
-                    "success",
-                    status=status.HTTP_200_OK
-                )
+                # * retrieve updated meet seeding data
+                retrieved_seeding = vh.get_seeding_data("Meet", session_of_id.meet)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
+                else:
+                    return Response(
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
+                    )
+            
+            # $ ...a meet
+            case "meet":
+                meet_id = vh.get_query_param(request, "meet_id")
+                # ? no "meet_id" param passed
+                if isinstance(meet_id, Response):
+                    return meet_id
+                else:
+                    meet_id = int(meet_id)
+
+                meet_of_id = vh.get_model_of_id("Meet", meet_id)
+                # ? no meet of meet_id exists
+                if isinstance(meet_of_id, Response):
+                    return meet_of_id
+
+                check_is_host = vh.check_user_is_host(request, meet_of_id.host_id)
+                # ? user is not meet host
+                if isinstance(check_is_host, Response):
+                    return check_is_host
+                
+                # * retrieve events to seed
+                if (request.data.get("re_seed_events", True)):
+                    events_to_seed = Event.objects.filter(session__meet_id=meet_id)
+                else:
+                    events_to_seed = Event.objects.filter(session__meet_id=meet_id, total_heats__isnull=True)
+
+                # * generate seeding for applicable events
+                for event in events_to_seed:
+                    generation_result = vh.generate_event_seeding(request.data, event)
+                    if isinstance(generation_result, Response):
+                        return generation_result
+
+                # * retrieve updated meet seeding data
+                retrieved_seeding = vh.get_seeding_data("Meet", meet_of_id)
+                # ? error retrieving seeding data
+                if isinstance(retrieved_seeding, Response):
+                    return retrieved_seeding
+                else:
+                    return Response(
+                        retrieved_seeding,
+                        status=status.HTTP_200_OK
+                    )
 
             # ? invalid "specific_to" specification
             case _:

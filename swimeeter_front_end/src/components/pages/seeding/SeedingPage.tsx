@@ -49,7 +49,7 @@ export const MeetContext = createContext<{
 });
 
 // ~ component
-export function MeetPage() {
+export function SeedingPage() {
     // * initialize context and navigation
     const { navTreeDispatch, setTabTitle }: {
         navTreeDispatch: React.Dispatch<NavTreeAction>,

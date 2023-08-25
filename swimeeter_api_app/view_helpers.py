@@ -994,10 +994,11 @@ def get_seeding_data(model_type, model_object):
                                     "event_id": event.pk,
                                     "event_name": get_event_name(event),
                                     "event_number": event.order_in_session,
+                                    "event_is_relay": event.is_relay,
                                     "heats_data": None,
                                 }
                             )
-                            break
+                            continue
 
                         num_heats = event.total_heats
                         heats_data = []
@@ -1009,6 +1010,7 @@ def get_seeding_data(model_type, model_object):
                                 "event_id": event.pk,
                                 "event_name": get_event_name(event),
                                 "event_number": event.order_in_session,
+                                "event_is_relay": event.is_relay,
                                 "heats_data": [],
                             }
                         )
@@ -1054,10 +1056,11 @@ def get_seeding_data(model_type, model_object):
                                     "event_id": event.pk,
                                     "event_name": get_event_name(event),
                                     "event_number": event.order_in_session,
+                                    "event_is_relay": event.is_relay,
                                     "heats_data": None,
                                 }
                             )
-                            break
+                            continue
 
                         num_heats = event.total_heats
                         heats_data = []
@@ -1069,6 +1072,7 @@ def get_seeding_data(model_type, model_object):
                                 "event_id": event.pk,
                                 "event_name": get_event_name(event),
                                 "event_number": event.order_in_session,
+                                "event_is_relay": event.is_relay,
                                 "heats_data": [],
                             }
                         )
@@ -1102,9 +1106,9 @@ def get_seeding_data(model_type, model_object):
                     events__relay_entries__swimmers__team__pk__contains=model_object.pk,
                 )
                 sessions_list = list(
-                    sessions_query_set.order_by("id")
+                    sessions_query_set.order_by("begin_time", "end_time", "name")
+                    .order_by("id")
                     .distinct("id")
-                    .order_by("begin_time", "end_time", "name")
                 )
 
                 for session in sessions_list:
@@ -1118,9 +1122,9 @@ def get_seeding_data(model_type, model_object):
                     )
 
                     events_list = list(
-                        events_query_set.order_by("id")
+                        events_query_set.order_by("order_in_session")
+                        .order_by("id")
                         .distinct("id")
-                        .order_by("order_in_session")
                     )
 
                     events_data = []
@@ -1131,19 +1135,28 @@ def get_seeding_data(model_type, model_object):
                                     "event_id": event.pk,
                                     "event_name": get_event_name(event),
                                     "event_number": event.order_in_session,
+                                    "event_is_relay": event.is_relay,
                                     "heats_data": None,
                                 }
                             )
-                            break
+                            continue
 
                         num_heats = event.total_heats
                         heats_data = []
                         for i in range(1, num_heats + 1):
                             # ! get heats with team members in them
                             if event.is_relay:
-                                entries_of_team = Relay_entry.objects.filter(event_id=event.pk, heat_number=i, swimmers__team__pk__contains=model_object.pk)
+                                entries_of_team = Relay_entry.objects.filter(
+                                    event_id=event.pk,
+                                    heat_number=i,
+                                    swimmers__team__pk__contains=model_object.pk,
+                                )
                             else:
-                                entries_of_team = Individual_entry.objects.filter(event_id=event.pk, heat_number=i, swimmer__team__pk=model_object.pk)
+                                entries_of_team = Individual_entry.objects.filter(
+                                    event_id=event.pk,
+                                    heat_number=i,
+                                    swimmer__team__pk=model_object.pk,
+                                )
 
                             if entries_of_team.count() > 0:
                                 heats_data.append(get_heat_seeding_data(event, i))
@@ -1153,6 +1166,7 @@ def get_seeding_data(model_type, model_object):
                                 "event_id": event.pk,
                                 "event_name": get_event_name(event),
                                 "event_number": event.order_in_session,
+                                "event_is_relay": event.is_relay,
                                 "heats_data": [],
                             }
                         )
@@ -1186,9 +1200,9 @@ def get_seeding_data(model_type, model_object):
                     events__relay_entries__swimmers__pk__contains=model_object.pk,
                 )
                 sessions_list = list(
-                    sessions_query_set.order_by("id")
+                    sessions_query_set.order_by("begin_time", "end_time", "name")
+                    .order_by("id")
                     .distinct("id")
-                    .order_by("begin_time", "end_time", "name")
                 )
 
                 for session in sessions_list:
@@ -1202,9 +1216,9 @@ def get_seeding_data(model_type, model_object):
                     )
 
                     events_list = list(
-                        events_query_set.order_by("id")
+                        events_query_set.order_by("order_in_session")
+                        .order_by("id")
                         .distinct("id")
-                        .order_by("order_in_session")
                     )
 
                     events_data = []
@@ -1215,23 +1229,32 @@ def get_seeding_data(model_type, model_object):
                                     "event_id": event.pk,
                                     "event_name": get_event_name(event),
                                     "event_number": event.order_in_session,
+                                    "event_is_relay": event.is_relay,
                                     "heat_data": None,
                                 }
                             )
-                            break
+                            continue
 
                         # ! determine heat with swimmer in it
                         if event.is_relay:
-                            swimmer_heat_num = Relay_entry.objects.get(event_id=event.pk, swimmers__pk__contains=model_object.pk).heat_number
+                            swimmer_heat_num = Relay_entry.objects.get(
+                                event_id=event.pk,
+                                swimmers__pk__contains=model_object.pk,
+                            ).heat_number
                         else:
-                            swimmer_heat_num = Individual_entry.objects.get(event_id=event.pk, swimmer_id=model_object.pk).heat_number
+                            swimmer_heat_num = Individual_entry.objects.get(
+                                event_id=event.pk, swimmer_id=model_object.pk
+                            ).heat_number
 
                         events_data.append(
                             {
                                 "event_id": event.pk,
                                 "event_name": get_event_name(event),
                                 "event_number": event.order_in_session,
-                                "heat_data": get_heat_seeding_data(event, swimmer_heat_num),
+                                "event_is_relay": event.is_relay,
+                                "heat_data": get_heat_seeding_data(
+                                    event, swimmer_heat_num
+                                ),
                             }
                         )
 
@@ -1270,10 +1293,11 @@ def get_seeding_data(model_type, model_object):
                                 "event_id": event.pk,
                                 "event_name": get_event_name(event),
                                 "event_number": event.order_in_session,
+                                "event_is_relay": event.is_relay,
                                 "heats_data": None,
                             }
                         )
-                        break
+                        continue
 
                     num_heats = event.total_heats
                     heats_data = []
@@ -1285,6 +1309,7 @@ def get_seeding_data(model_type, model_object):
                             "event_id": event.pk,
                             "event_name": get_event_name(event),
                             "event_number": event.order_in_session,
+                            "event_is_relay": event.is_relay,
                             "heats_data": [],
                         }
                     )
@@ -1299,6 +1324,7 @@ def get_seeding_data(model_type, model_object):
                         "event_id": model_object.pk,
                         "event_name": get_event_name(model_object),
                         "event_number": model_object.order_in_session,
+                        "event_is_relay": model_object.is_relay,
                         "heats_data": None,
                     }
 
@@ -1306,6 +1332,7 @@ def get_seeding_data(model_type, model_object):
                     "event_id": model_object.pk,
                     "event_name": get_event_name(model_object),
                     "event_number": model_object.order_in_session,
+                    "event_is_relay": model_object.is_relay,
                     "heats_data": [],
                 }
 

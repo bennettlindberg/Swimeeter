@@ -42,7 +42,7 @@ import { RelayEntryPage } from "./components/pages/relay_entries/RelayEntryPage.
 import { RelayEntryCreationPage } from "./components/pages/relay_entries/RelayEntryCreationPage.tsx";
 
 // * HEAT SHEETS
-import { HeatSheetPage } from "./components/pages/heat_sheets/HeatSheetPage.tsx";
+import { SeedingPage } from "./components/pages/seeding/SeedingPage.tsx";
 
 // * ERRORS
 import { Error404Redirect } from "./components/pages/errors/Error404Redirect.tsx";
@@ -163,8 +163,8 @@ const router = createBrowserRouter([
 
             // * HEAT SHEETS
             {
-                path: "meets/:meet_id/heat_sheet",
-                element: <HeatSheetPage />,
+                path: "meets/:meet_id/seeding",
+                element: <SeedingPage />,
             },
 
             // * ERRORS

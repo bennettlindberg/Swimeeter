@@ -19,6 +19,7 @@ type EventData = {
     event_id: number,
     event_name: string,
     event_number: number,
+    event_is_relay: boolean,
     heats_data: HeatData[] | null
 }
 
@@ -58,6 +59,7 @@ export type SwimmerHeatSheet = {
             event_id: number,
             event_name: string,
             event_number: number,
+            event_is_relay: boolean,
             heat_data: HeatData | null
         }[]
     }[]
