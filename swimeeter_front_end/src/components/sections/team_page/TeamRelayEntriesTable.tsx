@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { TeamContext } from "../../pages/teams/TeamPage.tsx";
 import { Team, RelayEntry } from "../../utilities/helpers/modelTypes.ts";
-import { generateRelayParticipantNames } from "../../utilities/helpers/nameGenerators.ts";
+import { generateEventName, generateRelayParticipantNames, generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -24,9 +24,11 @@ export function TeamRelayEntriesTable() {
     function tableRowGenerator(item: RelayEntry) {
         return (
             <TableRow handleClick={() => navigate(`/meets/${teamData.fields.meet.pk}/relay_entries/${item.pk}`)} entries={[
+                generateEventName(item.fields.event),
                 generateRelayParticipantNames(item),
-                `${item.fields.event.fields.distance}`,
-                item.fields.event.fields.stroke
+                "" + (item.fields.heat_number || "N/A"),
+                "" + (item.fields.lane_number || "N/A"),
+                generateSeedTimeString(item.fields.seed_time)
             ]} />
         )
     }
@@ -49,7 +51,7 @@ export function TeamRelayEntriesTable() {
                 <col span={1} className="w-auto" />
             ]}
             tableHeaderTitles={[
-                "Participants", "Distance", "Stroke"
+                "Event", "Participants", "Heat", "Lane", "Seed Time"
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no relay entries were found."

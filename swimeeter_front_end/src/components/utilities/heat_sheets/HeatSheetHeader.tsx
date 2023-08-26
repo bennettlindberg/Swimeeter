@@ -7,10 +7,12 @@ import { TableGrid } from "../tables/TableGrid.tsx";
 export function HeatSheetHeader({
     color,
     title,
+    indicator,
     children
 }: {
     color: "orange" | "purple" | "slate" | "primary",
     title: string,
+    indicator?: JSX.Element,
     children: React.ReactNode
 }) {
     // * initialize state and navigation
@@ -55,7 +57,10 @@ export function HeatSheetHeader({
 
                 <thead className={`group py-1 font-semibold text-xl ${interpretedButtonColor} ${interpretedTextColor}`} onClick={() => setIsOpen(!isOpen)}>
                     <td className={`first-of-type:rounded-l-md last-of-type:rounded-r-md border-t-2 border-b-2 first-of-type:border-l-2 last-of-type:border-r-2 ${interpretedButtonColor}`}>
-                        {title}
+                        <div className="flex flex-row gap-x-2 items-center">
+                            {indicator}
+                            {title}
+                        </div>
                     </td>
                     <td className={`first-of-type:rounded-l-md last-of-type:rounded-r-md border-t-2 border-b-2 first-of-type:border-l-2 last-of-type:border-r-2 ${interpretedButtonColor}`}>
                         {

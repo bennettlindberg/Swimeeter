@@ -14,8 +14,8 @@ class Heat_sheet_view(APIView):
 
         # $ get seeding data specific too...
         match specific_to:
-            # $ ...meet
-            case "meet":
+            # $ ...meet/overview
+            case "meet" | "overview":
                 meet_id = vh.get_query_param(request, "meet_id")
                 # ? no "meet_id" param passed
                 if isinstance(meet_id, Response):
@@ -35,7 +35,7 @@ class Heat_sheet_view(APIView):
                 if isinstance(check_meet_access, Response):
                     return check_meet_access
                 
-                retrieved_seeding = vh.get_seeding_data("Meet", meet_of_id)
+                retrieved_seeding = vh.get_seeding_data("Meet" if specific_to == "meet" else "Overview", meet_of_id)
                 # ? error retrieving seeding data
                 if isinstance(retrieved_seeding, Response):
                     return retrieved_seeding
@@ -302,7 +302,7 @@ class Heat_sheet_view(APIView):
                     return generation_result
 
                 # * retrieve updated meet seeding data
-                retrieved_seeding = vh.get_seeding_data("Meet", event_of_id.session.meet)
+                retrieved_seeding = vh.get_seeding_data("Overview", event_of_id.session.meet)
                 # ? error retrieving seeding data
                 if isinstance(retrieved_seeding, Response):
                     return retrieved_seeding
@@ -344,7 +344,7 @@ class Heat_sheet_view(APIView):
                         return generation_result
 
                 # * retrieve updated meet seeding data
-                retrieved_seeding = vh.get_seeding_data("Meet", session_of_id.meet)
+                retrieved_seeding = vh.get_seeding_data("Overview", session_of_id.meet)
                 # ? error retrieving seeding data
                 if isinstance(retrieved_seeding, Response):
                     return retrieved_seeding
@@ -386,7 +386,7 @@ class Heat_sheet_view(APIView):
                         return generation_result
 
                 # * retrieve updated meet seeding data
-                retrieved_seeding = vh.get_seeding_data("Meet", meet_of_id)
+                retrieved_seeding = vh.get_seeding_data("Overview", meet_of_id)
                 # ? error retrieving seeding data
                 if isinstance(retrieved_seeding, Response):
                     return retrieved_seeding

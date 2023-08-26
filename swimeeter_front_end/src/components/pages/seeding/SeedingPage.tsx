@@ -3,49 +3,27 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 import { AppContext, NavTreeAction } from "../../../App.tsx";
-import { Meet } from "../../utilities/helpers/modelTypes.ts";
+import { OverviewHeatSheet } from "../../utilities/helpers/heatSheetTypes.ts";
 import { convertStringParamToInt } from "../../utilities/helpers/helperFunctions.ts";
 
 import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
-import { MeetEditingForm } from "../../sections/meet_page/MeetEditingForm.tsx";
-import { MeetPoolsTable } from "../../sections/meet_page/MeetPoolsTable.tsx";
-import { MeetSessionsTable } from "../../sections/meet_page/MeetSessionsTable.tsx";
-import { MeetEventsTable } from "../../sections/meet_page/MeetEventsTable.tsx";
-import { MeetTeamsTable } from "../../sections/meet_page/MeetTeamsTable.tsx";
-import { MeetSwimmersTable } from "../../sections/meet_page/MeetSwimmersTable.tsx";
-import { MeetHeatSheetTable } from "../../sections/meet_page/MeetHeatSheetTable.tsx";
+import { SeedingOverviewTable } from "../../sections/seeding_page/SeedingOverviewTable.tsx";
+import { SeedingGenerationForm } from "../../sections/seeding_page/SeedingGenerationForm.tsx";
 
-// * create meet context
-export const MeetContext = createContext<{ 
-    meetData: Meet, 
-    setMeetData: React.Dispatch<React.SetStateAction<Meet>>,
-    isMeetHost: boolean 
+// * create seeding context
+export const SeedingContext = createContext<{
+    seedingData: OverviewHeatSheet,
+    setSeedingData: React.Dispatch<React.SetStateAction<OverviewHeatSheet>>,
 }>({
-    meetData: {
-        model: "",
-        pk: -1,
-        fields: {
-            name: "",
-            begin_time: null,
-            end_time: null,
-            is_public: true,
-            host: {
-                model: "",
-                pk: -1,
-                fields: {
-                    first_name: "",
-                    last_name: "",
-                    prefix: "",
-                    suffix: "",
-                    middle_initials: ""
-                }
-            }
-        }
+    seedingData: {
+        meet_id: -1,
+        meet_name: "",
+        meet_seeding_full: false,
+        sessions_data: []
     },
-    setMeetData: () => {},
-    isMeetHost: false
+    setSeedingData: () => { },
 });
 
 // ~ component
@@ -58,26 +36,11 @@ export function SeedingPage() {
     const navigate = useNavigate();
 
     // * initialize state and params
-    const [meetData, setMeetData] = useState<Meet>({
-        model: "",
-        pk: -1,
-        fields: {
-            name: "",
-            begin_time: null,
-            end_time: null,
-            is_public: true,
-            host: {
-                model: "",
-                pk: -1,
-                fields: {
-                    first_name: "",
-                    last_name: "",
-                    prefix: "",
-                    suffix: "",
-                    middle_initials: ""
-                }
-            }
-        }
+    const [seedingData, setSeedingData] = useState<OverviewHeatSheet>({
+        meet_id: -1,
+        meet_name: "",
+        meet_seeding_full: false,
+        sessions_data: []
     });
     const [isMeetHost, setIsMeetHost] = useState<boolean>(false);
 
@@ -88,25 +51,25 @@ export function SeedingPage() {
         navigate("/errors/unknown");
     }
 
-    // * retrieve meet data
+    // * retrieve meet seeding data
     useEffect(() => {
-        async function retrieveMeetData() {
+        async function retrieveMeetSeedingData() {
             try {
-                // @ retrieve meet data with back-end request
-                const response = await axios.get("/api/v1/meets/", {
+                // @ retrieve meet seeding data with back-end request
+                const response = await axios.get("/api/v1/heat_sheets/", {
                     params: {
-                        specific_to: "id",
+                        specific_to: "overview",
                         meet_id: meet_id_INT,
                     }
                 });
 
-                setMeetData(response.data);
+                setSeedingData(response.data);
             } catch (error) {
                 // ? back-end error
                 navigate("/errors/unknown");
             }
         }
-        retrieveMeetData();
+        retrieveMeetSeedingData();
     }, []);
 
     // * check if meet host
@@ -122,7 +85,12 @@ export function SeedingPage() {
                     }
                 });
 
-                setIsMeetHost(response.data.has_editing_access);
+                if (response.data.has_editing_access) {
+                    setIsMeetHost(true);
+                } else {
+                    // ? not meet host -> cannot view seeding page
+                    navigate(`/meets/${meet_id_INT}`);
+                }
             } catch (error) {
                 // ? back-end error
                 navigate("/errors/unknown");
@@ -138,113 +106,68 @@ export function SeedingPage() {
             data: [
                 { title: "HOME", route: "/" },
                 { title: "MEETS", route: "/meets" },
-                { title: `${meetData.fields.name.toUpperCase() || "Meet"}`, route: `/meets/${meet_id_INT}` }
+                { title: `${seedingData.meet_name.toUpperCase() || "MEET"}`, route: `/meets/${meet_id_INT}` },
+                { title: `MANAGE ${seedingData.meet_name.toUpperCase() || "MEET"} SEEDING`, route: `/meets/${meet_id_INT}/seeding` }
             ]
         })
-    }, [meetData]);
+    }, [seedingData]);
 
     // * update tab title
-    useEffect(() => setTabTitle(`${meetData.fields.name || "Meet"} | Swimeeter`), [meetData]);
+    useEffect(() => setTabTitle(`Manage ${seedingData.meet_name || "Meet"} Seeding | Swimeeter`), [seedingData]);
 
     // * create main content section refs
-    const informationRef = useRef<HTMLHeadingElement>(null);
-    const poolsRef = useRef<HTMLHeadingElement>(null);
-    const sessionsRef = useRef<HTMLHeadingElement>(null);
-    const eventsRef = useRef<HTMLHeadingElement>(null);
-    const teamsRef = useRef<HTMLHeadingElement>(null);
-    const swimmersRef = useRef<HTMLHeadingElement>(null);
-    const heatSheetRef = useRef<HTMLHeadingElement>(null);
+    const generationRef = useRef<HTMLHeadingElement>(null);
+    const overviewRef = useRef<HTMLHeadingElement>(null);
+
+    // * avoid rending page before meet host verification and seeding data retrieved
+    if (!isMeetHost || seedingData.meet_id === -1) {
+        return <></>;
+    }
 
     return (
         <>
-            <MeetContext.Provider value={{
-                meetData: meetData,
-                setMeetData: setMeetData,
-                isMeetHost: isMeetHost
+            <SeedingContext.Provider value={{
+                seedingData: seedingData,
+                setSeedingData: setSeedingData,
             }}>
                 <ContentPage
-                    title={meetData.fields.name}
+                    title={`Manage ${seedingData.meet_name || "Meet"} Seeding`}
                     primaryContent={[
                         {
-                            heading: "Information",
-                            icon: "CIRCLE_PIN",
-                            ref: informationRef,
+                            heading: "Generate seeding",
+                            icon: "WHEEL_NUT",
+                            ref: generationRef,
                             content: (
                                 <>
-                                    <MeetEditingForm />
+                                    <SeedingGenerationForm />
                                 </>
                             )
                         },
                         {
-                            heading: "Pools",
-                            icon: "BIG_WATER_DROP",
-                            ref: poolsRef,
+                            heading: "Seeding overview",
+                            icon: "EARTH_GLOBE",
+                            ref: overviewRef,
                             content: (
                                 <>
-                                    <MeetPoolsTable />
+                                    <SeedingOverviewTable />
                                 </>
                             )
-                        },
-                        {
-                            heading: "Sessions",
-                            icon: "CALENDAR",
-                            ref: sessionsRef,
-                            content: (
-                                <>
-                                    <MeetSessionsTable />
-                                </>
-                            )
-                        },
-                        {
-                            heading: "Events",
-                            icon: "TROPHY_CUP",
-                            ref: eventsRef,
-                            content: (
-                                <>
-                                    <MeetEventsTable />
-                                </>
-                            )
-                        },
-                        {
-                            heading: "Teams",
-                            icon: "TWO_USERS",
-                            ref: teamsRef,
-                            content: (
-                                <>
-                                    <MeetTeamsTable />
-                                </>
-                            )
-                        },
-                        {
-                            heading: "Swimmers",
-                            icon: "SWIMMER",
-                            ref: swimmersRef,
-                            content: (
-                                <>
-                                    <MeetSwimmersTable />
-                                </>
-                            )
-                        },
-                        {
-                            heading: "Heat Sheet",
-                            icon: "CLIP_BOARD",
-                            ref: heatSheetRef,
-                            content: (
-                                <>
-                                    <MeetHeatSheetTable />
-                                </>
-                            )
-                        },
+                        }
                     ]}
                     secondaryContent={[
                         <>
                             <SideBarText>
-                                Specific meet entries can seen by viewing this meet's sessions, events, swimmers, and more.
+                                Heat sheet seeding can be generated for a specific event, a whole session, or an entire meet all at once using the seeding generator.
+                            </SideBarText>
+                        </>,
+                        <>
+                            <SideBarText>
+                                Modifying the meet's details, such as the meet's events, swimmers, and entries, may cause some events' seeding to be invalidated and deleted.
                             </SideBarText>
                         </>
                     ]}
                 />
-            </MeetContext.Provider>
+            </SeedingContext.Provider>
         </>
     )
 }

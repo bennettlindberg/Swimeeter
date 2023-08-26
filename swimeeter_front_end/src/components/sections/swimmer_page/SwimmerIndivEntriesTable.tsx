@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { SwimmerContext } from "../../pages/swimmers/SwimmerPage.tsx";
 import { Swimmer, IndividualEntry } from "../../utilities/helpers/modelTypes.ts";
-import { generateCompetitorsString } from "../../utilities/helpers/nameGenerators.ts";
+import { generateEventName, generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -24,10 +24,10 @@ export function SwimmerIndivEntriesTable() {
     function tableRowGenerator(item: IndividualEntry) {
         return (
             <TableRow handleClick={() => navigate(`/meets/${swimmerData.fields.meet.pk}/individual_entries/${item.pk}`)} entries={[
-                `${item.fields.event.fields.distance}`,
-                item.fields.event.fields.stroke,
-                generateCompetitorsString(item.fields.event.fields.competing_gender, item.fields.event.fields.competing_min_age, item.fields.event.fields.competing_max_age),
-                item.fields.event.fields.stage
+                generateEventName(item.fields.event),
+                "" + (item.fields.heat_number || "N/A"),
+                "" + (item.fields.lane_number || "N/A"),
+                generateSeedTimeString(item.fields.seed_time)
             ]} />
         )
     }
@@ -51,7 +51,7 @@ export function SwimmerIndivEntriesTable() {
                 <col span={1} className="w-auto" />
             ]}
             tableHeaderTitles={[
-                "Distance", "Stroke", "Competitors", "Stage"
+                "Event", "Heat", "Lane", "Seed Time"
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no individual entries were found."

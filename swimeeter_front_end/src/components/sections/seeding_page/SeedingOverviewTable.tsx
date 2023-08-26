@@ -1,59 +1,30 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
-import { Meet } from "../../utilities/helpers/modelTypes.ts";
-import { MeetHeatSheet } from "../../utilities/helpers/heatSheetTypes.ts";
-import { MeetContext } from "../../pages/meets/MeetPage.tsx";
+import { OverviewHeatSheet } from "../../utilities/helpers/heatSheetTypes.ts";
+import { SeedingContext } from "../../pages/seeding/SeedingPage.tsx";
 import { generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
-import { PageButton } from "../../utilities/general/PageButton";
 import { HeatSheetHeader } from "../../utilities/heat_sheets/HeatSheetHeader";
 import { HeatSheetDivider } from "../../utilities/heat_sheets/HeatSheetDivider.tsx";
 import { HeatSheetHeatHeader } from "../../utilities/heat_sheets/HeatSheetHeatHeader.tsx";
 import { HeatSheetLaneEntry } from "../../utilities/heat_sheets/HeatSheetLaneEntry.tsx";
 import { HeatSheetText } from "../../utilities/heat_sheets/HeatSheetText.tsx";
+import { SeedingValidIndicator } from "../../utilities/heat_sheets/SeedingValidIndicator.tsx";
 
 // ~ component
-export function MeetHeatSheetTable() {
+export function SeedingOverviewTable() {
     // * initialize context, state, and navigation
-    const { meetData, isMeetHost }: { meetData: Meet, isMeetHost: boolean } = useContext(MeetContext);
-    const [seedingData, setSeedingData] = useState<MeetHeatSheet | null>(null);
+    const { seedingData }: { seedingData: OverviewHeatSheet } = useContext(SeedingContext);
     const navigate = useNavigate();
-
-    // * define seeding data loader
-    async function loadSeedingData() {
-        // @ make call to back-end for seeding data
-        try {
-            const response = await axios.get(
-                "/api/v1/heat_sheets/",
-                {
-                    params: {
-                        specific_to: "meet",
-                        meet_id: meetData.pk
-                    }
-                }
-            );
-
-            setSeedingData(response.data);
-        } catch {
-            // ? error retrieving seeding data
-            navigate("/errors/unknown");
-        }
-    }
 
     return (
         <>
-            <div>
-                <div className="flex flex-row gap-x-2 justify-start items-end">
-                    {!seedingData && <PageButton color="primary" text="Load heat sheet" icon="LIST_DOWN" handleClick={loadSeedingData} />}
-                    {isMeetHost && <PageButton color="green" text="Manage meet seeding" icon="WHEEL_NUT" handleClick={() => navigate(`/meets/${meetData.pk}/seeding`)} />}
-                </div>
-            </div>
-            {seedingData &&
+            {seedingData.meet_id !== -1 &&
                 <HeatSheetHeader
                     color="primary"
                     title={seedingData.meet_name + " Heat Sheet"}
+                    indicator={<SeedingValidIndicator valid={seedingData.meet_seeding_full}/>}
                 >
                     {
                         seedingData.sessions_data.length > 0
@@ -61,6 +32,7 @@ export function MeetHeatSheetTable() {
                                 return <HeatSheetDivider
                                     color="purple"
                                     title={"Session #" + session_data.session_number + ": " + session_data.session_name}
+                                    indicator={<SeedingValidIndicator valid={session_data.session_seeding_full}/>}
                                 >
                                     {
                                         session_data.events_data.length > 0
@@ -68,6 +40,7 @@ export function MeetHeatSheetTable() {
                                                 return <HeatSheetDivider
                                                     color="orange"
                                                     title={"Event #" + event_data.event_number + ": " + event_data.event_name}
+                                                    indicator={<SeedingValidIndicator valid={event_data.heats_data ? true : false}/>}
                                                 >
                                                     {
                                                         event_data.heats_data
@@ -92,7 +65,7 @@ export function MeetHeatSheetTable() {
                                                                     </HeatSheetDivider>
                                                                 })
                                                                 : <HeatSheetText text="This event has zero heats." />
-                                                            : <HeatSheetText text="Sorry, no seeding exists yet for this event." />
+                                                            : <HeatSheetText text="No seeding exists for this event." />
                                                     }
                                                 </HeatSheetDivider>
                                             })

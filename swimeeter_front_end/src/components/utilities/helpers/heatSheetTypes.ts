@@ -30,6 +30,19 @@ type SessionData = {
     events_data: EventData[]
 }
 
+export type OverviewHeatSheet = {
+    meet_id: number,
+    meet_name: string,
+    meet_seeding_full: boolean,
+    sessions_data: {
+        session_id: number,
+        session_name: string,
+        session_number: number,
+        session_seeding_full: boolean,
+        events_data: EventData[]
+    }[]
+}
+
 export type MeetHeatSheet = {
     meet_id: number,
     meet_name: string,

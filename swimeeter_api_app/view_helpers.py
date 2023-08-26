@@ -964,6 +964,78 @@ def get_seeding_data(model_type, model_object):
         session_number_map = {}
 
         match (model_type):
+            case "Overview":
+                session_number_map = generate_session_number_map(model_object)
+
+                seeding_data = {
+                    "meet_id": model_object.pk,
+                    "meet_name": model_object.name,
+                    "meet_seeding_full": True,
+                    "sessions_data": [],
+                }
+
+                sessions_list = list(
+                    Session.objects.filter(meet_id=model_object.pk).order_by(
+                        "begin_time", "end_time", "name"
+                    )
+                )
+
+                meet_seeding_full = True
+                for session in sessions_list:
+                    events_list = list(
+                        Event.objects.filter(session_id=session.pk).order_by(
+                            "order_in_session"
+                        )
+                    )
+
+                    session_seeding_full = True
+                    events_data = []
+                    for event in events_list:
+                        if event.total_heats == None:
+                            session_seeding_full = False
+                            events_data.append(
+                                {
+                                    "event_id": event.pk,
+                                    "event_name": get_event_name(event),
+                                    "event_number": event.order_in_session,
+                                    "event_is_relay": event.is_relay,
+                                    "heats_data": None,
+                                }
+                            )
+                            continue
+
+                        num_heats = event.total_heats
+                        heats_data = []
+                        for i in range(1, num_heats + 1):
+                            heats_data.append(get_heat_seeding_data(event, i))
+
+                        events_data.append(
+                            {
+                                "event_id": event.pk,
+                                "event_name": get_event_name(event),
+                                "event_number": event.order_in_session,
+                                "event_is_relay": event.is_relay,
+                                "heats_data": [],
+                            }
+                        )
+
+                    if session_seeding_full == False:
+                        meet_seeding_full = False
+
+                    seeding_data["sessions_data"].append(
+                        {
+                            "session_id": session.pk,
+                            "session_name": session.name,
+                            "session_number": session_number_map[session.pk],
+                            "session_seeding_full": session_seeding_full,
+                            "events_data": events_data,
+                        }
+                    )
+
+                seeding_data["meet_seeding_full"] = meet_seeding_full
+                
+                return seeding_data
+            
             case "Meet":
                 session_number_map = generate_session_number_map(model_object)
 

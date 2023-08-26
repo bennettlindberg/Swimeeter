@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { TeamContext } from "../../pages/teams/TeamPage.tsx";
 import { Team, IndividualEntry } from "../../utilities/helpers/modelTypes.ts";
-import { generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
+import { generateEventName, generateSeedTimeString, generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -24,11 +24,11 @@ export function TeamIndivEntriesTable() {
     function tableRowGenerator(item: IndividualEntry) {
         return (
             <TableRow handleClick={() => navigate(`/meets/${teamData.fields.meet.pk}/individual_entries/${item.pk}`)} entries={[
+                generateEventName(item.fields.event),
                 generateSwimmerName(item.fields.swimmer),
-                `${item.fields.swimmer.fields.age}`,
-                item.fields.swimmer.fields.gender,
-                `${item.fields.event.fields.distance}`,
-                item.fields.event.fields.stroke
+                "" + (item.fields.heat_number || "N/A"),
+                "" + (item.fields.lane_number || "N/A"),
+                generateSeedTimeString(item.fields.seed_time)
             ]} />
         )
     }
@@ -53,7 +53,7 @@ export function TeamIndivEntriesTable() {
                 <col span={1} className="w-auto" />
             ]}
             tableHeaderTitles={[
-                "Name", "Age", "Gender", "Distance", "Stroke"
+                "Event", "Swimmer", "Heat", "Lane", "Seed Time"
             ]}
             tableRowGenerator={tableRowGenerator}
             noneFoundText="Sorry, no individual entries were found."

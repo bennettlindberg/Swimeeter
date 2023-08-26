@@ -171,7 +171,7 @@ class Event_view(APIView):
                 event_type = vh.get_query_param(request, "event_type")
                 # ? no "event_type" param passed
                 if isinstance(event_type, str):
-                    if event_type != "individual" and event_type != "relay":
+                    if event_type != "individual" and event_type != "relay" and event_type != "both":
                         return Response(
                             "invalid event_type specification",
                             status=status.HTTP_400_BAD_REQUEST,

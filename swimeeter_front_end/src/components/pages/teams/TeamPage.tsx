@@ -223,7 +223,7 @@ export function TeamPage() {
                     secondaryContent={[
                         <>
                             <SideBarText>
-                                All swimmers must be associated with a team. To allow for unattached swimmers, you can add an "unattached" team.
+                                All swimmers must be associated with a team. To create unattached swimmers, first add an "unattached" team and assign the unattached swimmers to said team.
                             </SideBarText>
                         </>
                     ]}
