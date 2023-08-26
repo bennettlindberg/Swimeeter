@@ -1,16 +1,25 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 import { AppContext, UserState } from "../../../App";
+import { WaveContext } from "./WaveContainer";
 
 export function WaveSVG({ size }: { size: "SMALL" | "MEDIUM" | "LARGE" }) {
     // * initialize context
     const { userState }: { userState: UserState } = useContext(AppContext);
+    const { animations, setAnimations } = useContext(WaveContext);
+
+    // * useEffect to restart animations on resize
+    useEffect(() => {
+        if (!animations) {
+            setAnimations(true);
+        }
+    }, [animations]);
 
     // $ get SVG by size
     switch (size) {
         case "SMALL":
             return (
-                <svg className={userState.preferences.motion_safe ? "motion-safe:animate-translate_sm" : ""} width="200" height="8">
+                <svg className={userState.preferences.motion_safe && animations ? "motion-safe:animate-translate_sm" : ""} width="200" height="8">
                     <rect className="fill-sky-400 dark:fill-blue-500" mask="url(#sm-ellipse-mask)" width="200" height="4" x="0" y="0" />
                     <ellipse className="fill-sky-400 dark:fill-blue-500" cx="150" cy="3.1" rx="50" ry="4" />
                     <defs>
@@ -24,7 +33,7 @@ export function WaveSVG({ size }: { size: "SMALL" | "MEDIUM" | "LARGE" }) {
 
         case "MEDIUM":
             return (
-                <svg className={userState.preferences.motion_safe ? "motion-safe:animate-translate_md" : ""} width="250" height="14">
+                <svg className={userState.preferences.motion_safe && animations ? "motion-safe:animate-translate_md" : ""} width="250" height="14">
                     <rect className="fill-sky-300 dark:fill-blue-600" mask="url(#md-ellipse-mask)" width="250" height="7" x="0" y="0" />
                     <ellipse className="fill-sky-300 dark:fill-blue-600" cx="187.5" cy="5.75" rx="62.5" ry="7" />
                     <defs>
@@ -38,7 +47,7 @@ export function WaveSVG({ size }: { size: "SMALL" | "MEDIUM" | "LARGE" }) {
 
         case "LARGE":
             return (
-                <svg className={userState.preferences.motion_safe ? "motion-safe:animate-translate_lg" : ""} width="300" height="20">
+                <svg className={userState.preferences.motion_safe && animations ? "motion-safe:animate-translate_lg" : ""} width="300" height="20">
                     <rect className="fill-sky-200 dark:fill-blue-700" mask="url(#lg-ellipse-mask)" width="300" height="10" x="0" y="0" />
                     <ellipse className="fill-sky-200 dark:fill-blue-700" cx="225" cy="8.5" rx="75" ry="10" />
                     <defs>
