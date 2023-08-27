@@ -23,10 +23,21 @@ export function ContentPage({
 }) {
     // * initialize state variables
     const [containerHeight, setContainerHeight] = useState<number>(window.innerHeight);
+    const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
     const [selectedSection, setSelectedSection] = useState<string>(primaryContent[0].heading || "none");
     const contentRef = useRef<HTMLDivElement>(null);
 
-    // * determine height to reach bottom of page (to support scrollTo)
+    // * determine height to reach bottom of page (to support scrollTo) and set width state (for responsiveness)
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        window.addEventListener("resize", () => {
+            const viewportHeight = window.innerHeight;
+            const elementTop = contentRef.current?.offsetTop || 0;
+            setContainerHeight(viewportHeight - elementTop);
+            setWindowWidth(window.innerWidth);
+        });
+    }, []);
+
     useEffect(() => {
         const viewportHeight = window.innerHeight;
         const elementTop = contentRef.current?.offsetTop || 0;
@@ -60,8 +71,11 @@ export function ContentPage({
                 heading={contentObj.heading}
                 isSelected={selectedSection === contentObj.heading}
                 handleClick={() => {
-                    contentObj.ref.current?.scrollIntoView({ behavior: "smooth" });
-                    // setSelectedSection(contentObj.heading);
+                    if (windowWidth >= 1024) {
+                        contentObj.ref.current?.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                        contentObj.ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
                 }}
             />
         );
@@ -106,9 +120,9 @@ export function ContentPage({
     return (
         <>
             <div className="flex flex-row justify-center" ref={contentRef} style={
-                window.innerWidth >= 1024
-                ? { height: `${containerHeight}px` }
-                : undefined
+                windowWidth >= 1024
+                    ? { height: `${containerHeight}px` }
+                    : undefined
             }>
                 <div className="grid grid-rows-[max-content_1fr] grid-cols-1 lg:grid-cols-4 w-[95%] gap-y-5 gap-x-[2.5%]">
                     <h1 className="col-span-1 lg:col-span-4 col-start-1 row-span-1 row-start-1 text-4xl lg:text-5xl font-semibold">

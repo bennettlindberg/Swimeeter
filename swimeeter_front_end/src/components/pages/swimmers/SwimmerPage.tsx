@@ -14,6 +14,7 @@ import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 import { SwimmerEditingForm } from "../../sections/swimmer_page/SwimmerEditingForm.tsx";
 import { SwimmerIndivEntriesTable } from "../../sections/swimmer_page/SwimmerIndivEntriesTable.tsx";
 import { SwimmerRelayEntriesTable } from "../../sections/swimmer_page/SwimmerRelayEntriesTable.tsx";
+import { SwimmerHeatSheetTable } from "../../sections/swimmer_page/SwimmerHeatSheetTable.tsx";
 
 // * create swimmer context
 export const SwimmerContext = createContext<{
@@ -195,6 +196,7 @@ export function SwimmerPage() {
     const informationRef = useRef<HTMLHeadingElement>(null);
     const indivEntriesRef = useRef<HTMLHeadingElement>(null);
     const relayEntriesRef = useRef<HTMLHeadingElement>(null);
+    const heatSheetRef = useRef<HTMLHeadingElement>(null);
 
     return (
         <>
@@ -236,6 +238,16 @@ export function SwimmerPage() {
                                 </>
                             )
                         },
+                        {
+                            heading: "Heat Sheet",
+                            icon: "CLIP_BOARD",
+                            ref: heatSheetRef,
+                            content: (
+                                <>
+                                    <SwimmerHeatSheetTable />
+                                </>
+                            )
+                        }
                     ]}
                     secondaryContent={[
                         <>

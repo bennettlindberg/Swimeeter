@@ -624,6 +624,8 @@ class Individual_entry_view(APIView):
             )
 
     def put(self, request):
+        seeding_needs_invalidation = False
+
         individual_entry_id = vh.get_query_param(request, "individual_entry_id")
         # ? no "individual_entry_id" param passed
         if isinstance(individual_entry_id, Response):
@@ -645,7 +647,6 @@ class Individual_entry_view(APIView):
         if isinstance(check_is_host, Response):
             return check_is_host
 
-        seeding_needs_invalidation = False
         event_changed = False
         original_event_id = -1
         # * update existing individual_entry

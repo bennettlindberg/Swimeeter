@@ -2,9 +2,9 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { Meet } from "../../utilities/helpers/modelTypes.ts";
-import { MeetHeatSheet } from "../../utilities/helpers/heatSheetTypes.ts";
-import { MeetContext } from "../../pages/meets/MeetPage.tsx";
+import { Team } from "../../utilities/helpers/modelTypes.ts";
+import { TeamHeatSheet } from "../../utilities/helpers/heatSheetTypes.ts";
+import { TeamContext } from "../../pages/teams/TeamPage.tsx";
 import { generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { PageButton } from "../../utilities/general/PageButton";
@@ -15,10 +15,10 @@ import { HeatSheetLaneEntry } from "../../utilities/heat_sheets/HeatSheetLaneEnt
 import { HeatSheetText } from "../../utilities/heat_sheets/HeatSheetText.tsx";
 
 // ~ component
-export function MeetHeatSheetTable() {
+export function TeamHeatSheetTable() {
     // * initialize context, state, and navigation
-    const { meetData, isMeetHost }: { meetData: Meet, isMeetHost: boolean } = useContext(MeetContext);
-    const [seedingData, setSeedingData] = useState<MeetHeatSheet | null>(null);
+    const { teamData, isMeetHost }: { teamData: Team, isMeetHost: boolean } = useContext(TeamContext);
+    const [seedingData, setSeedingData] = useState<TeamHeatSheet | null>(null);
     const navigate = useNavigate();
 
     // * define seeding data loader
@@ -29,8 +29,8 @@ export function MeetHeatSheetTable() {
                 "/api/v1/heat_sheets/",
                 {
                     params: {
-                        specific_to: "meet",
-                        meet_id: meetData.pk
+                        specific_to: "team",
+                        team_id: teamData.pk
                     }
                 }
             );
@@ -47,13 +47,13 @@ export function MeetHeatSheetTable() {
             <div>
                 <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 justify-start lg:items-end">
                     {!seedingData && <PageButton color="primary" text="Load heat sheet" icon="LIST_DOWN" handleClick={loadSeedingData} />}
-                    {isMeetHost && <PageButton color="green" text="Manage meet seeding" icon="WHEEL_NUT" handleClick={() => navigate(`/meets/${meetData.pk}/seeding`)} />}
+                    {isMeetHost && <PageButton color="green" text="Manage meet seeding" icon="WHEEL_NUT" handleClick={() => navigate(`/meets/${teamData.fields.meet.pk}/seeding`)} />}
                 </div>
             </div>
             {seedingData &&
                 <HeatSheetHeader
                     color="primary"
-                    title={seedingData.meet_name + " Heat Sheet"}
+                    title={seedingData.team_name + " Heat Sheet"}
                 >
                     {
                         seedingData.sessions_data.length > 0

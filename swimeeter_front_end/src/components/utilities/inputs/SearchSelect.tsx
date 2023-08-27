@@ -105,7 +105,7 @@ export function SearchSelect({
     }, [inputText]);
 
     // * update state if DOM doesn't change
-    useEffect(() => setInputText(defaultText || ""), [defaultText])
+    useEffect(() => setInputText(defaultText || ""), [defaultText]);
 
     return (
         <>

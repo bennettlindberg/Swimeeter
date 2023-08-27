@@ -654,9 +654,9 @@ export function DataTable({
     return (
         <>
             <div className="flex flex-col gap-y-2">
-                <div className="flex flex-row gap-x-2 justify-between items-end">
+                <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 lg:justify-between justify-start lg:items-end">
                     <FilterForm type={searchType} idPrefix={idPrefix} handleSearch={handleSearchSubmit} />
-                    <div className="flex flex-col gap-y-2 items-end flex-shrink-0">
+                    <div className="flex flex-col gap-y-2 lg:items-end flex-shrink-0">
                         {tableBarItems}
                         {isMeetHost && tableBarHostItems}
                     </div>

@@ -201,7 +201,7 @@ class Heat_sheet_view(APIView):
                     )
 
             # $ ...relay entry
-            case "entry":
+            case "relay_entry":
                 entry_id = vh.get_query_param(request, "entry_id")
                 # ? no "entry_id" param passed
                 if isinstance(entry_id, Response):
@@ -232,7 +232,7 @@ class Heat_sheet_view(APIView):
                     )
                 
             # $ ...individual entry
-            case "entry":
+            case "individual_entry":
                 entry_id = vh.get_query_param(request, "entry_id")
                 # ? no "entry_id" param passed
                 if isinstance(entry_id, Response):

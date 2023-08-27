@@ -659,6 +659,8 @@ class Relay_entry_view(APIView):
             )
 
     def put(self, request):
+        seeding_needs_invalidation = False
+
         relay_entry_id = vh.get_query_param(request, "relay_entry_id")
         # ? no "relay_entry_id" param passed
         if isinstance(relay_entry_id, Response):
@@ -690,6 +692,11 @@ class Relay_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        original_swimmer_ids = [swimmer.pk for swimmer in list(relay_entry_of_id.swimmers.all())]
+        if (sorted(original_swimmer_ids) != sorted(swimmer_ids)):
+            # * swimmers changed
+            seeding_needs_invalidation = True
 
         event_changed = False
         original_event = relay_entry_of_id.event
@@ -775,8 +782,6 @@ class Relay_entry_view(APIView):
                     "new model is a duplicate; new model not added",
                     status=status.HTTP_200_OK,
                 )
-
-        seeding_needs_invalidation = False
 
         # * update existing relay_entry
         try:

@@ -1630,7 +1630,7 @@ export function FilterForm({ idPrefix, type, handleSearch }: {
     }, []);
 
     return (
-        <div className="flex flex-col gap-y-2 max-w-[75%]">
+        <div className="flex flex-col gap-y-2 lg:max-w-[75%]">
             {searchInfoShown && filtersShown && <InfoPane info={searchInfo} handleXClick={() => setSearchInfoShown(false)} />}
             <div className="flex flex-row items-center gap-x-2">
                 <PageButton color="purple" icon={filtersShown ? "EYE_CLOSED" : "EYE_OPEN"} text={filtersShown ? "Hide filters" : "Show filters"} handleClick={() => { setFiltersShown(!filtersShown) }} />

@@ -181,7 +181,7 @@ const deletionErrorPossibilities = [
 ];
 
 // ~ component
-export function RelayEntryEditingForm({ meet_id_INT }: {meet_id_INT: number}) {
+export function RelayEntryEditingForm({ meet_id_INT }: { meet_id_INT: number }) {
     // * initialize context
     const { relayEntryData, setRelayEntryData, isMeetHost }: {
         relayEntryData: RelayEntry,
@@ -469,13 +469,13 @@ export function RelayEntryEditingForm({ meet_id_INT }: {meet_id_INT: number}) {
                 }
             );
 
-            setRelayEntryData(response.data);
-
             formDispatch({
                 type: "SAVE_SUCCESS"
             });
 
-            navigate(`/meets/${meet_id_INT}/relay_entries/${response.data.pk}`);
+            setRelayEntryData(response.data);
+
+            navigate("/reroute", { state: { forward_route: `/meets/${meet_id_INT}/relay_entries/${response.data.pk}` } });
         } catch (error) {
             // ? back-end error
             if (axios.isAxiosError(error)) {
@@ -598,6 +598,8 @@ export function RelayEntryEditingForm({ meet_id_INT }: {meet_id_INT: number}) {
         formDispatch({
             type: "CANCEL_CLICKED"
         })
+
+        navigate("/reroute", { state: { forward_route: `/meets/${meet_id_INT}/relay_entries/${relayEntryData.pk}` } });
     }
 
     function handleEdit() {

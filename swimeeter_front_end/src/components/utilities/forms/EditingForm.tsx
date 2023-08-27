@@ -108,6 +108,7 @@ function formReducer(state: FormState, action: FormAction) {
 
 // ~ component
 export function EditingForm({
+    formReroutePath,
     modelData,
     setModelData,
     isMeetHost,
@@ -129,6 +130,7 @@ export function EditingForm({
     deletionQueryParam,
     deletionForwardRoute
 }: {
+    formReroutePath?: string,
     modelData: any,
     setModelData: React.Dispatch<React.SetStateAction<any>>,
     isMeetHost: boolean,
@@ -379,6 +381,10 @@ export function EditingForm({
             formDispatch({
                 type: "SAVE_SUCCESS"
             });
+
+            if (formReroutePath) {
+                navigate("/reroute", { state: { forward_route: formReroutePath } });
+            }
         } catch (error) {
             // ? back-end error
             if (axios.isAxiosError(error)) {
@@ -491,6 +497,10 @@ export function EditingForm({
         formDispatch({
             type: "CANCEL_CLICKED"
         })
+
+        if (formReroutePath) {
+            navigate("/reroute", { state: { forward_route: formReroutePath } });
+        }
     }
 
     function handleEdit() {

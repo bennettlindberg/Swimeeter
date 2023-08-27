@@ -14,6 +14,7 @@ import { TeamEditingForm } from "../../sections/team_page/TeamEditingForm.tsx";
 import { TeamSwimmersTable } from "../../sections/team_page/TeamSwimmersTable.tsx";
 import { TeamIndivEntriesTable } from "../../sections/team_page/TeamIndivEntriesTable.tsx";
 import { TeamRelayEntriesTable } from "../../sections/team_page/TeamRelayEntriesTable.tsx";
+import { TeamHeatSheetTable } from "../../sections/team_page/TeamHeatSheetTable.tsx";
 
 // * create team context
 export const TeamContext = createContext<{
@@ -168,6 +169,7 @@ export function TeamPage() {
     const swimmersRef = useRef<HTMLHeadingElement>(null);
     const indivEntriesRef = useRef<HTMLHeadingElement>(null);
     const relayEntriesRef = useRef<HTMLHeadingElement>(null);
+    const heatSheetRef = useRef<HTMLHeadingElement>(null);
 
     return (
         <>
@@ -219,6 +221,16 @@ export function TeamPage() {
                                 </>
                             )
                         },
+                        {
+                            heading: "Heat Sheet",
+                            icon: "CLIP_BOARD",
+                            ref: heatSheetRef,
+                            content: (
+                                <>
+                                    <TeamHeatSheetTable />
+                                </>
+                            )
+                        }
                     ]}
                     secondaryContent={[
                         <>

@@ -134,7 +134,7 @@ export function SeedingPage() {
                     title={`Manage ${seedingData.meet_name || "Meet"} Seeding`}
                     primaryContent={[
                         {
-                            heading: "Generate seeding",
+                            heading: "Generation Form",
                             icon: "WHEEL_NUT",
                             ref: generationRef,
                             content: (
@@ -144,7 +144,7 @@ export function SeedingPage() {
                             )
                         },
                         {
-                            heading: "Seeding overview",
+                            heading: "Seeding Overview",
                             icon: "EARTH_GLOBE",
                             ref: overviewRef,
                             content: (

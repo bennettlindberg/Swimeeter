@@ -48,6 +48,7 @@ import { SeedingPage } from "./components/pages/seeding/SeedingPage.tsx";
 import { Error404Redirect } from "./components/pages/errors/Error404Redirect.tsx";
 import { Error404Page } from "./components/pages/errors/Error404Page.tsx";
 import { ErrorUnknownPage } from "./components/pages/errors/ErrorUnknownPage.tsx";
+import { Rerouter } from "./components/utilities/general/Rerouter.tsx";
 
 const router = createBrowserRouter([
     {
@@ -176,6 +177,12 @@ const router = createBrowserRouter([
                 path: "errors/unknown",
                 element: <ErrorUnknownPage />,
             },
+
+            // * REROUTER
+            {
+                path: "reroute",
+                element: <Rerouter />,
+            }
         ],
     },
 ]);

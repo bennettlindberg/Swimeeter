@@ -12,6 +12,7 @@ import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
 import { SessionEditingForm } from "../../sections/session_page/SessionEditingForm.tsx";
 import { SessionEventsTable } from "../../sections/session_page/SessionEventsTable.tsx";
+import { SessionHeatSheetTable } from "../../sections/session_page/SessionHeatSheetTable.tsx";
 
 // import { SessionEditingForm } from "../../sections/session_page/SessionEditingForm.tsx";
 
@@ -200,6 +201,7 @@ export function SessionPage() {
     // * create main content section refs
     const informationRef = useRef<HTMLHeadingElement>(null);
     const eventsRef = useRef<HTMLHeadingElement>(null);
+    const heatSheetRef = useRef<HTMLHeadingElement>(null);
 
     return (
         <>
@@ -231,6 +233,16 @@ export function SessionPage() {
                                 </>
                             )
                         },
+                        {
+                            heading: "Heat Sheet",
+                            icon: "CLIP_BOARD",
+                            ref: heatSheetRef,
+                            content: (
+                                <>
+                                    <SessionHeatSheetTable />
+                                </>
+                            )
+                        }
                     ]}
                     secondaryContent={[
                         <>

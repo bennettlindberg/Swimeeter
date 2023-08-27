@@ -11,19 +11,8 @@ import { AppContext, UserState } from "../../../App.tsx";
 import { UserAction } from "../../../App.tsx";
 import axios from "axios";
 
-// ~ component
-export function NavBar() {
-    // * initialize context, navigation, an state
-    const { userState, userDispatch, interpretedScreenMode }: {
-        userState: UserState,
-        userDispatch: React.Dispatch<UserAction>,
-        interpretedScreenMode: "light" | "dark"
-    } = useContext(AppContext);
-    const navigate = useNavigate();
-    const [selectedNavItem, setSelectedNavItem] = useState<"none" | "screen_mode" | "miscellaneous">("none");
-    const [navbarContent, setNavbarContent] = useState<JSX.Element>(<></>);
-
-    // * determine account name
+// * define account name retriever
+function getAccountName(userState: UserState) {
     let accountName = "GUEST";
     if (userState.logged_in) {
         accountName = "";
@@ -44,6 +33,21 @@ export function NavBar() {
             accountName += " " + userState.profile?.suffix.toUpperCase();
         }
     }
+    return accountName;
+}
+
+// ~ component
+export function NavBar() {
+    // * initialize context, navigation, an state
+    const { userState, userDispatch, interpretedScreenMode }: {
+        userState: UserState,
+        userDispatch: React.Dispatch<UserAction>,
+        interpretedScreenMode: "light" | "dark"
+    } = useContext(AppContext);
+    const navigate = useNavigate();
+    const [selectedNavItem, setSelectedNavItem] = useState<"none" | "screen_mode" | "miscellaneous">("none");
+    const [navbarContent, setNavbarContent] = useState<JSX.Element>(<></>);
+    const [reloader, setReloader] = useState<boolean>(true); // exists to force account name to reload
 
     // * define nav bar handlers
     function handleLostFocus(event: any, nameForSelection: string) {
@@ -91,16 +95,17 @@ export function NavBar() {
     // * define window resize listener
     useEffect(() => {
         window.addEventListener("resize", () => {
-            setNavbarContent(getNavbarContent(window.innerWidth));
+            setReloader(reloader => !reloader);
         });
     }, []);
 
     // * reload navbar as needed
     useEffect(() => {
-        setNavbarContent(getNavbarContent(window.innerWidth));
-    }, [userState, interpretedScreenMode, selectedNavItem]);
+        const accountName = getAccountName(userState);
+        setNavbarContent(getNavbarContent(window.innerWidth, accountName));
+    }, [userState, interpretedScreenMode, selectedNavItem, reloader]);
 
-    function getNavbarContent(windowWidth: number) {
+    function getNavbarContent(windowWidth: number, accountName: string) {
         if (windowWidth < 400) {
             // * very small screen navbar
             return (
@@ -124,11 +129,11 @@ export function NavBar() {
                             <IconSVG icon="WIDGET_MENU" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[35px]" height="h-[35px]" />
                             <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
                                 <NavDropItem isSelected={false} handleClick={() => navigate("/")}>
-                                    <IconSVG icon="CIRCLE_BOOKMARK" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    <IconSVG icon="HOUSE" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     Home
                                 </NavDropItem>
                                 <NavDropItem isSelected={false} handleClick={() => navigate("/meets")}>
-                                    <IconSVG icon="FILE_FOLDER" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    <IconSVG icon="LIBRARY" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     Meets
                                 </NavDropItem>
                                 <NavDropItem isSelected={false} handleClick={() => navigate("/about")}>
@@ -186,11 +191,11 @@ export function NavBar() {
                             <IconSVG icon="WIDGET_MENU" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[40px]" height="h-[40px]" />
                             <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
                                 <NavDropItem isSelected={false} handleClick={() => navigate("/")}>
-                                    <IconSVG icon="CIRCLE_BOOKMARK" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    <IconSVG icon="HOUSE" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     Home
                                 </NavDropItem>
                                 <NavDropItem isSelected={false} handleClick={() => navigate("/meets")}>
-                                    <IconSVG icon="FILE_FOLDER" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    <IconSVG icon="LIBRARY" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     Meets
                                 </NavDropItem>
                                 <NavDropItem isSelected={false} handleClick={() => navigate("/about")}>
@@ -225,7 +230,7 @@ export function NavBar() {
                     </NavBarButton>
                 </>
             )
-        } else if (windowWidth < 900) {
+        } else if (windowWidth < 850) {
             // * medium screen navbar
             return (
                 <>
@@ -267,9 +272,21 @@ export function NavBar() {
                             : setSelectedNavItem("miscellaneous");
                     }} handleBlur={(event: any) => handleLostFocus(event, "miscellaneous")}>
                         <div className="flex flex-row items-center gap-x-1">
-                            <h2 className="text-2xl">{accountName}</h2>
+                            <IconSVG icon="CIRCLE_USER" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[30px]" height="h-[30px]" />
                             <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />
                             <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
+                                <NavDropItem isSelected={false} handleClick={() => navigate("/")}>
+                                    <IconSVG icon="HOUSE" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Home
+                                </NavDropItem>
+                                <NavDropItem isSelected={false} handleClick={() => navigate("/meets")}>
+                                    <IconSVG icon="LIBRARY" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Meets
+                                </NavDropItem>
+                                <NavDropItem isSelected={false} handleClick={() => navigate("/about")}>
+                                    <IconSVG icon="CIRCLE_INFO" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    About
+                                </NavDropItem>
                                 {
                                     userState.logged_in
                                         ? <>
@@ -298,7 +315,7 @@ export function NavBar() {
                     </NavBarButton>
                 </>
             )
-        } else {
+        } else if (windowWidth < 1100) {
             // * large screen navbar
             return (
                 <>
@@ -350,7 +367,90 @@ export function NavBar() {
                             : setSelectedNavItem("miscellaneous");
                     }} handleBlur={(event: any) => handleLostFocus(event, "miscellaneous")}>
                         <div className="flex flex-row items-center gap-x-1">
-                            <h2 className="text-2xl">{accountName}</h2>
+                            <IconSVG icon="CIRCLE_USER" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[30px]" height="h-[30px]" />
+                            <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />
+                            <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
+                                {
+                                    userState.logged_in
+                                        ? <>
+                                            <NavDropItem isSelected={false} handleClick={handleLogOut}>
+                                                <IconSVG icon="USER_MINUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                                Log out
+                                            </NavDropItem>
+                                        </>
+                                        : <>
+                                            <NavDropItem isSelected={false} handleClick={() => navigate("/log_in")}>
+                                                <IconSVG icon="USER_CHECK" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                                Log in
+                                            </NavDropItem>
+                                            <NavDropItem isSelected={false} handleClick={() => navigate("/sign_up")}>
+                                                <IconSVG icon="USER_PLUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                                Sign up
+                                            </NavDropItem>
+                                        </>
+                                }
+                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
+                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Settings
+                                </NavDropItem>
+                            </NavDropMenu>
+                        </div>
+                    </NavBarButton>
+                </>
+            )
+        } else {
+            // * very large screen navbar
+            return (
+                <>
+                    <div className="flex flex-row items-center gap-x-[10px]" onClick={() => navigate("/")}>
+                        <IconSVG icon="WATER_WAVES" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[50px]" height="h-[50px]" />
+                        <h1 className="font-extrabold italic text-4xl">SWIMEETER</h1>
+                    </div>
+
+                    <NavBarButton handleClick={() => navigate("/")}>
+                        HOME
+                    </NavBarButton>
+                    <NavBarButton handleClick={() => navigate("/meets")}>
+                        MEETS
+                    </NavBarButton>
+                    <NavBarButton handleClick={() => navigate("/about")}>
+                        ABOUT
+                    </NavBarButton>
+
+                    <div className="flex-auto"></div>
+
+                    <NavBarButton handleClick={() => {
+                        selectedNavItem === "screen_mode"
+                            ? setSelectedNavItem("none")
+                            : setSelectedNavItem("screen_mode");
+                    }} handleBlur={(event: any) => handleLostFocus(event, "screen_mode")}>
+                        <div className="flex flex-row items-center gap-x-1">
+                            <IconSVG icon={`${interpretedScreenMode == "dark" ? "MOON_STARS" : "SUN_SHINE"}`} color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[30px]" height="h-[30px]" />
+                            <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />
+                            <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="screen_mode">
+                                <NavDropItem isSelected={userState.preferences.screen_mode === "system"} handleClick={() => handleScreenModeChange("system")}>
+                                    <IconSVG icon="COMPUTER" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    System
+                                </NavDropItem>
+                                <NavDropItem isSelected={userState.preferences.screen_mode === "light"} handleClick={() => handleScreenModeChange("light")}>
+                                    <IconSVG icon="SUN_SHINE" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Light
+                                </NavDropItem>
+                                <NavDropItem isSelected={userState.preferences.screen_mode === "dark"} handleClick={() => handleScreenModeChange("dark")}>
+                                    <IconSVG icon="MOON_STARS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Dark
+                                </NavDropItem>
+                            </NavDropMenu>
+                        </div>
+                    </NavBarButton>
+
+                    <NavBarButton handleClick={() => {
+                        selectedNavItem === "miscellaneous"
+                            ? setSelectedNavItem("none")
+                            : setSelectedNavItem("miscellaneous");
+                    }} handleBlur={(event: any) => handleLostFocus(event, "miscellaneous")}>
+                        <div className="flex flex-row items-center gap-x-1">
+                            <h2 className="text-2xl max-w-sm overflow-hidden whitespace-nowrap">{accountName}</h2>
                             <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />
                             <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
                                 {

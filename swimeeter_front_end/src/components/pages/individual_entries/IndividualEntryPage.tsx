@@ -12,6 +12,7 @@ import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
 import { IndividualEntryEditingForm } from "../../sections/individual_entry_page/IndividualEntryEditingForm.tsx";
+import { IndivEntryHeatSheetTable } from "../../sections/individual_entry_page/IndivEntryHeatSheetTable.tsx";
 
 // * create individual_entry context
 export const IndividualEntryContext = createContext<{
@@ -245,6 +246,7 @@ export function IndividualEntryPage() {
 
     // * create main content section refs
     const informationRef = useRef<HTMLHeadingElement>(null);
+    const heatSheetRef = useRef<HTMLHeadingElement>(null);
 
     return (
         <>
@@ -266,6 +268,16 @@ export function IndividualEntryPage() {
                                 </>
                             )
                         },
+                        {
+                            heading: "Heat Sheet",
+                            icon: "CLIP_BOARD",
+                            ref: heatSheetRef,
+                            content: (
+                                <>
+                                    <IndivEntryHeatSheetTable />
+                                </>
+                            )
+                        }
                     ]}
                     secondaryContent={[
                         <>

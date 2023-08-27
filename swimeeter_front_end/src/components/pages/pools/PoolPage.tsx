@@ -12,6 +12,7 @@ import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
 import { PoolEditingForm } from "../../sections/pool_page/PoolEditingForm.tsx";
 import { PoolSessionsTable } from "../../sections/pool_page/PoolSessionsTable.tsx";
+import { PoolHeatSheetTable } from "../../sections/pool_page/PoolHeatSheetTable.tsx";
 
 // * create pool context
 export const PoolContext = createContext<{
@@ -178,6 +179,7 @@ export function PoolPage() {
     // * create main content section refs
     const informationRef = useRef<HTMLHeadingElement>(null);
     const sessionsRef = useRef<HTMLHeadingElement>(null);
+    const heatSheetRef = useRef<HTMLHeadingElement>(null);
 
     return (
         <>
@@ -209,6 +211,16 @@ export function PoolPage() {
                                 </>
                             )
                         },
+                        {
+                            heading: "Heat Sheet",
+                            icon: "CLIP_BOARD",
+                            ref: heatSheetRef,
+                            content: (
+                                <>
+                                    <PoolHeatSheetTable />
+                                </>
+                            )
+                        }
                     ]}
                     secondaryContent={[
                         <>

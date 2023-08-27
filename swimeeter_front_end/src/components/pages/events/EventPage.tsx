@@ -14,6 +14,7 @@ import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 import { EventEditingForm } from "../../sections/event_page/EventEditingForm.tsx";
 import { EventRelayEntriesTable } from "../../sections/event_page/EventRelayEntriesTable.tsx";
 import { EventIndivEntriesTable } from "../../sections/event_page/EventIndivEntriesTable.tsx";
+import { EventHeatSheetTable } from "../../sections/event_page/EventHeatSheetTable.tsx";
 
 // * create event context
 export const EventContext = createContext<{
@@ -186,6 +187,7 @@ export function EventPage() {
     // * create main content section refs
     const informationRef = useRef<HTMLHeadingElement>(null);
     const entriesRef = useRef<HTMLHeadingElement>(null);
+    const heatSheetRef = useRef<HTMLHeadingElement>(null);
 
     return (
         <>
@@ -220,6 +222,16 @@ export function EventPage() {
                                 </>
                             )
                         },
+                        {
+                            heading: "Heat Sheet",
+                            icon: "CLIP_BOARD",
+                            ref: heatSheetRef,
+                            content: (
+                                <>
+                                    <EventHeatSheetTable />
+                                </>
+                            )
+                        }
                     ]}
                     secondaryContent={[
                         <>

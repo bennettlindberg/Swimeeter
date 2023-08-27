@@ -25,6 +25,7 @@ export function IndividualEntryEditingForm() {
     return (
         <>
             <EditingForm
+                formReroutePath={`/meets/${individualEntryData.fields.swimmer.fields.meet.pk}/individual_entries/${individualEntryData.pk}`}
                 modelData={individualEntryData}
                 setModelData={setIndividualEntryData}
                 isMeetHost={isMeetHost}

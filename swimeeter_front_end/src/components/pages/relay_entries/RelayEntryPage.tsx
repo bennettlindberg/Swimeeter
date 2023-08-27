@@ -12,6 +12,7 @@ import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
 import { RelayEntryEditingForm } from "../../sections/relay_entry_page/RelayEntryEditingForm.tsx";
+import { RelayEntryHeatSheetTable } from "../../sections/relay_entry_page/RelayEntryHeatSheetTable.tsx";
 
 // * create relay_entry context
 export const RelayEntryContext = createContext<{
@@ -181,6 +182,7 @@ export function RelayEntryPage() {
 
     // * create main content section refs
     const informationRef = useRef<HTMLHeadingElement>(null);
+    const heatSheetRef = useRef<HTMLHeadingElement>(null);
 
     return (
         <>
@@ -202,6 +204,16 @@ export function RelayEntryPage() {
                                     <RelayEntryEditingForm meet_id_INT={meet_id_INT} />
                                 </>
                         },
+                        {
+                            heading: "Heat Sheet",
+                            icon: "CLIP_BOARD",
+                            ref: heatSheetRef,
+                            content: (
+                                <>
+                                    <RelayEntryHeatSheetTable />
+                                </>
+                            )
+                        }
                     ]}
                     secondaryContent={[
                         <>
