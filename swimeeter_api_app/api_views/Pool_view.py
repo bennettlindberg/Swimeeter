@@ -204,7 +204,7 @@ class Pool_view(APIView):
         if isinstance(pool_of_id, Response):
             return pool_of_id
 
-        check_is_host = vh.check_user_is_host(request, pool_of_id.host_id)
+        check_is_host = vh.check_user_is_host(request, pool_of_id.meet.host_id)
         # ? user is not meet host
         if isinstance(check_is_host, Response):
             return check_is_host

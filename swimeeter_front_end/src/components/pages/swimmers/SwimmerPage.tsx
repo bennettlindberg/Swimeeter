@@ -214,7 +214,7 @@ export function SwimmerPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <SwimmerEditingForm />
+                                    <SwimmerEditingForm scrollRef={informationRef}/>
                                 </>
                             )
                         },

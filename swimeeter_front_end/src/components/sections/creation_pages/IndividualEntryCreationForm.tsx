@@ -10,7 +10,7 @@ import { NeutralFormGroup } from "../../utilities/forms/NeutralFormGroup.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 
 // ~ component
-export function IndividualEntryCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
+export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: number, scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize id
     const idPrefix = useId();
 
@@ -32,6 +32,7 @@ export function IndividualEntryCreationForm({ meet_id_INT }: { meet_id_INT: numb
     return (
         <>
             <CreationForm
+                scrollRef={scrollRef}
                 formInputFields={[
                     {
                         title: "seed_time",

@@ -40,9 +40,6 @@ Swimeeter avoids constricting the user as they create their meets as much as pos
 ### Design
 Navigating around the Swimeeter site is made simple through the site's navbar and navigation tree. On larger screen sizes, the navbar displays buttons linking to the most highly-trafficked pages. Additionally, the site's horizontal navigation tree allows for quick movement within a given swim meet. Buttons are placed at the top of the site's main pages that scroll users directly to specific page sections, and Swimeeter supports a wide-range of screen sizes with its responsive design.
 
-## Examples
-
-
 ## Technologies
 Swimeeter was built using a collection of front-end and back-end technologies. On the front-end, Swimeeter was built using React JS, written in primarily in TypeScript, and styled using Tailwind CSS. Swimeeter's back-end was written in Python using the Django web framework, and PostgreSQL was used for the site's database management system. A more-extensive list of the technologies used to build the site is included below.
 

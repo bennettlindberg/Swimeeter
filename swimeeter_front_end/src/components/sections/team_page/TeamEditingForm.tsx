@@ -10,7 +10,7 @@ import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 
 // ~ component
-export function TeamEditingForm() {
+export function TeamEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { teamData, setTeamData, isMeetHost }: {
         teamData: Team,
@@ -22,6 +22,7 @@ export function TeamEditingForm() {
     return (
         <>
             <EditingForm
+                scrollRef={scrollRef}
                 modelData={teamData}
                 setModelData={setTeamData}
                 isMeetHost={isMeetHost}

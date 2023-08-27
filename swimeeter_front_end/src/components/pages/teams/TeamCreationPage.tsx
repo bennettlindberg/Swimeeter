@@ -82,7 +82,7 @@ export function TeamCreationPage() {
                         ref: createTeamRef,
                         content: (
                             <>
-                                <TeamCreationForm meet_id_INT={meet_id_INT}/>
+                                <TeamCreationForm meet_id_INT={meet_id_INT} scrollRef={createTeamRef}/>
                             </>
                         )
                     }

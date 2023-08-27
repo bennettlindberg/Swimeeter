@@ -14,7 +14,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function MeetEditingForm() {
+export function MeetEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { meetData, setMeetData, isMeetHost }: {
         meetData: Meet,
@@ -26,6 +26,7 @@ export function MeetEditingForm() {
     return (
         <>
             <EditingForm
+                scrollRef={scrollRef}
                 modelData={meetData}
                 setModelData={setMeetData}
                 isMeetHost={isMeetHost}

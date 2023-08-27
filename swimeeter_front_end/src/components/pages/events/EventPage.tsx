@@ -205,7 +205,7 @@ export function EventPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <EventEditingForm />
+                                    <EventEditingForm scrollRef={informationRef} />
                                 </>
                             )
                         },

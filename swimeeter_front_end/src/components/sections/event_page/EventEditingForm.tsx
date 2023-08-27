@@ -11,7 +11,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function EventEditingForm() {
+export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { eventData, setEventData, isMeetHost }: {
         eventData: Event,
@@ -227,7 +227,7 @@ export function EventEditingForm() {
                 editInfo={{
                     title: "COMPETING MIN AGE",
                     description: "The competing min age field should contain the minimum allowable competitor age of the event.",
-                    permitted_values: "Empty, or any positive integer.",
+                    permitted_values: "Any positive integer. May be left blank.",
                     warning: "An empty competing min age will be interpreted as the event's competing age range having no lower bound. If both the min and max competing age fields are left blank, any age will be allowed."
                 }}
                 viewInfo={{
@@ -282,7 +282,7 @@ export function EventEditingForm() {
                 editInfo={{
                     title: "COMPETING MAX AGE",
                     description: "The competing max age field should contain the maximum allowable competitor age of the event.",
-                    permitted_values: "Empty, or any positive integer.",
+                    permitted_values: "Any positive integer. May be left blank.",
                     warning: "An empty competing max age will be interpreted as the event's competing age range having no upper bound. If both the min and max competing age fields are left blank, any age will be allowed."
                 }}
                 viewInfo={{
@@ -446,6 +446,7 @@ export function EventEditingForm() {
     return (
         <>
             <EditingForm
+                scrollRef={scrollRef}
                 modelData={eventData}
                 setModelData={setEventData}
                 isMeetHost={isMeetHost}

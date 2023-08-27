@@ -84,7 +84,7 @@ export function RelayEntryCreationPage() {
                         ref: createRelayEntryRef,
                         content: (
                             <>
-                                <RelayEntryCreationForm meet_id_INT={meet_id_INT} />
+                                <RelayEntryCreationForm meet_id_INT={meet_id_INT} scrollRef={createRelayEntryRef} />
                             </>
                         )
                     }

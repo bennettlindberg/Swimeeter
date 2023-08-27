@@ -13,7 +13,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function MeetCreationForm() {
+export function MeetCreationForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { userState }: { userState: UserState } = useContext(AppContext);
     const idPrefix = useId();
@@ -21,6 +21,7 @@ export function MeetCreationForm() {
     return (
         <>
             <CreationForm
+                scrollRef={scrollRef}
                 formInputFields={[
                     {
                         title: "name",

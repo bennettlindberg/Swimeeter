@@ -12,7 +12,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { DateTimeInput } from "../../utilities/inputs/DateTimeInput.tsx";
 
 // ~ component
-export function SessionEditingForm() {
+export function SessionEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { sessionData, setSessionData, isMeetHost }: {
         sessionData: Session,
@@ -24,6 +24,7 @@ export function SessionEditingForm() {
     return (
         <>
             <EditingForm
+                scrollRef={scrollRef}
                 modelData={sessionData}
                 setModelData={setSessionData}
                 isMeetHost={isMeetHost}

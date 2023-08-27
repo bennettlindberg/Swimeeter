@@ -47,7 +47,7 @@ export function LogInPage() {
     useEffect(() => setTabTitle("Log In | Swimeeter"), []);
 
     // * create main content section refs
-    const signUpRef = useRef<HTMLHeadingElement>(null);
+    const logInRef = useRef<HTMLHeadingElement>(null);
 
     return (
         <>
@@ -57,10 +57,10 @@ export function LogInPage() {
                     {
                         heading: "Log In",
                         icon: "USER_CHECK",
-                        ref: signUpRef,
+                        ref: logInRef,
                         content: (
                             <>
-                                <LogInForm forwardTo={forwardTo} />
+                                <LogInForm forwardTo={forwardTo} scrollRef={logInRef} />
                             </>
                         )
                     }

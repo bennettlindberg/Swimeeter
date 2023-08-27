@@ -5,6 +5,7 @@ import axios from "axios";
 import { Pool } from "../../utilities/helpers/modelTypes.ts";
 import { PoolHeatSheet } from "../../utilities/helpers/heatSheetTypes.ts";
 import { PoolContext } from "../../pages/pools/PoolPage.tsx";
+import { AppContext, UserState } from "../../../App.tsx";
 import { generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { PageButton } from "../../utilities/general/PageButton";
@@ -13,12 +14,18 @@ import { HeatSheetDivider } from "../../utilities/heat_sheets/HeatSheetDivider.t
 import { HeatSheetHeatHeader } from "../../utilities/heat_sheets/HeatSheetHeatHeader.tsx";
 import { HeatSheetLaneEntry } from "../../utilities/heat_sheets/HeatSheetLaneEntry.tsx";
 import { HeatSheetText } from "../../utilities/heat_sheets/HeatSheetText.tsx";
+import { IconButton } from "../../utilities/general/IconButton.tsx";
+import { InfoPane } from "../../utilities/forms/InfoPane.tsx";
 
 // ~ component
 export function PoolHeatSheetTable() {
     // * initialize context, state, and navigation
     const { poolData, isMeetHost }: { poolData: Pool, isMeetHost: boolean } = useContext(PoolContext);
     const [seedingData, setSeedingData] = useState<PoolHeatSheet | null>(null);
+
+    const { userState }: { userState: UserState } = useContext(AppContext);
+    const [infoShown, setInfoShown] = useState<boolean>(false);
+    
     const navigate = useNavigate();
 
     // * define seeding data loader
@@ -44,8 +51,25 @@ export function PoolHeatSheetTable() {
 
     return (
         <>
-            <div>
-                <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 justify-start lg:items-end">
+            <div className="flex flex-col gap-y-2">
+                {infoShown &&
+                    <InfoPane
+                        handleXClick={(event: any) => {
+                            event.preventDefault();
+                            setInfoShown(false);
+                        }}
+                        info={{
+                            title: "Pool Heat Sheet",
+                            description: "The pool heat sheet contains the heat and lane seeding information for all events and sessions of the meet being viewed that are located at the current pool."
+                        }}
+                    />}
+                <div className="flex lg:flex-row flex-wrap gap-y-2 gap-x-2 items-center justify-start">
+                    {userState.preferences.data_entry_information &&
+                        <IconButton color="primary" icon="CIRCLE_INFO" handleClick={(event: any) => {
+                            event.preventDefault();
+                            setInfoShown(!infoShown);
+                        }}
+                        />}
                     {!seedingData && <PageButton color="primary" text="Load heat sheet" icon="LIST_DOWN" handleClick={loadSeedingData} />}
                     {isMeetHost && <PageButton color="green" text="Manage meet seeding" icon="WHEEL_NUT" handleClick={() => navigate(`/meets/${poolData.fields.meet.pk}/seeding`)} />}
                 </div>

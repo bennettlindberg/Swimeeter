@@ -108,6 +108,7 @@ function formReducer(state: FormState, action: FormAction) {
 
 // ~ component
 export function EditingForm({
+    scrollRef,
     formReroutePath,
     modelData,
     setModelData,
@@ -130,6 +131,7 @@ export function EditingForm({
     deletionQueryParam,
     deletionForwardRoute
 }: {
+    scrollRef?: React.RefObject<HTMLHeadingElement>,
     formReroutePath?: string,
     modelData: any,
     setModelData: React.Dispatch<React.SetStateAction<any>>,
@@ -298,6 +300,10 @@ export function EditingForm({
     }
 
     async function handleSubmit(duplicate_handling?: "unhandled" | "keep_new" | "keep_both", bypassDestructiveSubmission?: boolean) {
+        if (scrollRef) {
+            scrollRef.current?.scrollIntoView();
+        }
+        
         // ~ submit counts as destructive action -> show destructive pop-up
         if (destructiveSubmitInfo && !bypassDestructiveSubmission) {
             formDispatch({
@@ -434,6 +440,10 @@ export function EditingForm({
     }
 
     async function handleDelete(bypassDestructiveDeletion?: boolean) {
+        if (scrollRef) {
+            scrollRef.current?.scrollIntoView();
+        }
+
         // ~ submit counts as destructive action -> show destructive pop-up
         if (!bypassDestructiveDeletion) {
             formDispatch({
@@ -494,6 +504,10 @@ export function EditingForm({
     }
 
     function handleCancel() {
+        if (scrollRef) {
+            scrollRef.current?.scrollIntoView();
+        }
+
         formDispatch({
             type: "CANCEL_CLICKED"
         })
@@ -504,6 +518,10 @@ export function EditingForm({
     }
 
     function handleEdit() {
+        if (scrollRef) {
+            scrollRef.current?.scrollIntoView();
+        }
+        
         formDispatch({
             type: "EDIT_CLICKED"
         })

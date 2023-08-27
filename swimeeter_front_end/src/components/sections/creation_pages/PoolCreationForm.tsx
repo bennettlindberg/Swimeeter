@@ -5,15 +5,17 @@ import { CreationFormGroup } from "../../utilities/forms/CreationFormGroup.tsx";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
+import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function PoolCreationForm({ meet_id_INT }: {meet_id_INT: number}) {
+export function PoolCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: number, scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize id
     const idPrefix = useId();
 
     return (
         <>
             <CreationForm
+                scrollRef={scrollRef}
                 formInputFields={[
                     {
                         title: "name",
@@ -67,7 +69,7 @@ export function PoolCreationForm({ meet_id_INT }: {meet_id_INT: number}) {
                             createInfo={{
                                 title: "STREET ADDRESS",
                                 description: "The street address field should contain the street address of the pool being created.",
-                                common_values: "\"Street addresses generally come in the form of the following example: \"123 Main Street.\"",
+                                common_values: "Street addresses generally come in the form of the following example: \"123 Main Street.\"",
                                 permitted_values: "Any string. May be left blank.",
                             }}
                         />
@@ -207,30 +209,33 @@ export function PoolCreationForm({ meet_id_INT }: {meet_id_INT: number}) {
                     },
                     {
                         title: "side_length",
-                        idSuffix: "-side_length-text-field",
+                        idSuffix: "-side_length-select-field",
                         readOnly: false,
                         duplicateSensitive: true,
                         formGroup: <CreationFormGroup
-                            label={<InputLabel inputId={idPrefix + "-side_length-text-field"} text="Side length" />}
-                            key={idPrefix + "-side_length-text-field"}
+                            label={<InputLabel inputId={idPrefix + "-side_length-select-field"} text="Side length" />}
+                            key={idPrefix + "-side_length-select-field"}
                             optional={false}
-                            field={<TextInput
+                            field={<SearchSelect
                                 regex={/^[0-9]*$/}
+                                otherEnabled={true}
                                 placeholderText="Side length"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-side_length"}
+                                options={["25", "50"]}
                             />}
                             createInfo={{
                                 title: "SIDE LENGTH",
                                 description: "The side length field should contain the competition length of the pool being created.",
-                                permitted_values: "Any positive integer.",
+                                common_values: "25, 50",
+                                permitted_values: "Although the most common side lengths are provided as select options, any positive integer may be chosen.",
                             }}
                         />,
-                        validator: (lanes: string) => {
+                        validator: (length: string) => {
                             try {
-                                const lanes_INT = parseInt(lanes);
+                                const length_INT = parseInt(length);
 
-                                if (lanes_INT > 0) {
+                                if (length_INT > 0) {
                                     return true;
                                 } else {
                                     return {
@@ -252,24 +257,26 @@ export function PoolCreationForm({ meet_id_INT }: {meet_id_INT: number}) {
                     },
                     {
                         title: "measure_unit",
-                        idSuffix: "-measure_unit-text-field",
+                        idSuffix: "-measure_unit-select-field",
                         readOnly: false,
                         duplicateSensitive: true,
                         formGroup: <CreationFormGroup
-                            label={<InputLabel inputId={idPrefix + "-measure_unit-text-field"} text="Measure unit" />}
-                            key={idPrefix + "-measure_unit-text-field"}
+                            label={<InputLabel inputId={idPrefix + "-measure_unit-select-field"} text="Measure unit" />}
+                            key={idPrefix + "-measure_unit-select-field"}
                             optional={false}
-                            field={<TextInput
+                            field={<SearchSelect
                                 regex={/^.*$/}
+                                otherEnabled={true}
                                 placeholderText="Measure unit"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-measure_unit"}
+                                options={["Yard", "Meter"]}
                             />}
                             createInfo={{
                                 title: "MEASURE UNIT",
                                 description: "The measure unit field should contain the units used to measure the side length of the pool being created.",
                                 common_values: "\"Yard,\" \"Meter.\" Pool measure units are usually capitalized and singular.",
-                                permitted_values: "Any string at least 1 character long."
+                                permitted_values: "Although the most common measure units are provided as select options, any string may be chosen."
                             }}
                         />,
                         validator: (measure_unit: string) => {

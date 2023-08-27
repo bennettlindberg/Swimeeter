@@ -219,7 +219,7 @@ export function SessionPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <SessionEditingForm />
+                                    <SessionEditingForm scrollRef={informationRef}/>
                                 </>
                             )
                         },

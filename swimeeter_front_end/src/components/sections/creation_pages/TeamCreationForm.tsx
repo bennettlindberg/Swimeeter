@@ -7,13 +7,14 @@ import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 
 // ~ component
-export function TeamCreationForm({ meet_id_INT }: {meet_id_INT: number}) {
+export function TeamCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: number, scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize id
     const idPrefix = useId();
 
     return (
         <>
             <CreationForm
+                scrollRef={scrollRef}
                 formInputFields={[
                     {
                         title: "name",

@@ -45,7 +45,7 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function LogInForm({ forwardTo }: { forwardTo?: string }) {
+export function LogInForm({ forwardTo, scrollRef }: { forwardTo?: string, scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize context, state, id, and navigation
     const { userDispatch }: { userDispatch: React.Dispatch<UserAction> } = useContext(AppContext);
     const [formState, formDispatch] = useReducer(formReducer, { error: null });
@@ -54,6 +54,8 @@ export function LogInForm({ forwardTo }: { forwardTo?: string }) {
 
     // * define form handlers
     async function handleSubmit() {
+        scrollRef.current?.scrollIntoView();
+
         // * retrieve raw data
         let rawData: {
             email: string

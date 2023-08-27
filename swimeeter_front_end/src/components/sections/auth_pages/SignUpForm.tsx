@@ -47,7 +47,7 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
+export function SignUpForm({ forwardTo, scrollRef }: { forwardTo?: string, scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize context, state, and id
     const { userDispatch }: { userDispatch: React.Dispatch<UserAction> } = useContext(AppContext);
     const [formState, formDispatch] = useReducer(formReducer, { error: null });
@@ -56,6 +56,8 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
 
     // * define form handlers
     async function handleSubmit() {
+        scrollRef.current?.scrollIntoView();
+
         // * retrieve raw data
         let rawData: {
             email: string
@@ -405,7 +407,7 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                 createInfo={{
                     title: "MIDDLE INITIALS",
                     description: "The middle initials field should contain a space-separated list of the account owner's uppercase middle initials.",
-                    permitted_values: "Empty, or any string at least 1 character long containing space-separated uppercase alphabetic characters."
+                    permitted_values: "Any string at least 1 character long containing space-separated uppercase alphabetic characters. May be left blank."
                 }}
             />
 
@@ -422,7 +424,7 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                     title: "PREFIX",
                     description: "The prefix field should contain any special prefixes included in the account owner's name.",
                     common_values: "\"St.,\" \"Sir.\" This field is not intended for \"Mr.,\" \"Mrs.,\" and \"Ms.\" prefixes.",
-                    permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
+                    permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
                 }}
             />
 
@@ -439,7 +441,7 @@ export function SignUpForm({ forwardTo }: { forwardTo?: string }) {
                     title: "SUFFIX",
                     description: "The suffix field should contain any special suffixes included in the account owner's name.",
                     common_values: "\"Jr.,\" \"Sr.,\" \"III.\"",
-                    permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
+                    permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
                 }}
             />
 

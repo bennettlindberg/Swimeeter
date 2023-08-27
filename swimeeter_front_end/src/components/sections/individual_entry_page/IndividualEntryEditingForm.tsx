@@ -13,7 +13,7 @@ import { NeutralFormGroup } from "../../utilities/forms/NeutralFormGroup.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 
 // ~ component
-export function IndividualEntryEditingForm() {
+export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { individualEntryData, setIndividualEntryData, isMeetHost }: {
         individualEntryData: IndividualEntry,
@@ -25,6 +25,7 @@ export function IndividualEntryEditingForm() {
     return (
         <>
             <EditingForm
+                scrollRef={scrollRef}
                 formReroutePath={`/meets/${individualEntryData.fields.swimmer.fields.meet.pk}/individual_entries/${individualEntryData.pk}`}
                 modelData={individualEntryData}
                 setModelData={setIndividualEntryData}

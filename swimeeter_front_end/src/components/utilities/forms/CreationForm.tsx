@@ -90,6 +90,7 @@ function formReducer(state: FormState, action: FormAction) {
 
 // ~ component
 export function CreationForm({
+    scrollRef,
     formInputFields,
     modelSelectFields,
     destructiveKeepNewInfo,
@@ -103,6 +104,7 @@ export function CreationForm({
     queryParams,
     submitText
 }: {
+    scrollRef?: React.RefObject<HTMLHeadingElement>,
     formInputFields: {
         title: string
         idSuffix: string,
@@ -228,6 +230,10 @@ export function CreationForm({
     }
 
     async function handleSubmit(duplicate_handling?: "unhandled" | "keep_new" | "keep_both", bypassDestructiveSubmission?: boolean) {
+        if (scrollRef) {
+            scrollRef.current?.scrollIntoView();
+        }
+        
         // ~ submit counts as destructive action -> show destructive pop-up
         if (destructiveSubmitInfo && !bypassDestructiveSubmission) {
             formDispatch({

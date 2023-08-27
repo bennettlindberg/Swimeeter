@@ -9,13 +9,13 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { DateTimeInput } from "../../utilities/inputs/DateTimeInput.tsx";
 
 // ~ component
-export function SessionCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
+export function SessionCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: number, scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize id
     const idPrefix = useId();
 
     // * initialize location
     const location = useLocation();
-    let defaultPool: {name: string, pool_id: number} | undefined = undefined;
+    let defaultPool: { name: string, pool_id: number } | undefined = undefined;
     try {
         defaultPool = location.state.defaultPool;
     } catch {
@@ -25,6 +25,7 @@ export function SessionCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
     return (
         <>
             <CreationForm
+                scrollRef={scrollRef}
                 formInputFields={[
                     {
                         title: "name",
@@ -81,7 +82,7 @@ export function SessionCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                         validator: (inputDateTime: string) => {
                             try {
                                 const testDate = new Date(inputDateTime);
-                    
+
                                 if (isNaN(testDate.getTime()) || parseInt(inputDateTime.substring(8, 10)) !== testDate.getDate()) {
                                     return {
                                         title: "BEGIN TIME FIELD ERROR",
@@ -123,7 +124,7 @@ export function SessionCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                         validator: (inputDateTime: string) => {
                             try {
                                 const testDate = new Date(inputDateTime);
-                    
+
                                 if (isNaN(testDate.getTime()) || parseInt(inputDateTime.substring(8, 10)) !== testDate.getDate()) {
                                     return {
                                         title: "END TIME FIELD ERROR",

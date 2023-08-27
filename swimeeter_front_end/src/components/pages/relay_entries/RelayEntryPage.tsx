@@ -201,7 +201,7 @@ export function RelayEntryPage() {
                             content: relayEntryData.pk === -1
                                 ? <></>
                                 : <>
-                                    <RelayEntryEditingForm meet_id_INT={meet_id_INT} />
+                                    <RelayEntryEditingForm meet_id_INT={meet_id_INT} scrollRef={informationRef} />
                                 </>
                         },
                         {

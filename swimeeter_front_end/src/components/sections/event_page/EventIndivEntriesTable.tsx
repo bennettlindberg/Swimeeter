@@ -49,6 +49,7 @@ export function EventIndivEntriesTable() {
                 <col span={1} className="w-auto" />,
                 <col span={1} className="w-auto" />,
                 <col span={1} className="w-auto" />,
+                <col span={1} className="w-auto" />,
                 <col span={1} className="w-auto" />
             ]}
             tableHeaderTitles={[

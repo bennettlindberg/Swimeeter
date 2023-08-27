@@ -140,6 +140,11 @@ export function NavBar() {
                                     <IconSVG icon="CIRCLE_INFO" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     About
                                 </NavDropItem>
+                                <div className="b border-t-[2px] border-black dark:border-white w-full h-[2px]"></div>
+                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
+                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Settings
+                                </NavDropItem>
                                 {
                                     userState.logged_in
                                         ? <>
@@ -159,10 +164,6 @@ export function NavBar() {
                                             </NavDropItem>
                                         </>
                                 }
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
-                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Settings
-                                </NavDropItem>
                             </NavDropMenu>
                         </div>
                     </NavBarButton>
@@ -202,6 +203,11 @@ export function NavBar() {
                                     <IconSVG icon="CIRCLE_INFO" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     About
                                 </NavDropItem>
+                                <div className="b border-t-[2px] border-black dark:border-white w-full h-[2px]"></div>
+                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
+                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Settings
+                                </NavDropItem>
                                 {
                                     userState.logged_in
                                         ? <>
@@ -221,10 +227,6 @@ export function NavBar() {
                                             </NavDropItem>
                                         </>
                                 }
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
-                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Settings
-                                </NavDropItem>
                             </NavDropMenu>
                         </div>
                     </NavBarButton>
@@ -287,6 +289,11 @@ export function NavBar() {
                                     <IconSVG icon="CIRCLE_INFO" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
                                     About
                                 </NavDropItem>
+                                <div className="b border-t-[2px] border-black dark:border-white w-full h-[2px]"></div>
+                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
+                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Settings
+                                </NavDropItem>
                                 {
                                     userState.logged_in
                                         ? <>
@@ -306,10 +313,6 @@ export function NavBar() {
                                             </NavDropItem>
                                         </>
                                 }
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
-                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Settings
-                                </NavDropItem>
                             </NavDropMenu>
                         </div>
                     </NavBarButton>
@@ -370,6 +373,10 @@ export function NavBar() {
                             <IconSVG icon="CIRCLE_USER" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[30px]" height="h-[30px]" />
                             <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />
                             <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
+                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
+                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Settings
+                                </NavDropItem>
                                 {
                                     userState.logged_in
                                         ? <>
@@ -389,10 +396,6 @@ export function NavBar() {
                                             </NavDropItem>
                                         </>
                                 }
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
-                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Settings
-                                </NavDropItem>
                             </NavDropMenu>
                         </div>
                     </NavBarButton>
@@ -453,6 +456,10 @@ export function NavBar() {
                             <h2 className="text-2xl max-w-sm overflow-hidden whitespace-nowrap">{accountName}</h2>
                             <IconSVG icon="ARROW_DOWN" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[20px]" height="h-[20px]" />
                             <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
+                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
+                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                    Settings
+                                </NavDropItem>
                                 {
                                     userState.logged_in
                                         ? <>
@@ -472,10 +479,6 @@ export function NavBar() {
                                             </NavDropItem>
                                         </>
                                 }
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
-                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Settings
-                                </NavDropItem>
                             </NavDropMenu>
                         </div>
                     </NavBarButton>

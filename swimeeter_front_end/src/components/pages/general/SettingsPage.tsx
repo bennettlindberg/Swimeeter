@@ -75,9 +75,9 @@ export function SettingsPage() {
                             ? (
                                 <>
                                     <MainContentSubheading subheading="Account credentials" />
-                                    <AccountForm />
+                                    <AccountForm scrollRef={accountRef}/>
                                     <MainContentSubheading subheading="Account management" />
-                                    <AccountDeletion />
+                                    <AccountDeletion scrollRef={accountRef}/>
                                 </>
                             )
                             : (
@@ -99,7 +99,7 @@ export function SettingsPage() {
                         content: userState.logged_in
                             ? (
                                 <>
-                                    <ProfileForm />
+                                    <ProfileForm scrollRef={profileRef}/>
                                 </>
                             )
                             : (
@@ -120,7 +120,7 @@ export function SettingsPage() {
                         ref: preferencesRef,
                         content: (
                             <>
-                                <PreferencesForm />
+                                <PreferencesForm scrollRef={preferencesRef}/>
                             </>
                         )
                     }

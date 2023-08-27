@@ -7,7 +7,7 @@ import { AppContext, UserAction } from "../../../App.tsx";
 import { PageButton } from "../../utilities/general/PageButton.tsx";
 import { DestructivePane } from "../../utilities/forms/DestructivePane.tsx";
 
-export function AccountDeletion() {
+export function AccountDeletion({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and navigation
     const { userDispatch }: {
         userDispatch: React.Dispatch<UserAction>,
@@ -17,6 +17,8 @@ export function AccountDeletion() {
 
     // * define account deletion handler
     async function handleAccountDeletion(dismissDestructiveDeletion: boolean) {
+        scrollRef.current?.scrollIntoView();
+
         if (!dismissDestructiveDeletion) {
             setStatus("confirming");
             return;

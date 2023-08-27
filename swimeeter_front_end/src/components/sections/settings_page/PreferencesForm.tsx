@@ -61,7 +61,7 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function PreferencesForm() {
+export function PreferencesForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { userState, userDispatch }: {
         userState: UserState,
@@ -95,6 +95,8 @@ export function PreferencesForm() {
 
     // * define form handlers
     async function handleSubmit() {
+        scrollRef.current?.scrollIntoView();
+
         // * retrieve raw data
         let rawData: {
             screen_mode: string
@@ -276,12 +278,16 @@ export function PreferencesForm() {
     }
 
     function handleCancel() {
+        scrollRef.current?.scrollIntoView();
+
         formDispatch({
             type: "CANCEL_CLICKED"
         })
     }
 
     function handleEdit() {
+        scrollRef.current?.scrollIntoView();
+        
         formDispatch({
             type: "EDIT_CLICKED"
         })

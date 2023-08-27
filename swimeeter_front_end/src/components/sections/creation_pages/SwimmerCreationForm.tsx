@@ -9,7 +9,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
+export function SwimmerCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: number, scrollRef: React.RefObject<HTMLHeadingElement>} ) {
     // * initialize id
     const idPrefix = useId();
 
@@ -25,6 +25,7 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
     return (
         <>
             <CreationForm
+                scrollRef={scrollRef}
                 formInputFields={[
                     {
                         title: "first_name",
@@ -112,7 +113,7 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                             createInfo={{
                                 title: "MIDDLE INITIALS",
                                 description: "The middle initials field should contain a space-separated list of uppercase middle initials from the name of the swimmer being created.",
-                                permitted_values: "Empty, or any string at least 1 character long containing space-separated uppercase alphabetic characters."
+                                permitted_values: "Any string at least 1 character long containing space-separated uppercase alphabetic characters. May be left blank."
                             }}
                         />,
                         converter: (middle_initials: string) => {
@@ -138,7 +139,7 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                                 title: "PREFIX",
                                 description: "The prefix field should contain any special prefixes included in the name of the swimmer being created.",
                                 common_values: "\"St.,\" \"Sir.\" This field is not intended for \"Mr.,\" \"Mrs.,\" and \"Ms.\" prefixes.",
-                                permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
+                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
                             }}
                         />
                     },
@@ -161,7 +162,7 @@ export function SwimmerCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
                                 title: "SUFFIX",
                                 description: "The suffix field should contain any special suffixes included in the name of the swimmer being created.",
                                 common_values: "\"Jr.,\" \"Sr.,\" \"III.\"",
-                                permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
+                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
                             }}
                         />
                     },

@@ -84,7 +84,7 @@ export function IndividualEntryCreationPage() {
                         ref: createIndividualEntryRef,
                         content: (
                             <>
-                                <IndividualEntryCreationForm meet_id_INT={meet_id_INT} />
+                                <IndividualEntryCreationForm meet_id_INT={meet_id_INT} scrollRef={createIndividualEntryRef} />
                             </>
                         )
                     }

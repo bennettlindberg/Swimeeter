@@ -60,7 +60,7 @@ export function SignUpPage() {
                         ref: signUpRef,
                         content: (
                             <>
-                                <SignUpForm forwardTo={forwardTo} />
+                                <SignUpForm forwardTo={forwardTo} scrollRef={signUpRef} />
                             </>
                         )
                     }

@@ -181,7 +181,7 @@ const deletionErrorPossibilities = [
 ];
 
 // ~ component
-export function RelayEntryEditingForm({ meet_id_INT }: { meet_id_INT: number }) {
+export function RelayEntryEditingForm({ meet_id_INT, scrollRef }: { meet_id_INT: number, scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize context
     const { relayEntryData, setRelayEntryData, isMeetHost }: {
         relayEntryData: RelayEntry,
@@ -388,6 +388,8 @@ export function RelayEntryEditingForm({ meet_id_INT }: { meet_id_INT: number }) 
     }
 
     async function handleSubmit(duplicate_handling?: "unhandled" | "keep_new" | "keep_both", bypassDestructiveSubmission?: boolean) {
+        scrollRef.current?.scrollIntoView();
+        
         // ~ submit counts as destructive action -> show destructive pop-up
         if (!bypassDestructiveSubmission) {
             formDispatch({
@@ -530,6 +532,8 @@ export function RelayEntryEditingForm({ meet_id_INT }: { meet_id_INT: number }) 
     }
 
     async function handleDelete(bypassDestructiveDeletion?: boolean) {
+        scrollRef.current?.scrollIntoView();
+
         // ~ submit counts as destructive action -> show destructive pop-up
         if (!bypassDestructiveDeletion) {
             formDispatch({
@@ -595,6 +599,8 @@ export function RelayEntryEditingForm({ meet_id_INT }: { meet_id_INT: number }) 
     }
 
     function handleCancel() {
+        scrollRef.current?.scrollIntoView();
+        
         formDispatch({
             type: "CANCEL_CLICKED"
         })
@@ -603,6 +609,8 @@ export function RelayEntryEditingForm({ meet_id_INT }: { meet_id_INT: number }) 
     }
 
     function handleEdit() {
+        scrollRef.current?.scrollIntoView();
+
         formDispatch({
             type: "EDIT_CLICKED"
         })

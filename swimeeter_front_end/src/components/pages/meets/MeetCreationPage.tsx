@@ -51,7 +51,7 @@ export function MeetCreationPage() {
                         ref: createMeetRef,
                         content: (
                             <>
-                                <MeetCreationForm />
+                                <MeetCreationForm scrollRef={createMeetRef}/>
                             </>
                         )
                     }

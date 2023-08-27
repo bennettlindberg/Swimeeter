@@ -88,7 +88,7 @@ export function EventCreationPage() {
                         ref: createEventRef,
                         content: (
                             <>
-                                <EventCreationForm meet_id_INT={meet_id_INT} event_type={event_type} />
+                                <EventCreationForm meet_id_INT={meet_id_INT} event_type={event_type} scrollRef={createEventRef} />
                             </>
                         )
                     }

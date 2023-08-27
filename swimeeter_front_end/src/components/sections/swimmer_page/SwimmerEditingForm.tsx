@@ -11,7 +11,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function SwimmerEditingForm() {
+export function SwimmerEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { swimmerData, setSwimmerData, isMeetHost }: {
         swimmerData: Swimmer,
@@ -23,6 +23,7 @@ export function SwimmerEditingForm() {
     return (
         <>
             <EditingForm
+                scrollRef={scrollRef}
                 modelData={swimmerData}
                 setModelData={setSwimmerData}
                 isMeetHost={isMeetHost}
@@ -124,7 +125,7 @@ export function SwimmerEditingForm() {
                             editInfo={{
                                 title: "MIDDLE INITIALS",
                                 description: "The middle initials field should contain a space-separated list of the swimmer's uppercase middle initials.",
-                                permitted_values: "Empty, or any string at least 1 character long containing space-separated uppercase alphabetic characters."
+                                permitted_values: "Any string at least 1 character long containing space-separated uppercase alphabetic characters. May be left blank."
                             }}
                             viewInfo={{
                                 title: "MIDDLE INITIALS",
@@ -155,7 +156,7 @@ export function SwimmerEditingForm() {
                                 title: "PREFIX",
                                 description: "The prefix field should contain any special prefixes included in the swimmer's name.",
                                 common_values: "\"St.,\" \"Sir.\" This field is not intended for \"Mr.,\" \"Mrs.,\" and \"Ms.\" prefixes.",
-                                permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
+                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
                             }}
                             viewInfo={{
                                 title: "PREFIX",
@@ -183,7 +184,7 @@ export function SwimmerEditingForm() {
                                 title: "SUFFIX",
                                 description: "The suffix field should contain any special suffixes included in the swimmer's name.",
                                 common_values: "\"Jr.,\" \"Sr.,\" \"III.\"",
-                                permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
+                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
                             }}
                             viewInfo={{
                                 title: "SUFFIX",

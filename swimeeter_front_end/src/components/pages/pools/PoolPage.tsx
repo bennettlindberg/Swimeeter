@@ -197,7 +197,7 @@ export function PoolPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <PoolEditingForm />
+                                    <PoolEditingForm scrollRef={informationRef}/>
                                 </>
                             )
                         },

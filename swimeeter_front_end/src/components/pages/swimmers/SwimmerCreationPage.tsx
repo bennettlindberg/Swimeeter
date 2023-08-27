@@ -82,7 +82,7 @@ export function SwimmerCreationPage() {
                         ref: createSwimmerRef,
                         content: (
                             <>
-                                <SwimmerCreationForm meet_id_INT={meet_id_INT} />
+                                <SwimmerCreationForm meet_id_INT={meet_id_INT} scrollRef={createSwimmerRef}/>
                             </>
                         )
                     }

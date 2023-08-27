@@ -82,7 +82,7 @@ export function PoolCreationPage() {
                         ref: createPoolRef,
                         content: (
                             <>
-                                <PoolCreationForm meet_id_INT={meet_id_INT}/>
+                                <PoolCreationForm meet_id_INT={meet_id_INT} scrollRef={createPoolRef}/>
                             </>
                         )
                     }

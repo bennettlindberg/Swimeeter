@@ -5,6 +5,7 @@ import axios from "axios";
 import { IndividualEntry } from "../../utilities/helpers/modelTypes.ts";
 import { EntryHeatSheet } from "../../utilities/helpers/heatSheetTypes.ts";
 import { IndividualEntryContext } from "../../pages/individual_entries/IndividualEntryPage.tsx";
+import { AppContext, UserState } from "../../../App.tsx";
 import { generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { HeatSheetHeader } from "../../utilities/heat_sheets/HeatSheetHeader.tsx";
@@ -12,12 +13,18 @@ import { HeatSheetHeatHeader } from "../../utilities/heat_sheets/HeatSheetHeatHe
 import { HeatSheetLaneEntry } from "../../utilities/heat_sheets/HeatSheetLaneEntry.tsx";
 import { PageButton } from "../../utilities/general/PageButton";
 import { HeatSheetText } from "../../utilities/heat_sheets/HeatSheetText.tsx";
+import { InfoPane } from "../../utilities/forms/InfoPane.tsx";
+import { IconButton } from "../../utilities/general/IconButton.tsx";
 
 // ~ component
 export function IndivEntryHeatSheetTable() {
     // * initialize context, state, and navigation
     const { individualEntryData, isMeetHost }: { individualEntryData: IndividualEntry, isMeetHost: boolean } = useContext(IndividualEntryContext);
     const [seedingData, setSeedingData] = useState<EntryHeatSheet | null>(null);
+    
+    const { userState }: { userState: UserState } = useContext(AppContext);
+    const [infoShown, setInfoShown] = useState<boolean>(false);
+
     const navigate = useNavigate();
 
     // * define seeding data loader
@@ -43,8 +50,25 @@ export function IndivEntryHeatSheetTable() {
 
     return (
         <>
-            <div>
-                <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 justify-start lg:items-end">
+            <div className="flex flex-col gap-y-2">
+                {infoShown &&
+                    <InfoPane
+                        handleXClick={(event: any) => {
+                            event.preventDefault();
+                            setInfoShown(false);
+                        }}
+                        info={{
+                            title: "Individual Entry Heat Sheet",
+                            description: "The individual entry heat sheet contains the heat and lane seeding information for the heat of the individual entry being viewed."
+                        }}
+                    />}
+                <div className="flex lg:flex-row flex-wrap gap-y-2 gap-x-2 items-center justify-start">
+                    {userState.preferences.data_entry_information &&
+                        <IconButton color="primary" icon="CIRCLE_INFO" handleClick={(event: any) => {
+                            event.preventDefault();
+                            setInfoShown(!infoShown);
+                        }}
+                        />}
                     {!seedingData && <PageButton color="primary" text="Load heat sheet" icon="LIST_DOWN" handleClick={loadSeedingData} />}
                     {isMeetHost && <PageButton color="green" text="Manage meet seeding" icon="WHEEL_NUT" handleClick={() => navigate(`/meets/${individualEntryData.fields.swimmer.fields.meet.pk}/seeding`)} />}
                 </div>

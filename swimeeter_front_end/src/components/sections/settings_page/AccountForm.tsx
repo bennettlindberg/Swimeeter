@@ -61,7 +61,7 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function AccountForm() {
+export function AccountForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { userState, userDispatch }: {
         userState: UserState,
@@ -81,6 +81,8 @@ export function AccountForm() {
 
     // * define form handlers
     async function handleSubmit() {
+        scrollRef.current?.scrollIntoView();
+
         // * retrieve raw data
         let rawData: {
             email: string
@@ -245,12 +247,16 @@ export function AccountForm() {
     }
 
     function handleCancel() {
+        scrollRef.current?.scrollIntoView();
+
         formDispatch({
             type: "CANCEL_CLICKED"
         })
     }
 
     function handleEdit() {
+        scrollRef.current?.scrollIntoView();
+        
         formDispatch({
             type: "EDIT_CLICKED"
         })

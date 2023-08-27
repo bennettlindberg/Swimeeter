@@ -139,7 +139,7 @@ export function SeedingPage() {
                             ref: generationRef,
                             content: (
                                 <>
-                                    <SeedingGenerationForm />
+                                    <SeedingGenerationForm scrollRef={generationRef}/>
                                 </>
                             )
                         },

@@ -140,7 +140,7 @@ const errorPossibilities = [
 ];
 
 // ~ component
-export function RelayEntryCreationForm({ meet_id_INT }: { meet_id_INT: number }) {
+export function RelayEntryCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: number, scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize location
     const location = useLocation();
     let defaultSwimmer: { name: string, swimmer_id: number } | undefined = undefined;
@@ -307,6 +307,8 @@ export function RelayEntryCreationForm({ meet_id_INT }: { meet_id_INT: number })
     }
 
     async function handleSubmit(duplicate_handling?: "unhandled" | "keep_new" | "keep_both", bypassDestructiveSubmission?: boolean) {
+        scrollRef.current?.scrollIntoView();
+
         // ~ submit counts as destructive action -> show destructive pop-up
         if (!bypassDestructiveSubmission) {
             formDispatch({

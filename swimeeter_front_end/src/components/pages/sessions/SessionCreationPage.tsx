@@ -82,7 +82,7 @@ export function SessionCreationPage() {
                         ref: createSessionRef,
                         content: (
                             <>
-                                <SessionCreationForm meet_id_INT={meet_id_INT}/>
+                                <SessionCreationForm meet_id_INT={meet_id_INT} scrollRef={createSessionRef}/>
                             </>
                         )
                     }

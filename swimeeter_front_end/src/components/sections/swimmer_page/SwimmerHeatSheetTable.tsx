@@ -5,6 +5,7 @@ import axios from "axios";
 import { Swimmer } from "../../utilities/helpers/modelTypes.ts";
 import { SwimmerHeatSheet } from "../../utilities/helpers/heatSheetTypes.ts";
 import { SwimmerContext } from "../../pages/swimmers/SwimmerPage.tsx";
+import { AppContext, UserState } from "../../../App.tsx";
 import { generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { PageButton } from "../../utilities/general/PageButton";
@@ -13,12 +14,18 @@ import { HeatSheetDivider } from "../../utilities/heat_sheets/HeatSheetDivider.t
 import { HeatSheetHeatHeader } from "../../utilities/heat_sheets/HeatSheetHeatHeader.tsx";
 import { HeatSheetLaneEntry } from "../../utilities/heat_sheets/HeatSheetLaneEntry.tsx";
 import { HeatSheetText } from "../../utilities/heat_sheets/HeatSheetText.tsx";
+import { InfoPane } from "../../utilities/forms/InfoPane.tsx";
+import { IconButton } from "../../utilities/general/IconButton.tsx";
 
 // ~ component
 export function SwimmerHeatSheetTable() {
     // * initialize context, state, and navigation
     const { swimmerData, isMeetHost }: { swimmerData: Swimmer, isMeetHost: boolean } = useContext(SwimmerContext);
     const [seedingData, setSeedingData] = useState<SwimmerHeatSheet | null>(null);
+
+    const { userState }: { userState: UserState } = useContext(AppContext);
+    const [infoShown, setInfoShown] = useState<boolean>(false);
+    
     const navigate = useNavigate();
 
     // * define seeding data loader
@@ -44,8 +51,25 @@ export function SwimmerHeatSheetTable() {
 
     return (
         <>
-            <div>
-                <div className="flex lg:flex-row flex-col gap-y-2 gap-x-2 justify-start lg:items-end">
+            <div className="flex flex-col gap-y-2">
+                {infoShown &&
+                    <InfoPane
+                        handleXClick={(event: any) => {
+                            event.preventDefault();
+                            setInfoShown(false);
+                        }}
+                        info={{
+                            title: "Swimmer Heat Sheet",
+                            description: "The swimmer heat sheet contains the heat and lane seeding information for all heats of the meet being viewed that contain an entry from the current swimmer."
+                        }}
+                    />}
+                <div className="flex lg:flex-row flex-wrap gap-y-2 gap-x-2 items-center justify-start">
+                    {userState.preferences.data_entry_information &&
+                        <IconButton color="primary" icon="CIRCLE_INFO" handleClick={(event: any) => {
+                            event.preventDefault();
+                            setInfoShown(!infoShown);
+                        }}
+                        />}
                     {!seedingData && <PageButton color="primary" text="Load heat sheet" icon="LIST_DOWN" handleClick={loadSeedingData} />}
                     {isMeetHost && <PageButton color="green" text="Manage meet seeding" icon="WHEEL_NUT" handleClick={() => navigate(`/meets/${swimmerData.fields.meet.pk}/seeding`)} />}
                 </div>

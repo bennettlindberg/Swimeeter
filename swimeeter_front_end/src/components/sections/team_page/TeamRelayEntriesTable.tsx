@@ -48,6 +48,8 @@ export function TeamRelayEntriesTable() {
             tableCols={[
                 <col span={1} className="w-auto" />,
                 <col span={1} className="w-auto" />,
+                <col span={1} className="w-auto" />,
+                <col span={1} className="w-auto" />,
                 <col span={1} className="w-auto" />
             ]}
             tableHeaderTitles={[

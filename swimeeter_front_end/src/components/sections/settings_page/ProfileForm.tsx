@@ -60,7 +60,7 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function ProfileForm() {
+export function ProfileForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { userState, userDispatch }: {
         userState: UserState,
@@ -95,6 +95,8 @@ export function ProfileForm() {
 
     // * define form handlers
     async function handleSubmit() {
+        scrollRef.current?.scrollIntoView();
+        
         // * retrieve raw data
         let rawData: {
             email: string
@@ -269,12 +271,16 @@ export function ProfileForm() {
     }
 
     function handleCancel() {
+        scrollRef.current?.scrollIntoView();
+
         formDispatch({
             type: "CANCEL_CLICKED"
         })
     }
 
     function handleEdit() {
+        scrollRef.current?.scrollIntoView();
+        
         formDispatch({
             type: "EDIT_CLICKED"
         })
@@ -340,7 +346,7 @@ export function ProfileForm() {
                     editInfo={{
                         title: "MIDDLE INITIALS",
                         description: "The middle initials field should contain a space-separated list of the account owner's uppercase middle initials.",
-                        permitted_values: "Empty, or any string at least 1 character long containing space-separated uppercase alphabetic characters."
+                        permitted_values: "Any string at least 1 character long containing space-separated uppercase alphabetic characters. May be left blank."
                     }}
                     viewInfo={{
                         title: "MIDDLE INITIALS",
@@ -362,7 +368,7 @@ export function ProfileForm() {
                         title: "PREFIX",
                         description: "The prefix field should contain any special prefixes included in the account owner's name.",
                         common_values: "\"St.\", \"Sir.\" This field is not intended for \"Mr.\", \"Mrs.\", and \"Ms.\" prefixes.",
-                        permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
+                        permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
                     }}
                     viewInfo={{
                         title: "PREFIX",
@@ -384,7 +390,7 @@ export function ProfileForm() {
                         title: "SUFFIX",
                         description: "The suffix field should contain any special suffixes included in the account owner's name.",
                         common_values: "\"Jr.\", \"Sr.\", \"III\"",
-                        permitted_values: "Empty, or any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods."
+                        permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
                     }}
                     viewInfo={{
                         title: "SUFFIX",

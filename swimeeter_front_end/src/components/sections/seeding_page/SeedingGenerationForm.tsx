@@ -129,7 +129,7 @@ const errorPossibilities = [
 ];
 
 // ~ component
-export function SeedingGenerationForm() {
+export function SeedingGenerationForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize state, context, and navigation
     const [formState, formDispatch] = useReducer(formReducer, {
         error: null,
@@ -298,6 +298,8 @@ export function SeedingGenerationForm() {
     }
 
     async function handleSubmit(bypassDestructiveSubmission?: boolean) {
+        scrollRef.current?.scrollIntoView();
+
         // ~ submit counts as destructive action -> show destructive pop-up
         if (!bypassDestructiveSubmission) {
             formDispatch({

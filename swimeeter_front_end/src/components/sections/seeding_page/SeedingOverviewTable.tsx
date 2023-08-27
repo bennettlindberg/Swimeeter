@@ -1,8 +1,8 @@
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 
 import { OverviewHeatSheet } from "../../utilities/helpers/heatSheetTypes.ts";
 import { SeedingContext } from "../../pages/seeding/SeedingPage.tsx";
+import { AppContext, UserState } from "../../../App.tsx";
 import { generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { HeatSheetHeader } from "../../utilities/heat_sheets/HeatSheetHeader";
@@ -11,15 +11,40 @@ import { HeatSheetHeatHeader } from "../../utilities/heat_sheets/HeatSheetHeatHe
 import { HeatSheetLaneEntry } from "../../utilities/heat_sheets/HeatSheetLaneEntry.tsx";
 import { HeatSheetText } from "../../utilities/heat_sheets/HeatSheetText.tsx";
 import { SeedingValidIndicator } from "../../utilities/heat_sheets/SeedingValidIndicator.tsx";
+import { InfoPane } from "../../utilities/forms/InfoPane.tsx";
+import { IconButton } from "../../utilities/general/IconButton.tsx";
 
 // ~ component
 export function SeedingOverviewTable() {
     // * initialize context, state, and navigation
     const { seedingData }: { seedingData: OverviewHeatSheet } = useContext(SeedingContext);
-    const navigate = useNavigate();
+
+    const { userState }: { userState: UserState } = useContext(AppContext);
+    const [infoShown, setInfoShown] = useState<boolean>(false);
 
     return (
         <>
+            <div className="flex flex-col gap-y-2">
+                {infoShown &&
+                    <InfoPane
+                        handleXClick={(event: any) => {
+                            event.preventDefault();
+                            setInfoShown(false);
+                        }}
+                        info={{
+                            title: "Seeding Overview",
+                            description: "The seeding overview contains an up-to-date copy of the full meet heat sheet for the meet being viewed. The left side of each section of the seeding overview contains a seeding status indicator. A green check indicates full seeding exists for the section and a red cross indicates zero or incomplete seeding exists for the section."
+                        }}
+                    />}
+                <div className="flex lg:flex-row flex-wrap gap-y-2 gap-x-2 items-center justify-start">
+                    {userState.preferences.data_entry_information &&
+                        <IconButton color="primary" icon="CIRCLE_INFO" handleClick={(event: any) => {
+                            event.preventDefault();
+                            setInfoShown(!infoShown);
+                        }}
+                        />}
+                </div>
+            </div>
             {seedingData.meet_id !== -1 &&
                 <HeatSheetHeader
                     color="primary"

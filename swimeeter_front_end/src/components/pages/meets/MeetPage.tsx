@@ -171,7 +171,7 @@ export function MeetPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <MeetEditingForm />
+                                    <MeetEditingForm scrollRef={informationRef}/>
                                 </>
                             )
                         },

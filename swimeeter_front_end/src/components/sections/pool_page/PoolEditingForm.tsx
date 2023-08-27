@@ -8,9 +8,10 @@ import { EditingFormGroup } from "../../utilities/forms/EditingFormGroup.tsx";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
+import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function PoolEditingForm() {
+export function PoolEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
     // * initialize context, state, and id
     const { poolData, setPoolData, isMeetHost }: {
         poolData: Pool,
@@ -22,6 +23,7 @@ export function PoolEditingForm() {
     return (
         <>
             <EditingForm
+                scrollRef={scrollRef}
                 modelData={poolData}
                 setModelData={setPoolData}
                 isMeetHost={isMeetHost}
@@ -84,7 +86,7 @@ export function PoolEditingForm() {
                             editInfo={{
                                 title: "STREET ADDRESS",
                                 description: "The street address field should contain the street address of the pool.",
-                                common_values: "\"Street addresses generally come in the form of the following example: \"123 Main Street.\"",
+                                common_values: "Street addresses generally come in the form of the following example: \"123 Main Street.\"",
                                 permitted_values: "Any string. May be left blank.",
                             }}
                             viewInfo={{
@@ -253,35 +255,38 @@ export function PoolEditingForm() {
                     },
                     {
                         title: "side_length",
-                        idSuffix: "-side_length-text-field",
+                        idSuffix: "-side_length-select-field",
                         readOnly: false,
                         duplicateSensitive: true,
                         formGroup: <EditingFormGroup
-                            label={<InputLabel inputId={idPrefix + "-side_length-text-field"} text="Side length" />}
-                            key={idPrefix + "-side_length-text-field"}
+                            label={<InputLabel inputId={idPrefix + "-side_length-select-field"} text="Side length" />}
+                            key={idPrefix + "-side_length-select-field"}
                             optional={false}
-                            field={<TextInput
+                            field={<SearchSelect
                                 regex={/^[0-9]*$/}
+                                otherEnabled={true}
                                 placeholderText="Side length"
                                 defaultText={`${poolData.fields.side_length}`}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-side_length"}
+                                options={["25", "50"]}
                             />}
                             editInfo={{
                                 title: "SIDE LENGTH",
                                 description: "The side length field should contain the competition length of the pool.",
-                                permitted_values: "Any positive integer.",
+                                common_values: "25, 50",
+                                permitted_values: "Although the most common side lengths are provided as select options, any positive integer may be chosen.",
                             }}
                             viewInfo={{
                                 title: "SIDE LENGTH",
                                 description: "The side length field contains the competition length of the pool.",
                             }}
                         />,
-                        validator: (lanes: string) => {
+                        validator: (length: string) => {
                             try {
-                                const lanes_INT = parseInt(lanes);
+                                const length_INT = parseInt(length);
 
-                                if (lanes_INT > 0) {
+                                if (length_INT > 0) {
                                     return true;
                                 } else {
                                     return {
@@ -303,25 +308,27 @@ export function PoolEditingForm() {
                     },
                     {
                         title: "measure_unit",
-                        idSuffix: "-measure_unit-text-field",
+                        idSuffix: "-measure_unit-select-field",
                         readOnly: false,
                         duplicateSensitive: true,
                         formGroup: <EditingFormGroup
-                            label={<InputLabel inputId={idPrefix + "-measure_unit-text-field"} text="Measure unit" />}
-                            key={idPrefix + "-measure_unit-text-field"}
+                            label={<InputLabel inputId={idPrefix + "-measure_unit-select-field"} text="Measure unit" />}
+                            key={idPrefix + "-measure_unit-select-field"}
                             optional={false}
-                            field={<TextInput
+                            field={<SearchSelect
                                 regex={/^.*$/}
+                                otherEnabled={true}
                                 placeholderText="Measure unit"
                                 defaultText={poolData.fields.measure_unit}
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-measure_unit"}
+                                options={["Yard", "Meter"]}
                             />}
                             editInfo={{
                                 title: "MEASURE UNIT",
                                 description: "The measure unit field should contain the units used to measure the side length of the pool.",
                                 common_values: "\"Yard,\" \"Meter.\" Pool measure units are usually capitalized and singular.",
-                                permitted_values: "Any string at least 1 character long."
+                                permitted_values: "Although the most common measure units are provided as select options, any string may be chosen."
                             }}
                             viewInfo={{
                                 title: "MEASURE UNIT",
