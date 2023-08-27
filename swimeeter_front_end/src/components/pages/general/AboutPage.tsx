@@ -6,6 +6,10 @@ import { ContentPage } from "../../utilities/general/ContentPage.tsx";
 import { PageButton } from "../../utilities/general/PageButton.tsx";
 import { SideBarText } from "../../utilities/side_bar/SideBarText.tsx";
 
+import { DescriptionText } from "../../sections/about_page/DescriptionText.tsx";
+import { TechnologiesText } from "../../sections/about_page/TechnologiesText.tsx";
+import { CreditsText } from "../../sections/about_page/CreditsText.tsx";
+
 // ~ component
 export function AboutPage() {
     // * initialize context
@@ -29,8 +33,8 @@ export function AboutPage() {
     useEffect(() => setTabTitle("About | Swimeeter"), []);
 
     // * create main content section refs
-    const overviewRef = useRef<HTMLHeadingElement>(null);
-    const documentationRef = useRef<HTMLHeadingElement>(null);
+    const descriptionRef = useRef<HTMLHeadingElement>(null);
+    const technologiesRef = useRef<HTMLHeadingElement>(null);
     const creditsRef = useRef<HTMLHeadingElement>(null);
 
     return (
@@ -39,22 +43,22 @@ export function AboutPage() {
                 title="About"
                 primaryContent={[
                     {
-                        heading: "Overview",
-                        icon: "EARTH_GLOBE",
-                        ref: overviewRef,
-                        content: <></>
+                        heading: "Site Description",
+                        icon: "DOC_BOOK",
+                        ref: descriptionRef,
+                        content: <DescriptionText />
                     },
                     {
-                        heading: "Documentation",
-                        icon: "DOC_BOOK",
-                        ref: documentationRef,
-                        content: <></>
+                        heading: "Technologies",
+                        icon: "COMPUTER",
+                        ref: technologiesRef,
+                        content: <TechnologiesText />
                     },
                     {
                         heading: "Credits",
                         icon: "TWO_USERS",
                         ref: creditsRef,
-                        content: <></>
+                        content: <CreditsText />
                     }
                 ]}
                 secondaryContent={[
