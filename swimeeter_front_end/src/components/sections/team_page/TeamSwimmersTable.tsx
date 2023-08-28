@@ -41,7 +41,20 @@ export function TeamSwimmersTable() {
             searchType="SWIMMER_OF_TEAM"
             tableBarItems={[]}
             tableBarHostItems={[
-                <PageButton color="orange" text="Create a swimmer" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${teamData.fields.meet.pk}/swimmers/create`)} />
+                <PageButton color="orange" text="Create a swimmer" icon="CIRCLE_PLUS" handleClick={() => navigate(
+                    `/meets/${teamData.fields.meet.pk}/swimmers/create`,
+                    {
+                        state:
+                        {
+                            defaultTeam:
+                            {
+                                name: teamData.fields.name,
+                                team_id: teamData.pk
+                            }
+                        }
+                    }
+                    )
+                } />
             ]}
             tableCols={[
                 <col span={1} className="w-auto" />,

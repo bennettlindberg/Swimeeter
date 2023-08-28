@@ -74,7 +74,51 @@ export function generateSwimmerName(swimmer: Swimmer | SwimmerShallow) {
     return swimmerName;
 }
 
-export function generateEventName(event: Event | EventShallow) {
+function generateDistanceWithUnits(event: Event) {
+    const pool = event.fields.session.fields.pool;
+
+    let distanceStr = event.fields.distance + " ";
+
+    if (pool.fields.side_length == 50) {
+        distanceStr += "LC ";
+    } else if (pool.fields.side_length == 25) {
+        distanceStr += "SC ";
+    }
+
+    distanceStr += pool.fields.measure_unit;
+
+    return distanceStr;
+}
+
+export function generateEventName(event: Event) {
+    let eventName = event.fields.competing_gender + " ";
+
+    if (event.fields.competing_min_age && event.fields.competing_max_age) {
+        if (event.fields.competing_min_age === event.fields.competing_max_age) {
+            eventName += event.fields.competing_min_age + " Years Old ";
+        } else {
+            eventName += event.fields.competing_min_age + "-" + event.fields.competing_max_age + " Years Old ";
+        }
+    } else if (event.fields.competing_min_age) {
+        eventName += event.fields.competing_min_age + " & Over ";
+    } else if (event.fields.competing_max_age) {
+        eventName += event.fields.competing_max_age + " & Under ";
+    } else {
+        eventName += "Open ";
+    }
+
+    eventName += generateDistanceWithUnits(event) + " " + event.fields.stroke + " ";
+
+    if (event.fields.is_relay) {
+        eventName += "Relay ";
+    }
+
+    eventName += event.fields.stage;
+
+    return eventName;
+}
+
+export function generateEventNameShallow(event: EventShallow) {
     let eventName = event.fields.competing_gender + " ";
 
     if (event.fields.competing_min_age && event.fields.competing_max_age) {
@@ -388,9 +432,9 @@ export function generateCompetitorsString(gender: string, minAge: number | null,
             competitorsString += `${minAge}-${maxAge} Years Old`;
         }
     } else if (minAge) {
-        competitorsString += `${minAge} & Under`;
+        competitorsString += `${minAge} & Over`;
     } else if (maxAge) {
-        competitorsString += `${maxAge} & Over`;
+        competitorsString += `${maxAge} & Under`;
     } else {
         competitorsString += "Open";
     }

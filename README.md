@@ -55,4 +55,4 @@ Swimeeter was built by [Bennett Lindberg](https://github.com/bennettlindberg).
 
 All SVG icons used by Swimeeter were sourced from the [Solar Bold Icons](https://www.svgrepo.com/collection/solar-bold-icons/) collection, a set of SVG icons created by [Solar Icons](https://www.figma.com/community/file/1166831539721848736?ref=svgrepo.com) under the [CC Attribution License](https://creativecommons.org/licenses/by/4.0/) via [SVG Repo](https://www.svgrepo.com/).
 
-Swimeeter uses the [inflect](https://pypi.org/project/inflect/) library on the back-end for pluralization purposes. Inflect is a Python library authored by [Paul Dyson](mailto:pwdyson@yahoo.com) under the [MIT license](https://opensource.org/license/mit/).
+Swimeeter uses the [inflect](https://pypi.org/project/inflect/) library on the back-end for pluralization purposes. Inflect is a Python library authored by [Paul Dyson](mailto:pwdyson@yahoo.com) under the [MIT License](https://opensource.org/license/mit/).

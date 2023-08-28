@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState, useId, useEffect } from "react";
-import { Event, Swimmer } from "../helpers/modelTypes";
-import { generateEventName, generateSwimmerName } from "../helpers/nameGenerators";
+import { Swimmer } from "../helpers/modelTypes";
+import { generateSwimmerName } from "../helpers/nameGenerators";
 import { useNavigate } from "react-router-dom";
 import { InputLabel } from "../forms/InputLabel";
 import { CreationFormGroup } from "../forms/CreationFormGroup";

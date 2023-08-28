@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
-import { Host, Meet } from "../../utilities/helpers/modelTypes.ts";
-import { generateLocalTimeString } from "../../utilities/helpers/nameGenerators.ts";
+import { Meet } from "../../utilities/helpers/modelTypes.ts";
+import { generateHostName, generateLocalTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -29,7 +29,7 @@ export function PublicMeetsTable() {
                 item.fields.name,
                 begin_time,
                 end_time,
-                item.fields.is_public ? "Public" : "Private"
+                generateHostName(item.fields.host)
             ]} />
         )
     }

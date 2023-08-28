@@ -360,6 +360,21 @@ def get_swimmer_name(swimmer_object: Swimmer):
     return swimmer_name
 
 
+def get_distance_with_units(event_object: Event):
+    pool_object = event_object.session.pool
+
+    distance_str = str(event_object.distance) + " "
+
+    if pool_object.side_length == 50:
+        distance_str += "LC "
+    elif pool_object.side_length == 25:
+        distance_str += "SC "
+
+    distance_str += pool_object.measure_unit
+
+    return distance_str
+
+
 def get_event_name(event_object: Event):
     event_name = event_object.competing_gender + " "
 
@@ -380,7 +395,9 @@ def get_event_name(event_object: Event):
     else:
         event_name += "Open "
 
-    event_name += str(event_object.distance) + " " + event_object.stroke + " "
+    event_name += (
+        get_distance_with_units(event_object) + " " + event_object.stroke + " "
+    )
 
     if event_object.is_relay:
         event_name += "Relay "
@@ -751,16 +768,16 @@ def generate_event_seeding(options, event_object: Event):
     # * get entries of event
     if event_object.is_relay:
         entries_list = list(
-            Relay_entry.objects.filter(event_id=event_object.pk).order_by("-seed_time")
+            Relay_entry.objects.filter(event_id=event_object.pk).order_by("seed_time")
         )
     else:
         entries_list = list(
             Individual_entry.objects.filter(event_id=event_object.pk).order_by(
-                "-seed_time"
+                "seed_time"
             )
         )
 
-    # * calculate entries per lane
+    # * calculate entries per heat
     total_entries = len(entries_list)
     lanes_per_heat = event_object.session.pool.lanes
 
@@ -802,7 +819,7 @@ def generate_event_seeding(options, event_object: Event):
     while current >= 1 and current <= lanes_per_heat:
         standard_lane_order.append(current)
         current += change
-        change = -1 * (change + 1)
+        change = -1 * (change + 1 if change > 0 else change - 1)
 
     # $ assign heat and lanes using...
     match (options["seeding_type"]):
@@ -811,7 +828,7 @@ def generate_event_seeding(options, event_object: Event):
             entry_index = 0
 
             # * standard seed all heats
-            for heat_index in range(len(heat_entry_counts)):
+            for heat_index in range(len(heat_entry_counts) - 1, -1, -1):
                 for lane_index in range(heat_entry_counts[heat_index]):
                     entries_list[entry_index].heat_number = heat_index + 1
                     entries_list[entry_index].lane_number = standard_lane_order[
@@ -829,27 +846,36 @@ def generate_event_seeding(options, event_object: Event):
                 if heat_entry_counts[i] == max_heat_entry_count:
                     can_circle_seed_heats += 1
 
+            requested_circled_seeded_heats = options["num_circle_seeded_heats"]
+            if requested_circled_seeded_heats == "All full heats":
+                requested_circled_seeded_heats = can_circle_seed_heats
+            else:
+                requested_circled_seeded_heats = int(requested_circled_seeded_heats)
+
             will_circle_seed_heats = min(
-                can_circle_seed_heats, options["num_circle_seeded_heats"]
+                can_circle_seed_heats, requested_circled_seeded_heats
             )
 
             entry_index = 0
 
-            # * standard seed beginning heats
-            for heat_index in range(len(heat_entry_counts) - will_circle_seed_heats):
-                for lane_index in range(heat_entry_counts[heat_index]):
+            # * circle seed ending heats
+            for lane_index in range(0, max_heat_entry_count):
+                for heat_index in range(
+                    len(heat_entry_counts) - 1,
+                    len(heat_entry_counts) - will_circle_seed_heats - 1,
+                    -1,
+                ):
                     entries_list[entry_index].heat_number = heat_index + 1
                     entries_list[entry_index].lane_number = standard_lane_order[
                         lane_index
                     ]
                     entry_index += 1
 
-            # * circle seed ending heats
-            for lane_index in range(max_heat_entry_count - 1, -1, -1):
-                for heat_index in range(
-                    len(heat_entry_counts) - will_circle_seed_heats,
-                    len(heat_entry_counts),
-                ):
+            # * standard seed beginning heats
+            for heat_index in range(
+                len(heat_entry_counts) - will_circle_seed_heats - 1, -1, -1
+            ):
+                for lane_index in range(heat_entry_counts[heat_index]):
                     entries_list[entry_index].heat_number = heat_index + 1
                     entries_list[entry_index].lane_number = standard_lane_order[
                         lane_index
@@ -1057,7 +1083,7 @@ def get_seeding_data(model_type, model_object):
                 seeding_data["meet_seeding_full"] = meet_seeding_full
 
                 return seeding_data
-            
+
             case "Meet":
                 session_number_map = generate_session_number_map(model_object)
 
@@ -1615,7 +1641,7 @@ def get_JSON_multiple(model_type, model_objects, get_inner_JSON):
                     individual_JSON["fields"]["session"] = get_JSON_single(
                         "Session",
                         Session.objects.get(id=individual_JSON["fields"]["session"]),
-                        False,
+                        True,
                     )
 
             return collective_JSON

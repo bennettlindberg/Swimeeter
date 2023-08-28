@@ -82,7 +82,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                 />}
                 editInfo={{
                     title: "DISTANCE",
-                    description: "The distance field should contain the competition distance of the event.",
+                    description: "The distance field should contain the competition distance of the event. Distance units are implied based on the measure unit of the pool at which the event's session is located.",
                     common_values: eventData.fields.is_relay ? "100, 200, 400, 800" : "25, 50, 100, 200, 400, 500, 800, 1000, 1500, 1650",
                     permitted_values: "Any positive integer."
                 }}
@@ -477,7 +477,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                                 specific_to: "meet",
                                 apiRoute: "/api/v1/sessions/",
                                 id_params: {
-                                    meet_id: eventData.fields.session.fields.meet
+                                    meet_id: eventData.fields.session.fields.meet.pk
                                 }
                             }
                         }
@@ -597,7 +597,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                 deletionQueryParam={{
                     "event_id": eventData.pk
                 }}
-                deletionForwardRoute={`/meets/${eventData.fields.session.fields.meet}/sessions/${eventData.fields.session.pk}`}
+                deletionForwardRoute={`/meets/${eventData.fields.session.fields.meet.pk}/sessions/${eventData.fields.session.pk}`}
             />
         </>
     )

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { SwimmerContext } from "../../pages/swimmers/SwimmerPage.tsx";
 import { Swimmer, RelayEntry } from "../../utilities/helpers/modelTypes.ts";
-import { generateEventName, generateRelayParticipantNames, generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
+import { generateEventNameShallow, generateRelayParticipantNames, generateSeedTimeString, generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -24,7 +24,7 @@ export function SwimmerRelayEntriesTable() {
     function tableRowGenerator(item: RelayEntry) {
         return (
             <TableRow handleClick={() => navigate(`/meets/${swimmerData.fields.meet.pk}/relay_entries/${item.pk}`)} entries={[
-                generateEventName(item.fields.event),
+                generateEventNameShallow(item.fields.event),
                 generateRelayParticipantNames(item),
                 "" + (item.fields.heat_number || "N/A"),
                 "" + (item.fields.lane_number || "N/A"),
@@ -43,7 +43,21 @@ export function SwimmerRelayEntriesTable() {
             searchType="RELAY_ENTRY_OF_SWIMMER"
             tableBarItems={[]}
             tableBarHostItems={[
-                <PageButton color="orange" text="Create an relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${swimmerData.fields.meet.pk}/relay_entries/create`)} />
+                <PageButton color="orange" text="Create an relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(
+                    `/meets/${swimmerData.fields.meet.pk}/relay_entries/create`,
+                    {
+                        state:
+                        {
+                            defaultSwimmer:
+                            {
+                                name: generateSwimmerName(swimmerData),
+                                swimmer_id: swimmerData.pk
+                            }
+                        }
+                    }
+                    )
+                } 
+                />
             ]}
             tableCols={[
                 <col span={1} className="w-auto" />,

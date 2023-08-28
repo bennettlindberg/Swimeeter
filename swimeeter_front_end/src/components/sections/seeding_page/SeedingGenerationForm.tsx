@@ -1,5 +1,5 @@
 import { useContext, useEffect, useId, useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { Event, Session } from "../../utilities/helpers/modelTypes.ts";
@@ -129,8 +129,17 @@ const errorPossibilities = [
 ];
 
 // ~ component
-export function SeedingGenerationForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
-    // * initialize state, context, and navigation
+export function SeedingGenerationForm({ scrollRef }: { scrollRef: React.RefObject<HTMLHeadingElement> }) {
+    // * initialize location
+    const location = useLocation();
+    let defaultTarget: { target_type: "meet" | "event" | "session", target_name: string, target_id: number } | undefined = undefined;
+    try {
+        defaultTarget = location.state.defaultTarget;
+    } catch {
+        defaultTarget = undefined;
+    }
+
+    // * initialize state and context
     const [formState, formDispatch] = useReducer(formReducer, {
         error: null,
         destructive: null,
@@ -139,7 +148,11 @@ export function SeedingGenerationForm({scrollRef}: {scrollRef: React.RefObject<H
     const [modelSelection, setModelSelection] = useState<{
         text: string;
         model_id: number;
-    }>({
+    }>((defaultTarget && defaultTarget.target_type !== "meet" && {
+        text: defaultTarget.target_name,
+        model_id: defaultTarget.target_id
+    })
+        || {
         text: "",
         model_id: -1
     });
@@ -152,7 +165,7 @@ export function SeedingGenerationForm({scrollRef}: {scrollRef: React.RefObject<H
         model_id: number
     }[]>([]);
 
-    const [specificTo, setSpecificTo] = useState<"meet" | "session" | "event">("meet");
+    const [specificTo, setSpecificTo] = useState<"meet" | "session" | "event">((defaultTarget && defaultTarget.target_type) || "meet");
     const [seedingType, setSeedingType] = useState<"standard" | "circle">("standard");
 
     const { seedingData, setSeedingData }: {
@@ -160,9 +173,8 @@ export function SeedingGenerationForm({scrollRef}: {scrollRef: React.RefObject<H
         setSeedingData: React.Dispatch<React.SetStateAction<OverviewHeatSheet>>,
     } = useContext(SeedingContext);
 
+    // * initialize id and navigation
     const navigate = useNavigate();
-
-    // * initialize id
     const idPrefix = useId();
 
     // * ensure read-only for applicable inputs
@@ -221,6 +233,15 @@ export function SeedingGenerationForm({scrollRef}: {scrollRef: React.RefObject<H
             }
         }
         retrieveOptions();
+
+        // ! avoid loss of selection when options change
+        setModelSelection(defaultTarget && {
+            text: defaultTarget.target_name,
+            model_id: defaultTarget.target_id
+        } || {
+            text: "",
+            model_id: -1
+        });
     }, [seedingData]);
 
     // * define form handlers
@@ -502,7 +523,7 @@ export function SeedingGenerationForm({scrollRef}: {scrollRef: React.RefObject<H
                         regex={/^(M(e(e(t?)?)?)?)?$|^(S(e(s(s(i(o(n?)?)?)?)?)?)?)?$|^(E(v(e(n(t?)?)?)?)?)?$/}
                         otherEnabled={false}
                         placeholderText="Seeding target type"
-                        defaultText="Meet"
+                        defaultText={specificTo === "meet" ? "Meet" : specificTo === "event" ? "Event" : "Session"}
                         options={[
                             "Meet", "Session", "Event"
                         ]}

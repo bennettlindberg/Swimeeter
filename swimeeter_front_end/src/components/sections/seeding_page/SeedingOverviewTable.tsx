@@ -49,7 +49,13 @@ export function SeedingOverviewTable() {
                 <HeatSheetHeader
                     color="primary"
                     title={seedingData.meet_name + " Heat Sheet"}
-                    indicator={<SeedingValidIndicator valid={seedingData.meet_seeding_full}/>}
+                    indicator={<SeedingValidIndicator valid={seedingData.meet_seeding_full} />}
+                    generationRoute={`/meets/${seedingData.meet_id}/seeding`}
+                    generationData={{
+                        target_type: "meet",
+                        target_name: seedingData.meet_name,
+                        target_id: seedingData.meet_id
+                    }}
                 >
                     {
                         seedingData.sessions_data.length > 0
@@ -57,7 +63,13 @@ export function SeedingOverviewTable() {
                                 return <HeatSheetDivider
                                     color="purple"
                                     title={"Session #" + session_data.session_number + ": " + session_data.session_name}
-                                    indicator={<SeedingValidIndicator valid={session_data.session_seeding_full}/>}
+                                    indicator={<SeedingValidIndicator valid={session_data.session_seeding_full} />}
+                                    generationRoute={`/meets/${seedingData.meet_id}/seeding`}
+                                    generationData={{
+                                        target_type: "session",
+                                        target_name: session_data.session_name,
+                                        target_id: session_data.session_id
+                                    }}
                                 >
                                     {
                                         session_data.events_data.length > 0
@@ -65,7 +77,13 @@ export function SeedingOverviewTable() {
                                                 return <HeatSheetDivider
                                                     color="orange"
                                                     title={"Event #" + event_data.event_number + ": " + event_data.event_name}
-                                                    indicator={<SeedingValidIndicator valid={event_data.heats_data ? true : false}/>}
+                                                    indicator={<SeedingValidIndicator valid={event_data.heats_data ? true : false} />}
+                                                    generationRoute={`/meets/${seedingData.meet_id}/seeding`}
+                                                    generationData={{
+                                                        target_type: "event",
+                                                        target_name: event_data.event_name,
+                                                        target_id: event_data.event_id
+                                                    }}
                                                 >
                                                     {
                                                         event_data.heats_data

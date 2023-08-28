@@ -114,7 +114,7 @@ export type Event = {
         competing_min_age: number | null,
         order_in_session: number,
         total_heats: number | null,
-        session: SessionShallow
+        session: Session
     }
 }
 

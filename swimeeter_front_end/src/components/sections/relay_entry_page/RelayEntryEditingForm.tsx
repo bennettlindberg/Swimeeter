@@ -5,7 +5,7 @@ import axios from "axios";
 import { DestructiveType, DuplicateType, ErrorType } from "../../utilities/helpers/formTypes.ts";
 import { RelayEntry } from "../../utilities/helpers/modelTypes.ts";
 import { RelayEntryContext } from "../../pages/relay_entries/RelayEntryPage.tsx";
-import { generateEventName, generateSeedTimeElements, generateSeedTimeString, generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
+import { generateEventNameShallow, generateSeedTimeElements, generateSeedTimeString, generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { InputButton } from "../../utilities/inputs/InputButton.tsx";
@@ -201,7 +201,7 @@ export function RelayEntryEditingForm({ meet_id_INT, scrollRef }: { meet_id_INT:
         swimmers_per_entry: number;
         event_id: number;
     }>({
-        name: generateEventName(relayEntryData.fields.event),
+        name: generateEventNameShallow(relayEntryData.fields.event),
         swimmers_per_entry: relayEntryData.fields.event.fields.swimmers_per_entry,
         event_id: relayEntryData.fields.event.pk
     });
@@ -691,7 +691,7 @@ export function RelayEntryEditingForm({ meet_id_INT, scrollRef }: { meet_id_INT:
                     meet_id_INT={meet_id_INT}
                     type="editing"
                     defaultSelection={{
-                        text: generateEventName(relayEntryData.fields.event),
+                        text: generateEventNameShallow(relayEntryData.fields.event),
                         swimmers_per_entry: relayEntryData.fields.event.fields.swimmers_per_entry,
                         model_id: relayEntryData.fields.event.pk
                     }}

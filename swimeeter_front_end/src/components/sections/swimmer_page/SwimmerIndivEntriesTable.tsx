@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { SwimmerContext } from "../../pages/swimmers/SwimmerPage.tsx";
 import { Swimmer, IndividualEntry } from "../../utilities/helpers/modelTypes.ts";
-import { generateEventName, generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
+import { generateEventNameShallow, generateSeedTimeString, generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -24,7 +24,7 @@ export function SwimmerIndivEntriesTable() {
     function tableRowGenerator(item: IndividualEntry) {
         return (
             <TableRow handleClick={() => navigate(`/meets/${swimmerData.fields.meet.pk}/individual_entries/${item.pk}`)} entries={[
-                generateEventName(item.fields.event),
+                generateEventNameShallow(item.fields.event),
                 "" + (item.fields.heat_number || "N/A"),
                 "" + (item.fields.lane_number || "N/A"),
                 generateSeedTimeString(item.fields.seed_time)
@@ -42,7 +42,21 @@ export function SwimmerIndivEntriesTable() {
             searchType="INDIVIDUAL_ENTRY_OF_SWIMMER"
             tableBarItems={[]}
             tableBarHostItems={[
-                <PageButton color="orange" text="Create an indiv. entry" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${swimmerData.fields.meet.pk}/individual_entries/create`)} />
+                <PageButton color="orange" text="Create an indiv. entry" icon="CIRCLE_PLUS" handleClick={() => navigate(
+                    `/meets/${swimmerData.fields.meet.pk}/individual_entries/create`,
+                    {
+                        state:
+                        {
+                            defaultSwimmer:
+                            {
+                                name: generateSwimmerName(swimmerData),
+                                swimmer_id: swimmerData.pk
+                            }
+                        }
+                    }
+                    )
+                } 
+                />
             ]}
             tableCols={[
                 <col span={1} className="w-auto" />,

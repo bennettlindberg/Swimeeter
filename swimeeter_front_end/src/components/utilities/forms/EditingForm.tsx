@@ -277,7 +277,7 @@ export function EditingForm({
         if (selection === "continue") {
             switch (context) {
                 case "duplicate_keep_new":
-                    handleSubmit(duplicate_handling);
+                    handleSubmit(duplicate_handling, true);
                     break;
 
                 case "destructive_submission":

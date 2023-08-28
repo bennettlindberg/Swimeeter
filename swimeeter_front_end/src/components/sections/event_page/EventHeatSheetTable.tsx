@@ -71,7 +71,7 @@ export function EventHeatSheetTable() {
                         }}
                         />}
                     {!seedingData && <PageButton color="primary" text="Load heat sheet" icon="LIST_DOWN" handleClick={loadSeedingData} />}
-                    {isMeetHost && <PageButton color="green" text="Manage meet seeding" icon="WHEEL_NUT" handleClick={() => navigate(`/meets/${eventData.fields.session.fields.meet}/seeding`)} />}
+                    {isMeetHost && <PageButton color="green" text="Manage meet seeding" icon="WHEEL_NUT" handleClick={() => navigate(`/meets/${eventData.fields.session.fields.meet.pk}/seeding`)} />}
                 </div>
             </div>
             {seedingData &&

@@ -1,22 +1,33 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { IconSVG } from "../svgs/IconSVG.tsx";
 import { TableGrid } from "../tables/TableGrid.tsx";
+import { GenerateButton } from "./GenerateButton.tsx";
 
 // ~ component
 export function HeatSheetHeader({
     color,
     title,
     indicator,
+    generationRoute,
+    generationData,
     children
 }: {
     color: "orange" | "purple" | "slate" | "primary",
     title: string,
     indicator?: JSX.Element,
+    generationRoute?: string,
+    generationData?: {
+        target_type: "meet" | "session" | "event",
+        target_name: string,
+        target_id: number
+    }
     children: React.ReactNode
 }) {
     // * initialize state and navigation
     const [isOpen, setIsOpen] = useState<boolean>(true);
+    const navigate = useNavigate();
 
     let interpretedButtonColor = "";
     let interpretedTextColor = "";
@@ -60,6 +71,12 @@ export function HeatSheetHeader({
                         <div className="flex flex-row gap-x-2 items-center">
                             {indicator}
                             {title}
+                            {generationData && 
+                                <GenerateButton handleClick={(event: any) => {
+                                    event.stopPropagation();
+                                    navigate("/reroute", { state: { defaultTarget: generationData, forward_route: generationRoute } });
+                                }} />
+                            }
                         </div>
                     </td>
                     <td className={`first-of-type:rounded-l-md last-of-type:rounded-r-md border-t-2 border-b-2 first-of-type:border-l-2 last-of-type:border-r-2 ${interpretedButtonColor}`}>

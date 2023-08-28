@@ -8,7 +8,7 @@ import { EditingFormGroup } from "../../utilities/forms/EditingFormGroup.tsx";
 
 import { InputLabel } from "../../utilities/forms/InputLabel.tsx";
 import { DurationInput } from "../../utilities/inputs/DurationInput.tsx";
-import { generateEventName, generateSeedTimeElements, generateSeedTimeString, generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
+import { generateEventNameShallow, generateSeedTimeElements, generateSeedTimeString, generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
 import { NeutralFormGroup } from "../../utilities/forms/NeutralFormGroup.tsx";
 import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 
@@ -148,7 +148,7 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                             optional: false,
                             placeholderText: "Event",
                             defaultSelection: {
-                                text: generateEventName(individualEntryData.fields.event),
+                                text: generateEventNameShallow(individualEntryData.fields.event),
                                 model_id: individualEntryData.fields.event.pk
                             },
                             modelInfo: {

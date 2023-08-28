@@ -90,8 +90,9 @@ class Relay_entry_view(APIView):
                 relay_entries_of_event = (
                     Relay_entry.objects.filter(event_id=event_id)
                     .order_by(
-                        "swimmers__first_name",
+                        "seed_time",
                         "swimmers__last_name",
+                        "swimmers__first_name",
                         "swimmers__age",
                         "swimmers__gender",
                     )
@@ -166,6 +167,7 @@ class Relay_entry_view(APIView):
                         "event__distance",
                         "event__competing_min_age",
                         "event__competing_gender",
+                        "seed_time",
                     )
                     .order_by("id")
                     .distinct("id")

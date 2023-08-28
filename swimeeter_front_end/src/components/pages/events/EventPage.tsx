@@ -43,8 +43,33 @@ export const EventContext = createContext<{
                     name: "",
                     begin_time: "",
                     end_time: "",
-                    pool: -1,
-                    meet: -1
+                    pool: {
+                        model: "",
+                        pk: -1,
+                        fields: {
+                            name: "",
+                            street_address: "",
+                            city: "",
+                            state: "",
+                            country: "",
+                            zipcode: "",
+                            lanes: -1,
+                            side_length: -1,
+                            measure_unit: "",
+                            meet: -1
+                        }
+                    },
+                    meet: {
+                        model: "",
+                        pk: -1,
+                        fields: {
+                            name: "",
+                            begin_time: null,
+                            end_time: null,
+                            is_public: false,
+                            host: -1,
+                        }
+                    }
                 }
             },
         }
@@ -84,8 +109,33 @@ export function EventPage() {
                     name: "",
                     begin_time: "",
                     end_time: "",
-                    pool: -1,
-                    meet: -1
+                    pool: {
+                        model: "",
+                        pk: -1,
+                        fields: {
+                            name: "",
+                            street_address: "",
+                            city: "",
+                            state: "",
+                            country: "",
+                            zipcode: "",
+                            lanes: -1,
+                            side_length: -1,
+                            measure_unit: "",
+                            meet: -1
+                        }
+                    },
+                    meet: {
+                        model: "",
+                        pk: -1,
+                        fields: {
+                            name: "",
+                            begin_time: null,
+                            end_time: null,
+                            is_public: false,
+                            host: -1,
+                        }
+                    }
                 }
             },
         }

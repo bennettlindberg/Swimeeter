@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { TeamContext } from "../../pages/teams/TeamPage.tsx";
 import { Team, IndividualEntry } from "../../utilities/helpers/modelTypes.ts";
-import { generateEventName, generateSeedTimeString, generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
+import { generateEventNameShallow, generateSeedTimeString, generateSwimmerName } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -24,7 +24,7 @@ export function TeamIndivEntriesTable() {
     function tableRowGenerator(item: IndividualEntry) {
         return (
             <TableRow handleClick={() => navigate(`/meets/${teamData.fields.meet.pk}/individual_entries/${item.pk}`)} entries={[
-                generateEventName(item.fields.event),
+                generateEventNameShallow(item.fields.event),
                 generateSwimmerName(item.fields.swimmer),
                 "" + (item.fields.heat_number || "N/A"),
                 "" + (item.fields.lane_number || "N/A"),

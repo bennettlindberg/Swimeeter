@@ -78,7 +78,7 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
                 />}
                 createInfo={{
                     title: "DISTANCE",
-                    description: "The distance field should contain the competition distance of the event being created.",
+                    description: "The distance field should contain the competition distance of the event being created. Distance units are implied based on the measure unit of the pool at which the event's session is located.",
                     common_values: event_type === "relay" ? "100, 200, 400, 800" : "25, 50, 100, 200, 400, 500, 800, 1000, 1500, 1650",
                     permitted_values: "Any positive integer."
                 }}

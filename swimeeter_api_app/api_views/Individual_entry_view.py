@@ -90,8 +90,9 @@ class Individual_entry_view(APIView):
                 individual_entries_of_event = Individual_entry.objects.filter(
                     event_id=event_id
                 ).order_by(
-                    "swimmer__first_name",
+                    "seed_time",
                     "swimmer__last_name",
+                    "swimmer__first_name",
                     "swimmer__age",
                     "swimmer__gender",
                 )
@@ -182,6 +183,7 @@ class Individual_entry_view(APIView):
                     "event__distance",
                     "event__competing_min_age",
                     "event__competing_gender",
+                    "seed_time",
                 )
 
                 # @ apply search filtering

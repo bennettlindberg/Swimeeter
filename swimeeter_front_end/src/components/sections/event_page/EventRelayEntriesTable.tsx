@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { EventContext } from "../../pages/events/EventPage.tsx";
 import { Event, RelayEntry } from "../../utilities/helpers/modelTypes.ts";
-import { generateRelayParticipantNames, generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
+import { generateEventName, generateRelayParticipantNames, generateSeedTimeString } from "../../utilities/helpers/nameGenerators.ts";
 
 import { DataTable } from "../../utilities/tables/DataTable.tsx";
 import { TableRow } from "../../utilities/tables/TableRow.tsx";
@@ -23,7 +23,7 @@ export function EventRelayEntriesTable() {
     // * define table row generator
     function tableRowGenerator(item: RelayEntry) {
         return (
-            <TableRow handleClick={() => navigate(`/meets/${eventData.fields.session.fields.meet}/relay_entries/${item.pk}`)} entries={[
+            <TableRow handleClick={() => navigate(`/meets/${eventData.fields.session.fields.meet.pk}/relay_entries/${item.pk}`)} entries={[
                 generateRelayParticipantNames(item),
                 item.fields.relay_assignments[0].fields.swimmer.fields.team.fields.name,
                 "" + (item.fields.heat_number || "N/A"),
@@ -43,7 +43,21 @@ export function EventRelayEntriesTable() {
             searchType="RELAY_ENTRY_OF_EVENT"
             tableBarItems={[]}
             tableBarHostItems={[
-                <PageButton color="orange" text="Create an relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${eventData.fields.session.fields.meet}/relay_entries/create`)} />
+                <PageButton color="orange" text="Create an relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(
+                    `/meets/${eventData.fields.session.fields.meet.pk}/relay_entries/create`,
+                    {
+                        state:
+                        {
+                            defaultEvent:
+                            {
+                                name: generateEventName(eventData),
+                                event_id: eventData.pk
+                            }
+                        }
+                    }
+                    )
+                } 
+                />
             ]}
             tableCols={[
                 <col span={1} className="w-auto" />,
