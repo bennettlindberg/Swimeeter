@@ -213,7 +213,7 @@ export function App() {
             case "dark":
                 setInterpretedScreenMode("dark");
                 break;
-            
+
             case "system":
                 if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
                     setInterpretedScreenMode("dark");

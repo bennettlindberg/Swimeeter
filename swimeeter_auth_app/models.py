@@ -10,10 +10,12 @@ class Host(AbstractUser):
 
     # * standard name fields
     first_name = models.CharField(
-        max_length=255, validators=[validators.MinLengthValidator(1), v.host_fl_name_validator]
+        max_length=255,
+        validators=[validators.MinLengthValidator(1), v.host_fl_name_validator],
     )
     last_name = models.CharField(
-        max_length=255, validators=[validators.MinLengthValidator(1), v.host_fl_name_validator]
+        max_length=255,
+        validators=[validators.MinLengthValidator(1), v.host_fl_name_validator],
     )
 
     # * special name fields
@@ -28,9 +30,7 @@ class Host(AbstractUser):
     )
 
     # * settings fields
-    screen_mode = models.CharField(
-        max_length=255, validators=[v.host_screen_validator]
-    )
+    screen_mode = models.CharField(max_length=255, validators=[v.host_screen_validator])
     data_entry_information = models.BooleanField()
     destructive_action_confirms = models.BooleanField()
     motion_safe = models.BooleanField()

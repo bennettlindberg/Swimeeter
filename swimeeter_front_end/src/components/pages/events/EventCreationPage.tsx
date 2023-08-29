@@ -106,11 +106,11 @@ export function EventCreationPage() {
                     <>
                         <SideBarText>
                             {`Looking to create ${event_type === "individual" ? "a relay" : "an individual"} event instead?`}
-                            <PageButton 
+                            <PageButton
                                 color="primary"
                                 text={`Create ${event_type === "individual" ? "a relay" : "an indiv."} event`}
                                 icon="CIRCLE_PLUS"
-                                handleClick={() => {navigate(`/meets/${meet_id_INT}/events/${event_type === "individual" ? "relay" : "individual"}/create`)}}
+                                handleClick={() => { navigate(`/meets/${meet_id_INT}/events/${event_type === "individual" ? "relay" : "individual"}/create`) }}
                             />
                         </SideBarText>
                     </>

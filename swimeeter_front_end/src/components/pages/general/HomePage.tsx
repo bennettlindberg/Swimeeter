@@ -7,7 +7,7 @@ import { MainPageIcon } from "../../utilities/svgs/MainPageIcon.tsx";
 
 export function HomePage() {
     // * initialize context and navigation
-    const { navTreeDispatch, interpretedScreenMode, setTabTitle }: { 
+    const { navTreeDispatch, interpretedScreenMode, setTabTitle }: {
         interpretedScreenMode: "light" | "dark",
         navTreeDispatch: React.Dispatch<NavTreeAction>,
         setTabTitle: (title: string) => void

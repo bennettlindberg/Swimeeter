@@ -263,7 +263,7 @@ export function IndividualEntryPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <IndividualEntryEditingForm scrollRef={informationRef}/>
+                                    <IndividualEntryEditingForm scrollRef={informationRef} />
                                 </>
                             )
                         },

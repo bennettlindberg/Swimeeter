@@ -38,13 +38,13 @@ export function TeamCreationPage() {
             try {
                 // @ make back-end request for tree data
                 const response = await axios.get("/api/v1/info/",
-                {
-                    params: {
-                        info_needed: "relationship_tree",
-                        model_type: "Meet",
-                        model_id: meet_id_INT
-                    }
-                });
+                    {
+                        params: {
+                            info_needed: "relationship_tree",
+                            model_type: "Meet",
+                            model_id: meet_id_INT
+                        }
+                    });
 
                 const treeData: MeetTree = response.data;
                 navTreeDispatch({
@@ -52,7 +52,7 @@ export function TeamCreationPage() {
                     data: [
                         { title: "HOME", route: "/" },
                         { title: "MEETS", route: "/meets" },
-                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route},
+                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route },
                         { title: "CREATE A TEAM", route: `${treeData.MEET.route}/teams/create` }
                     ]
                 });
@@ -81,7 +81,7 @@ export function TeamCreationPage() {
                         ref: createTeamRef,
                         content: (
                             <>
-                                <TeamCreationForm meet_id_INT={meet_id_INT} scrollRef={createTeamRef}/>
+                                <TeamCreationForm meet_id_INT={meet_id_INT} scrollRef={createTeamRef} />
                             </>
                         )
                     }
@@ -89,7 +89,7 @@ export function TeamCreationPage() {
                 secondaryContent={[
                     <>
                         <SideBarText>
-                            After creating your new team, you'll be able to add swimmers belonging to this team to your meet. 
+                            After creating your new team, you'll be able to add swimmers belonging to this team to your meet.
                         </SideBarText>
                     </>
                 ]}

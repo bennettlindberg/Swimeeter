@@ -168,13 +168,13 @@ export function SessionPage() {
             try {
                 // @ make back-end request for tree data
                 const response = await axios.get("/api/v1/info/",
-                {
-                    params: {
-                        info_needed: "relationship_tree",
-                        model_type: "Session",
-                        model_id: session_id_INT
-                    }
-                });
+                    {
+                        params: {
+                            info_needed: "relationship_tree",
+                            model_type: "Session",
+                            model_id: session_id_INT
+                        }
+                    });
 
                 const treeData: SessionTree = response.data;
                 navTreeDispatch({
@@ -182,8 +182,8 @@ export function SessionPage() {
                     data: [
                         { title: "HOME", route: "/" },
                         { title: "MEETS", route: "/meets" },
-                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route},
-                        { title: treeData.SESSION.title.toUpperCase(), route: treeData.SESSION.route}
+                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route },
+                        { title: treeData.SESSION.title.toUpperCase(), route: treeData.SESSION.route }
                     ]
                 });
             } catch (error) {
@@ -218,7 +218,7 @@ export function SessionPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <SessionEditingForm scrollRef={informationRef}/>
+                                    <SessionEditingForm scrollRef={informationRef} />
                                 </>
                             )
                         },

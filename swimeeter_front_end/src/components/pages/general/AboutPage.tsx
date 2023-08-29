@@ -72,7 +72,7 @@ export function AboutPage() {
                             Want to view Swimeeter's source code?
                         </SideBarText>
                         <a href="https://github.com/bennettlindberg/Swimeeter" target="_blank" rel="noopener noreferrer" className="w-fit h-fit">
-                            <PageButton color="slate" text="GitHub repository" icon="LINK" handleClick={() => {}}/>
+                            <PageButton color="slate" text="GitHub repository" icon="LINK" handleClick={() => { }} />
                         </a>
                     </>
                 ]}

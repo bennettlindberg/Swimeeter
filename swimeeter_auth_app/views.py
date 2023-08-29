@@ -173,7 +173,7 @@ class Update_profile(APIView):
                         "must pass current password to update password",
                         status=status.HTTP_403_FORBIDDEN,
                     )
-                
+
                 user = authenticate(
                     username=request.data["email"],
                     password=request.data["old_password"],

@@ -38,13 +38,13 @@ export function SessionCreationPage() {
             try {
                 // @ make back-end request for tree data
                 const response = await axios.get("/api/v1/info/",
-                {
-                    params: {
-                        info_needed: "relationship_tree",
-                        model_type: "Meet",
-                        model_id: meet_id_INT
-                    }
-                });
+                    {
+                        params: {
+                            info_needed: "relationship_tree",
+                            model_type: "Meet",
+                            model_id: meet_id_INT
+                        }
+                    });
 
                 const treeData: MeetTree = response.data;
                 navTreeDispatch({
@@ -52,7 +52,7 @@ export function SessionCreationPage() {
                     data: [
                         { title: "HOME", route: "/" },
                         { title: "MEETS", route: "/meets" },
-                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route},
+                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route },
                         { title: "CREATE A SESSION", route: `${treeData.MEET.route}/sessions/create` }
                     ]
                 });
@@ -81,7 +81,7 @@ export function SessionCreationPage() {
                         ref: createSessionRef,
                         content: (
                             <>
-                                <SessionCreationForm meet_id_INT={meet_id_INT} scrollRef={createSessionRef}/>
+                                <SessionCreationForm meet_id_INT={meet_id_INT} scrollRef={createSessionRef} />
                             </>
                         )
                     }
@@ -89,7 +89,7 @@ export function SessionCreationPage() {
                 secondaryContent={[
                     <>
                         <SideBarText>
-                            After creating your new session, you'll be able to add events taking place during the session to your meet. 
+                            After creating your new session, you'll be able to add events taking place during the session to your meet.
                         </SideBarText>
                     </>
                 ]}

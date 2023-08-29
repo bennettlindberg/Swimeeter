@@ -146,13 +146,13 @@ export function PoolPage() {
             try {
                 // @ make back-end request for tree data
                 const response = await axios.get("/api/v1/info/",
-                {
-                    params: {
-                        info_needed: "relationship_tree",
-                        model_type: "Pool",
-                        model_id: pool_id_INT
-                    }
-                });
+                    {
+                        params: {
+                            info_needed: "relationship_tree",
+                            model_type: "Pool",
+                            model_id: pool_id_INT
+                        }
+                    });
 
                 const treeData: PoolTree = response.data;
                 navTreeDispatch({
@@ -160,8 +160,8 @@ export function PoolPage() {
                     data: [
                         { title: "HOME", route: "/" },
                         { title: "MEETS", route: "/meets" },
-                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route},
-                        { title: treeData.POOL.title.toUpperCase(), route: treeData.POOL.route}
+                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route },
+                        { title: treeData.POOL.title.toUpperCase(), route: treeData.POOL.route }
                     ]
                 });
             } catch (error) {
@@ -196,7 +196,7 @@ export function PoolPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <PoolEditingForm scrollRef={informationRef}/>
+                                    <PoolEditingForm scrollRef={informationRef} />
                                 </>
                             )
                         },

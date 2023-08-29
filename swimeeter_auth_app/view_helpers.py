@@ -4,17 +4,17 @@ from rest_framework import status
 from django.core.serializers import serialize
 import json
 
+
 def get_session_preferences(request):
     return {
         "screen_mode": request.session.get("screen_mode", "system"),
-        "data_entry_information": request.session.get(
-            "data_entry_information", True
-        ),
+        "data_entry_information": request.session.get("data_entry_information", True),
         "destructive_action_confirms": request.session.get(
             "destructive_action_confirms", True
         ),
         "motion_safe": request.session.get("motion_safe", True),
     }
+
 
 def get_user_profile(host_object):
     return json.loads(
@@ -32,6 +32,7 @@ def get_user_profile(host_object):
         )
     )[0]
 
+
 def get_user_preferences(host_object):
     return json.loads(
         serialize(
@@ -46,6 +47,7 @@ def get_user_preferences(host_object):
         )
     )[0]
 
+
 def make_full_user_response(user_preferences_JSON, user_profile_JSON):
     return Response(
         {
@@ -58,10 +60,12 @@ def make_full_user_response(user_preferences_JSON, user_profile_JSON):
         status=status.HTTP_200_OK,
     )
 
+
 def make_session_preferences_response(session_preferences_JSON):
     return Response(
         {"preferences": session_preferences_JSON}, status=status.HTTP_200_OK
     )
+
 
 def make_user_profile_response(user_profile_JSON):
     return Response(

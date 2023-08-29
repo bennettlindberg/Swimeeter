@@ -18,10 +18,10 @@ import { MeetSwimmersTable } from "../../sections/meet_page/MeetSwimmersTable.ts
 import { MeetHeatSheetTable } from "../../sections/meet_page/MeetHeatSheetTable.tsx";
 
 // * create meet context
-export const MeetContext = createContext<{ 
-    meetData: Meet, 
+export const MeetContext = createContext<{
+    meetData: Meet,
     setMeetData: React.Dispatch<React.SetStateAction<Meet>>,
-    isMeetHost: boolean 
+    isMeetHost: boolean
 }>({
     meetData: {
         model: "",
@@ -44,7 +44,7 @@ export const MeetContext = createContext<{
             }
         }
     },
-    setMeetData: () => {},
+    setMeetData: () => { },
     isMeetHost: false
 });
 
@@ -171,7 +171,7 @@ export function MeetPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <MeetEditingForm scrollRef={informationRef}/>
+                                    <MeetEditingForm scrollRef={informationRef} />
                                 </>
                             )
                         },

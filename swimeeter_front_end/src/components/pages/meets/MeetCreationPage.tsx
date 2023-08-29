@@ -51,7 +51,7 @@ export function MeetCreationPage() {
                         ref: createMeetRef,
                         content: (
                             <>
-                                <MeetCreationForm scrollRef={createMeetRef}/>
+                                <MeetCreationForm scrollRef={createMeetRef} />
                             </>
                         )
                     }
@@ -59,7 +59,7 @@ export function MeetCreationPage() {
                 secondaryContent={[
                     <>
                         <SideBarText>
-                            After creating your new meet, you'll be able to add pools, teams, sessions, events, swimmers, and entries to your meet. 
+                            After creating your new meet, you'll be able to add pools, teams, sessions, events, swimmers, and entries to your meet.
                         </SideBarText>
                         <SideBarText>
                             <span className="text-yellow-400 dark:text-yellow-500">NOTE: </span>Meet begin and end times are calculated after meet creation based on your meet's sessions.

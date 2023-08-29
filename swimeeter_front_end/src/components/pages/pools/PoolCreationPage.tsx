@@ -38,13 +38,13 @@ export function PoolCreationPage() {
             try {
                 // @ make back-end request for tree data
                 const response = await axios.get("/api/v1/info/",
-                {
-                    params: {
-                        info_needed: "relationship_tree",
-                        model_type: "Meet",
-                        model_id: meet_id_INT
-                    }
-                });
+                    {
+                        params: {
+                            info_needed: "relationship_tree",
+                            model_type: "Meet",
+                            model_id: meet_id_INT
+                        }
+                    });
 
                 const treeData: MeetTree = response.data;
                 navTreeDispatch({
@@ -52,7 +52,7 @@ export function PoolCreationPage() {
                     data: [
                         { title: "HOME", route: "/" },
                         { title: "MEETS", route: "/meets" },
-                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route},
+                        { title: treeData.MEET.title.toUpperCase(), route: treeData.MEET.route },
                         { title: "CREATE A POOL", route: `${treeData.MEET.route}/pools/create` }
                     ]
                 });
@@ -81,7 +81,7 @@ export function PoolCreationPage() {
                         ref: createPoolRef,
                         content: (
                             <>
-                                <PoolCreationForm meet_id_INT={meet_id_INT} scrollRef={createPoolRef}/>
+                                <PoolCreationForm meet_id_INT={meet_id_INT} scrollRef={createPoolRef} />
                             </>
                         )
                     }
@@ -89,7 +89,7 @@ export function PoolCreationPage() {
                 secondaryContent={[
                     <>
                         <SideBarText>
-                            After creating your new pool, you'll be able to add sessions located at the pool to your meet. 
+                            After creating your new pool, you'll be able to add sessions located at the pool to your meet.
                         </SideBarText>
                     </>
                 ]}

@@ -186,7 +186,7 @@ export function TeamPage() {
                             ref: informationRef,
                             content: (
                                 <>
-                                    <TeamEditingForm scrollRef={informationRef}/>
+                                    <TeamEditingForm scrollRef={informationRef} />
                                 </>
                             )
                         },
