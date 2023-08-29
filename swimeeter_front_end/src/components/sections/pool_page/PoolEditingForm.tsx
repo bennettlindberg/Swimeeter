@@ -11,7 +11,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function PoolEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
+export function PoolEditingForm({ scrollRef }: { scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize context, state, and id
     const { poolData, setPoolData, isMeetHost }: {
         poolData: Pool,
@@ -27,7 +27,7 @@ export function PoolEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
                 modelData={poolData}
                 setModelData={setPoolData}
                 isMeetHost={isMeetHost}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "name",
                         idSuffix: "-name-text-field",
@@ -66,143 +66,7 @@ export function PoolEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
                                 }
                             }
                         }
-                    },
-                    {
-                        title: "street_address",
-                        idSuffix: "-street_address-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <EditingFormGroup
-                            label={<InputLabel inputId={idPrefix + "-street_address-text-field"} text="Street address" />}
-                            key={idPrefix + "-street_address-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="Street address"
-                                defaultText={poolData.fields.street_address}
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-street_address"}
-                            />}
-                            editInfo={{
-                                title: "STREET ADDRESS",
-                                description: "The street address field should contain the street address of the pool.",
-                                common_values: "Street addresses generally come in the form of the following example: \"123 Main Street.\"",
-                                permitted_values: "Any string. May be left blank.",
-                            }}
-                            viewInfo={{
-                                title: "STREET ADDRESS",
-                                description: "The street address field contains the street address of the pool.",
-                            }}
-                        />
-                    },
-                    {
-                        title: "city",
-                        idSuffix: "-city-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <EditingFormGroup
-                            label={<InputLabel inputId={idPrefix + "-city-text-field"} text="City" />}
-                            key={idPrefix + "-city-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="City"
-                                defaultText={poolData.fields.city}
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-city"}
-                            />}
-                            editInfo={{
-                                title: "CITY",
-                                description: "The city field should contain the city the pool is located in.",
-                                permitted_values: "Any string. May be left blank.",
-                            }}
-                            viewInfo={{
-                                title: "CITY",
-                                description: "The city field contains the name of the city the pool is located in.",
-                            }}
-                        />
-                    },
-                    {
-                        title: "state",
-                        idSuffix: "-state-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <EditingFormGroup
-                            label={<InputLabel inputId={idPrefix + "-state-text-field"} text="State" />}
-                            key={idPrefix + "-state-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="State"
-                                defaultText={poolData.fields.state}
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-state"}
-                            />}
-                            editInfo={{
-                                title: "STATE",
-                                description: "The state field should contain the state the pool is located in.",
-                                permitted_values: "Any string. May be left blank.",
-                            }}
-                            viewInfo={{
-                                title: "STATE",
-                                description: "The state field contains the name of the state the pool is located in.",
-                            }}
-                        />
-                    },
-                    {
-                        title: "country",
-                        idSuffix: "-country-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <EditingFormGroup
-                            label={<InputLabel inputId={idPrefix + "-country-text-field"} text="Country" />}
-                            key={idPrefix + "-country-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="Country"
-                                defaultText={poolData.fields.country}
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-country"}
-                            />}
-                            editInfo={{
-                                title: "COUNTRY",
-                                description: "The country field should contain the country the pool is located in.",
-                                permitted_values: "Any string. May be left blank.",
-                            }}
-                            viewInfo={{
-                                title: "COUNTRY",
-                                description: "The country field contains the name of the country the pool is located in.",
-                            }}
-                        />
-                    },
-                    {
-                        title: "zipcode",
-                        idSuffix: "-zipcode-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <EditingFormGroup
-                            label={<InputLabel inputId={idPrefix + "-zipcode-text-field"} text="Zip code" />}
-                            key={idPrefix + "-zipcode-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^[0-9]*$/}
-                                placeholderText="Zip code"
-                                defaultText={poolData.fields.zipcode}
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-zipcode"}
-                            />}
-                            editInfo={{
-                                title: "ZIP CODE",
-                                description: "The zip code field should contain the zip code of location of the pool.",
-                                permitted_values: "Any numerical string. May be left blank.",
-                            }}
-                            viewInfo={{
-                                title: "ZIP CODE",
-                                description: "The zip code field contains the zip code of location of the pool.",
-                            }}
-                        />
-                    },
+                    }], [
                     {
                         title: "lanes",
                         idSuffix: "-lanes-text-field",
@@ -347,8 +211,144 @@ export function PoolEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
                                 }
                             }
                         }
+                    }], [
+                    {
+                        title: "street_address",
+                        idSuffix: "-street_address-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-street_address-text-field"} text="Street address" />}
+                            key={idPrefix + "-street_address-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="Street address"
+                                defaultText={poolData.fields.street_address}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-street_address"}
+                            />}
+                            editInfo={{
+                                title: "STREET ADDRESS",
+                                description: "The street address field should contain the street address of the pool.",
+                                common_values: "Street addresses generally come in the form of the following example: \"123 Main Street.\"",
+                                permitted_values: "Any string. May be left blank.",
+                            }}
+                            viewInfo={{
+                                title: "STREET ADDRESS",
+                                description: "The street address field contains the street address of the pool.",
+                            }}
+                        />
                     },
-                ]}
+                    {
+                        title: "city",
+                        idSuffix: "-city-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-city-text-field"} text="City" />}
+                            key={idPrefix + "-city-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="City"
+                                defaultText={poolData.fields.city}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-city"}
+                            />}
+                            editInfo={{
+                                title: "CITY",
+                                description: "The city field should contain the city the pool is located in.",
+                                permitted_values: "Any string. May be left blank.",
+                            }}
+                            viewInfo={{
+                                title: "CITY",
+                                description: "The city field contains the name of the city the pool is located in.",
+                            }}
+                        />
+                    },
+                    {
+                        title: "state",
+                        idSuffix: "-state-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-state-text-field"} text="State" />}
+                            key={idPrefix + "-state-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="State"
+                                defaultText={poolData.fields.state}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-state"}
+                            />}
+                            editInfo={{
+                                title: "STATE",
+                                description: "The state field should contain the state the pool is located in.",
+                                permitted_values: "Any string. May be left blank.",
+                            }}
+                            viewInfo={{
+                                title: "STATE",
+                                description: "The state field contains the name of the state the pool is located in.",
+                            }}
+                        />
+                    },
+                    {
+                        title: "country",
+                        idSuffix: "-country-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-country-text-field"} text="Country" />}
+                            key={idPrefix + "-country-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="Country"
+                                defaultText={poolData.fields.country}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-country"}
+                            />}
+                            editInfo={{
+                                title: "COUNTRY",
+                                description: "The country field should contain the country the pool is located in.",
+                                permitted_values: "Any string. May be left blank.",
+                            }}
+                            viewInfo={{
+                                title: "COUNTRY",
+                                description: "The country field contains the name of the country the pool is located in.",
+                            }}
+                        />
+                    },
+                    {
+                        title: "zipcode",
+                        idSuffix: "-zipcode-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-zipcode-text-field"} text="Zip code" />}
+                            key={idPrefix + "-zipcode-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^[0-9]*$/}
+                                placeholderText="Zip code"
+                                defaultText={poolData.fields.zipcode}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-zipcode"}
+                            />}
+                            editInfo={{
+                                title: "ZIP CODE",
+                                description: "The zip code field should contain the zip code of location of the pool.",
+                                permitted_values: "Any numerical string. May be left blank.",
+                            }}
+                            viewInfo={{
+                                title: "ZIP CODE",
+                                description: "The zip code field contains the zip code of location of the pool.",
+                            }}
+                        />
+                    }
+                ]]}
                 modelSelectFields={[]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",

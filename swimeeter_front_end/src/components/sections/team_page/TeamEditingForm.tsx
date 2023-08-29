@@ -26,7 +26,7 @@ export function TeamEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
                 modelData={teamData}
                 setModelData={setTeamData}
                 isMeetHost={isMeetHost}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "name",
                         idSuffix: "-name-text-field",
@@ -105,7 +105,7 @@ export function TeamEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
                             }
                         }
                     },
-                ]}
+                ]]}
                 modelSelectFields={[]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",

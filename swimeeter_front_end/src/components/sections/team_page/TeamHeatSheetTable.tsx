@@ -59,7 +59,7 @@ export function TeamHeatSheetTable() {
                             setInfoShown(false);
                         }}
                         info={{
-                            title: "Team Heat Sheet",
+                            title: "TEAM HEAT SHEET",
                             description: "The team heat sheet contains the heat and lane seeding information for all heats of the meet being viewed that contain at least one entry from the current team."
                         }}
                     />}

@@ -185,16 +185,12 @@ class Meet_view(APIView):
             new_meet.save()
         except ValidationError as err:
             # ? invalid creation data passed -> validators
-            print(err)
-
             return Response(
                 "; ".join(err.messages),
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as err:
             # ? invalid creation data passed -> general
-            print(err)
-
             return Response(
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,

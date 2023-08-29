@@ -26,7 +26,7 @@ export function SessionCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
         <>
             <CreationForm
                 scrollRef={scrollRef}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "name",
                         idSuffix: "-name-text-field",
@@ -60,7 +60,7 @@ export function SessionCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                                 }
                             }
                         }
-                    },
+                    }], [
                     {
                         title: "begin_time",
                         idSuffix: "-begin_time-datetime-field",
@@ -145,8 +145,8 @@ export function SessionCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                             }
                         }
                     },
-                ]}
-                modelSelectFields={[
+                ]]}
+                modelSelectFields={[[
                     {
                         queryParamTitle: "pool_id",
                         baseInfo: {
@@ -170,7 +170,7 @@ export function SessionCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                             }
                         }
                     }
-                ]}
+                ]]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
                     description: "Replacing previously-created duplicate sessions with this one will result in the deletion of the original sessions. Are you sure you want to continue?",
@@ -218,6 +218,7 @@ export function SessionCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                         error: {
                             title: "POOL FIELD ERROR",
                             description: "No pool matching the pool name provided in the pool field exists. Every session must be associated with a pool.",
+                            fields: "Pool",
                             recommendation: "Choose an existing pool for the session to be associated with. If no pools exist, first add a pool to the meet."
                         }
                     },
@@ -226,6 +227,7 @@ export function SessionCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                         error: {
                             title: "POOL FIELD ERROR",
                             description: "No pool matching the pool name provided in the pool field exists. Every session must be associated with a pool.",
+                            fields: "Pool",
                             recommendation: "Choose an existing pool for the session to be associated with. If no pools exist, first add a pool to the meet."
                         }
                     },

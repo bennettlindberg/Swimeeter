@@ -21,7 +21,7 @@ export function IndivEntryHeatSheetTable() {
     // * initialize context, state, and navigation
     const { individualEntryData, isMeetHost }: { individualEntryData: IndividualEntry, isMeetHost: boolean } = useContext(IndividualEntryContext);
     const [seedingData, setSeedingData] = useState<EntryHeatSheet | null>(null);
-    
+
     const { userState }: { userState: UserState } = useContext(AppContext);
     const [infoShown, setInfoShown] = useState<boolean>(false);
 
@@ -58,7 +58,7 @@ export function IndivEntryHeatSheetTable() {
                             setInfoShown(false);
                         }}
                         info={{
-                            title: "Individual Entry Heat Sheet",
+                            title: "INDIVIDUAL ENTRY HEAT SHEET",
                             description: "The individual entry heat sheet contains the heat and lane seeding information for the heat of the individual entry being viewed."
                         }}
                     />}
@@ -92,7 +92,12 @@ export function IndivEntryHeatSheetTable() {
                             }
                         </HeatSheetHeatHeader>
                     </HeatSheetHeader>
-                    : <HeatSheetText text="This entry has no seeding yet." />
+                    : <HeatSheetHeader
+                        color="primary"
+                        title={"Heat"}
+                    >
+                        <HeatSheetText text="Sorry, no seeding exists yet for this entry's event." />
+                    </HeatSheetHeader>
                 )
             }
         </>

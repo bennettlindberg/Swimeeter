@@ -141,7 +141,7 @@ export function RelaySwimmerModelSelect({
 
                 setAllOptions(response.data.map((option: Swimmer) => {
                     return {
-                        text: generateSwimmerName(option),
+                        text: generateSwimmerName(option) + " (" + option.fields.age + ", " + option.fields.gender + ", " + option.fields.team.fields.acronym + ")",
                         model_id: option.pk
                     }
                 }));
@@ -170,7 +170,7 @@ export function RelaySwimmerModelSelect({
                     optional={false}
                     field={
                         <div className="flex flex-col gap-y-0">
-                            <input id={`${idPrefix}-swimmer-model-select-field`} className="peer text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black read-only:bg-slate-100 read-only:dark:bg-slate-800" type="text" placeholder="Leg swimmer" value={inputSelection.text} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{ width: "300px" }} />
+                            <input id={`${idPrefix}-swimmer-model-select-field`} className="peer text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black read-only:bg-slate-100 read-only:dark:bg-slate-800" type="text" placeholder="Leg swimmer" defaultValue={inputSelection.text} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{ width: "300px" }} />
                             <div className="relative peer-read-only:invisible">
                                 <div className={`${optionsShown && matchingOptions.length > 0 ? "visible" : "invisible"} bg-white dark:bg-black border-2 border-slate-200 dark:border-slate-700 flex flex-col items-start rounded-md absolute left-0 top-0 p-2 z-10`}>
                                     {matchingOptions.map((option, index) => {
@@ -183,6 +183,7 @@ export function RelaySwimmerModelSelect({
                                                 setInputSelection(option);
                                                 setModelSelection(option);
                                                 setOptionsShown(false);
+                                                (document.getElementById(`${idPrefix}-swimmer-model-select-field`) as HTMLInputElement).value = option.text;
                                             }}>
                                             {option.text}
                                         </button>
@@ -207,7 +208,7 @@ export function RelaySwimmerModelSelect({
                     optional={false}
                     field={
                         <div className="flex flex-col gap-y-0">
-                            <input id={`${idPrefix}-swimmer-model-select-field`} className="peer text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black read-only:bg-slate-100 read-only:dark:bg-slate-800" type="text" placeholder="Leg swimmer" value={inputSelection.text} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{ width: "300px" }} />
+                            <input id={`${idPrefix}-swimmer-model-select-field`} className="peer text-lg px-1 rounded-md border-2 border-slate-400 dark:border-slate-500 focus:border-sky-400 focus:dark:border-blue-500 read-only:focus:border-slate-400 read-only:focus:dark:border-slate-500 focus:outline-none bg-white dark:bg-black read-only:bg-slate-100 read-only:dark:bg-slate-800" type="text" placeholder="Leg swimmer" defaultValue={inputSelection.text} onChange={handleChange} onFocus={handleGainFocus} onBlur={handleLostFocus} style={{ width: "300px" }} />
                             <div className="relative peer-read-only:invisible">
                                 <div className={`${optionsShown && matchingOptions.length > 0 ? "visible" : "invisible"} bg-white dark:bg-black border-2 border-slate-200 dark:border-slate-700 flex flex-col items-start rounded-md absolute left-0 top-0 p-2 z-10`}>
                                     {matchingOptions.map((option, index) => {
@@ -220,6 +221,7 @@ export function RelaySwimmerModelSelect({
                                                 setInputSelection(option);
                                                 setModelSelection(option);
                                                 setOptionsShown(false);
+                                                (document.getElementById(`${idPrefix}-swimmer-model-select-field`) as HTMLInputElement).value = option.text;
                                             }}>
                                             {option.text}
                                         </button>

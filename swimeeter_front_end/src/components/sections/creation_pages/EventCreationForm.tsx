@@ -9,13 +9,13 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_id_INT: number, event_type: string, scrollRef: React.RefObject<HTMLHeadingElement>} ) {
+export function EventCreationForm({ meet_id_INT, event_type, scrollRef }: { meet_id_INT: number, event_type: string, scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize id
     const idPrefix = useId();
 
     // * initialize location
     const location = useLocation();
-    let defaultSession: {name: string, session_id: number} | undefined = undefined;
+    let defaultSession: { name: string, session_id: number } | undefined = undefined;
     try {
         defaultSession = location.state.defaultSession;
     } catch {
@@ -23,44 +23,7 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
     }
 
     // * create form input fields
-    const formInputFields = [
-        {
-            title: "stroke",
-            idSuffix: "-stroke-select-field",
-            readOnly: false,
-            duplicateSensitive: true,
-            formGroup: <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-stroke-select-field"} text="Stroke" />}
-                key={idPrefix + "-stroke-select-field"}
-                optional={false}
-                field={<SearchSelect
-                    regex={/^.*$/}
-                    otherEnabled={true}
-                    placeholderText="Stroke"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-stroke"}
-                    options={["Butterfly", "Backstroke", "Breaststroke", "Freestyle", event_type === "relay" ? "Medley" : "IM"]}
-                />}
-                createInfo={{
-                    title: "STROKE",
-                    description: "The stroke field should contain the competition stroke of the event being created.",
-                    common_values: `Butterfly, Backstroke, Breaststroke, Freestyle, ${event_type === "relay" ? "Medley" : "IM"}`,
-                    permitted_values: "Any string. Although the most common values are provided as select options, you may provide any stroke string."
-                }}
-            />,
-            validator: (stroke: string) => {
-                if (stroke === "") {
-                    return {
-                        title: "STROKE FIELD ERROR",
-                        description: "The stroke field was left blank. Event strokes are required and can be any string.",
-                        fields: "Stroke",
-                        recommendation: "Alter the entered event stroke to conform to the requirements of the field."
-                    }
-                } else {
-                    return true;
-                }
-            }
-        },
+    const formInputFields = [[
         {
             title: "distance",
             idSuffix: "-distance-text-field",
@@ -116,42 +79,42 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
             }
         },
         {
-            title: "stage",
-            idSuffix: "-stage-select-field",
+            title: "stroke",
+            idSuffix: "-stroke-select-field",
             readOnly: false,
             duplicateSensitive: true,
             formGroup: <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-stage-select-field"} text="Stage" />}
-                key={idPrefix + "-stage-select-field"}
+                label={<InputLabel inputId={idPrefix + "-stroke-select-field"} text="Stroke" />}
+                key={idPrefix + "-stroke-select-field"}
                 optional={false}
                 field={<SearchSelect
                     regex={/^.*$/}
                     otherEnabled={true}
-                    placeholderText="Stage"
+                    placeholderText="Stroke"
                     pixelWidth={300}
-                    idPrefix={idPrefix + "-stage"}
-                    options={["Prelim", "Final"]}
+                    idPrefix={idPrefix + "-stroke"}
+                    options={["Butterfly", "Backstroke", "Breaststroke", "Freestyle", event_type === "relay" ? "Medley" : "IM"]}
                 />}
                 createInfo={{
-                    title: "STAGE",
-                    description: "The stage field should contain the competition round of the event being created. This field's value should be \"Final\" unless the meet is a prelims-finals or other round-based meet.",
-                    common_values: "Prelim, Final",
-                    permitted_values: "Any string. Although the most common values are provided as select options, you may provide any stage string."
+                    title: "STROKE",
+                    description: "The stroke field should contain the competition stroke of the event being created.",
+                    common_values: `Butterfly, Backstroke, Breaststroke, Freestyle, ${event_type === "relay" ? "Medley" : "IM"}`,
+                    permitted_values: "Any string. Although the most common values are provided as select options, you may provide any stroke string."
                 }}
             />,
-            validator: (stage: string) => {
-                if (stage === "") {
+            validator: (stroke: string) => {
+                if (stroke === "") {
                     return {
-                        title: "STAGE FIELD ERROR",
-                        description: "The stage field was left blank. Event stages are required and can be any string.",
-                        fields: "Stage",
-                        recommendation: "Alter the entered event stage to conform to the requirements of the field."
+                        title: "STROKE FIELD ERROR",
+                        description: "The stroke field was left blank. Event strokes are required and can be any string.",
+                        fields: "Stroke",
+                        recommendation: "Alter the entered event stroke to conform to the requirements of the field."
                     }
                 } else {
                     return true;
                 }
             }
-        },
+        }], [
         {
             title: "competing_gender",
             idSuffix: "-competing_gender-select-field",
@@ -289,7 +252,44 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
                 }
                 return parseInt(max_age);
             }
-        },
+        }], [
+        {
+            title: "stage",
+            idSuffix: "-stage-select-field",
+            readOnly: false,
+            duplicateSensitive: true,
+            formGroup: <CreationFormGroup
+                label={<InputLabel inputId={idPrefix + "-stage-select-field"} text="Stage" />}
+                key={idPrefix + "-stage-select-field"}
+                optional={false}
+                field={<SearchSelect
+                    regex={/^.*$/}
+                    otherEnabled={true}
+                    placeholderText="Stage"
+                    pixelWidth={300}
+                    idPrefix={idPrefix + "-stage"}
+                    options={["Prelim", "Final"]}
+                />}
+                createInfo={{
+                    title: "STAGE",
+                    description: "The stage field should contain the competition round of the event being created. This field's value should be \"Final\" unless the meet is a prelims-finals or other round-based meet.",
+                    common_values: "Prelim, Final",
+                    permitted_values: "Any string. Although the most common values are provided as select options, you may provide any stage string."
+                }}
+            />,
+            validator: (stage: string) => {
+                if (stage === "") {
+                    return {
+                        title: "STAGE FIELD ERROR",
+                        description: "The stage field was left blank. Event stages are required and can be any string.",
+                        fields: "Stage",
+                        recommendation: "Alter the entered event stage to conform to the requirements of the field."
+                    }
+                } else {
+                    return true;
+                }
+            }
+        }], [
         {
             title: "order_in_session",
             idSuffix: "-order_in_session-select-field",
@@ -344,9 +344,9 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
                 }
             }
         },
-    ]
+    ]]
     if (event_type === "relay") {
-        formInputFields.push(
+        formInputFields.push([
             {
                 title: "swimmers_per_entry",
                 idSuffix: "-swimmers_per_entry-text-field",
@@ -402,7 +402,7 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
                     return parseInt(distance);
                 }
             },
-        )
+        ])
     }
 
     return (
@@ -410,7 +410,7 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
             <CreationForm
                 scrollRef={scrollRef}
                 formInputFields={formInputFields}
-                modelSelectFields={[
+                modelSelectFields={[[
                     {
                         queryParamTitle: "session_id",
                         baseInfo: {
@@ -434,7 +434,7 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
                             }
                         }
                     }
-                ]}
+                ]]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
                     description: "Replacing previously-created duplicate events with this one will result in the deletion of the original events. Are you sure you want to continue?",
@@ -488,6 +488,7 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
                         error: {
                             title: "SESSION FIELD ERROR",
                             description: "No session matching the session name provided in the session field exists. Every event must be associated with a session.",
+                            fields: "Session",
                             recommendation: "Choose an existing session for the event to be associated with. If no sessions exist, first add a session to the meet."
                         }
                     },
@@ -496,6 +497,7 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
                         error: {
                             title: "SESSION FIELD ERROR",
                             description: "No session matching the session name provided in the session field exists. Every event must be associated with a session.",
+                            fields: "Session",
                             recommendation: "Choose an existing session for the event to be associated with. If no sessions exist, first add a session to the meet."
                         }
                     },
@@ -504,6 +506,7 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
                         error: {
                             title: "COMPETING AGE RANGE ERROR",
                             description: "The provided maximum competing age was smaller than the provided minimum competing age. Event maximum ages must be greater than or equal to event minimum ages.",
+                            fields: "Competing min age, Competing max age",
                             recommendation: "Choose maximum and minimum competing ages where the maximum age is greater than or equal to the minimum age."
                         }
                     },
@@ -512,6 +515,7 @@ export function EventCreationForm({ meet_id_INT, event_type, scrollRef}: { meet_
                         error: {
                             title: "SWIMMERS PER MEDLEY RELAY ENTRY ERROR",
                             description: "The provided number of swimmers per relay entry was not 4 but the event stroke was \"Medley\". Medley relays must have exactly 4 swimmers per relay.",
+                            fields: "Swimmers per relay",
                             recommendation: "Either change the number of swimmers per relay to 4 or change the event stroke to a different stroke than \"Medley\"."
                         }
                     }

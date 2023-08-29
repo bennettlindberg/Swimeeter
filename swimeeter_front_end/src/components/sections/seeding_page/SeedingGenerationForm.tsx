@@ -99,6 +99,7 @@ const errorPossibilities = [
         error: {
             title: "EVENT FIELD ERROR",
             description: "No event matching the event name provided in the event field exists.",
+            fields: "Event",
             recommendation: "Choose an existing event for which to generate seeding. If no events exist, first add an event to the meet."
         }
     },
@@ -107,6 +108,7 @@ const errorPossibilities = [
         error: {
             title: "EVENT FIELD ERROR",
             description: "No event matching the event name provided in the event field exists.",
+            fields: "Event",
             recommendation: "Choose an existing event for which to generate seeding. If no events exist, first add an event to the meet."
         }
     },
@@ -115,6 +117,7 @@ const errorPossibilities = [
         error: {
             title: "SESSION FIELD ERROR",
             description: "No session matching the session name provided in the session field exists.",
+            fields: "Session",
             recommendation: "Choose an existing session for which to generate seeding. If no sessions exist, first add a session to the meet."
         }
     },
@@ -123,6 +126,7 @@ const errorPossibilities = [
         error: {
             title: "SESSION FIELD ERROR",
             description: "No session matching the session name provided in the session field exists.",
+            fields: "Session",
             recommendation: "Choose an existing session for which to generate seeding. If no sessions exist, first add a session to the meet."
         }
     }
@@ -344,6 +348,7 @@ export function SeedingGenerationForm({ scrollRef }: { scrollRef: React.RefObjec
                 error: {
                     title: `${specificTo.toUpperCase()} FIELD ERROR`,
                     description: `The ${specificTo} field was provided an invalid value. The ${specificTo} field must be provided the name of a valid ${specificTo} in this meet.`,
+                    fields: specificTo === "event" ? "Event" : "Session",
                     recommendation: `Alter the provided ${specificTo} value to conform to the requirements of the ${specificTo} field.`
                 }
             });
@@ -368,6 +373,7 @@ export function SeedingGenerationForm({ scrollRef }: { scrollRef: React.RefObjec
                     error: {
                         title: "MINIMUM ENTRIES PER HEAT FIELD ERROR",
                         description: "The minimum entries per heat field was left blank. Specifying the minimum entries per heat is required and must be a positive integer.",
+                        fields: "Minimum entries per heat",
                         recommendation: "Alter the entered minimum entries per heat to conform to the requirements of the field."
                     }
                 });
@@ -378,6 +384,7 @@ export function SeedingGenerationForm({ scrollRef }: { scrollRef: React.RefObjec
                     error: {
                         title: "MINIMUM ENTRIES PER HEAT FIELD ERROR",
                         description: "An invalid value was provided to the minimum entries per heat field. The specified minimum entries per heat must be a positive integer.",
+                        fields: "Minimum entries per heat",
                         recommendation: "Alter the entered minimum entries per heat to conform to the requirements of the field."
                     }
                 });
@@ -393,6 +400,7 @@ export function SeedingGenerationForm({ scrollRef }: { scrollRef: React.RefObjec
                     error: {
                         title: "SEEDING TYPE FIELD ERROR",
                         description: "The seeding type field was left blank. Specifying the seeding type is required and must be either \"Standard\" or \"Circle.\"",
+                        fields: "Seeding type",
                         recommendation: "Alter the entered seeding type to conform to the requirements of the field."
                     }
                 });
@@ -403,6 +411,7 @@ export function SeedingGenerationForm({ scrollRef }: { scrollRef: React.RefObjec
                     error: {
                         title: "SEEDING TYPE FIELD ERROR",
                         description: "An invalid value was provided to the seeding type field. The specified seeding type must be either \"Standard\" or \"Circle.\"",
+                        fields: "Seeding type",
                         recommendation: "Alter the entered seeding type to conform to the requirements of the field."
                     }
                 });
@@ -419,6 +428,7 @@ export function SeedingGenerationForm({ scrollRef }: { scrollRef: React.RefObjec
                         error: {
                             title: "NUMBER OF CIRCLE-SEEDED HEATS FIELD ERROR",
                             description: "The number of circled-seeded heats field was left blank. Specifying the number of circle-seeded heats is required when using circle seeding and may be either \"All full heats\" or any positive integer.",
+                            fields: "Number of circle-seeded heats",
                             recommendation: "Alter the entered number of circled-seeded heats to conform to the requirements of the field."
                         }
                     });
@@ -433,6 +443,7 @@ export function SeedingGenerationForm({ scrollRef }: { scrollRef: React.RefObjec
                         error: {
                             title: "NUMBER OF CIRCLE-SEEDED HEATS FIELD ERROR",
                             description: "An invalid value was provided to the number of circled-seeded heats field. The specified number of circle-seeded heats may be either \"All full heats\" or any positive integer.",
+                            fields: "Number of circle-seeded heats",
                             recommendation: "Alter the entered number of circled-seeded heats to conform to the requirements of the field."
                         }
                     });
@@ -516,155 +527,173 @@ export function SeedingGenerationForm({ scrollRef }: { scrollRef: React.RefObjec
             {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}
 
             <FormContext.Provider value={true}>
-                <CreationFormGroup
-                    label={<InputLabel inputId={idPrefix + "-specific_to-select-field"} text="Seeding target type" />}
-                    field={<SearchSelect
-                        idPrefix={idPrefix + "-specific_to"}
-                        regex={/^(M(e(e(t?)?)?)?)?$|^(S(e(s(s(i(o(n?)?)?)?)?)?)?)?$|^(E(v(e(n(t?)?)?)?)?)?$/}
-                        otherEnabled={false}
-                        placeholderText="Seeding target type"
-                        defaultText={specificTo === "meet" ? "Meet" : specificTo === "event" ? "Event" : "Session"}
-                        options={[
-                            "Meet", "Session", "Event"
-                        ]}
-                        pixelWidth={300}
-                        exteriorHandleChange={handleSpecificToSelection}
-                    />}
-                    createInfo={{
-                        title: "SEEDING TARGET TYPE",
-                        description: "The seeding target type field should contain the type for which the seeding will be generated.",
-                        permitted_values: "\"Meet,\" \"Session,\" or \"Event.\""
-                    }}
-                    optional={false}
-                />
-                {specificTo === "meet"
-                    ? <NeutralFormGroup
-                        label={<InputLabel inputId={idPrefix + "-model_name-model-select-field"} text="Meet target name" />}
-                        field={<ModelSearchSelect
-                            idPrefix={idPrefix + "-model_name"}
-                            regex={/^.*$/}
-                            otherEnabled={false}
-                            placeholderText="Meet target name"
-                            pixelWidth={300}
-                            defaultSelection={{
-                                text: seedingData.meet_name,
-                                model_id: seedingData.meet_id
-                            }}
-                            setModelSelection={handleModelSelection}
-                            options={[
-                                { text: seedingData.meet_name, model_id: seedingData.meet_id }
-                            ]}
-                        />}
-                        baseInfo={{
-                            title: "MEET TARGET NAME",
-                            description: `The meet target name field contains the meet name for which the seeding will be generated. The value of the field is read-only as only the current meet's seeding can be generated on this page.`,
-                        }}
-                    />
-                    : specificTo === "event"
-                        ? <CreationFormGroup
-                            label={<InputLabel inputId={idPrefix + "-model_name-model-select-field"} text="Event target name" />}
-                            field={<ModelSearchSelect
-                                idPrefix={idPrefix + "-model_name"}
-                                regex={/^.*$/}
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <CreationFormGroup
+                            label={<InputLabel inputId={idPrefix + "-specific_to-select-field"} text="Seeding target type" />}
+                            field={<SearchSelect
+                                idPrefix={idPrefix + "-specific_to"}
+                                regex={/^(M(e(e(t?)?)?)?)?$|^(S(e(s(s(i(o(n?)?)?)?)?)?)?)?$|^(E(v(e(n(t?)?)?)?)?)?$/}
                                 otherEnabled={false}
-                                placeholderText="Event target name"
+                                placeholderText="Seeding target type"
+                                defaultText={specificTo === "meet" ? "Meet" : specificTo === "event" ? "Event" : "Session"}
+                                options={[
+                                    "Meet", "Session", "Event"
+                                ]}
                                 pixelWidth={300}
-                                defaultSelection={modelSelection}
-                                setModelSelection={handleModelSelection}
-                                options={eventChoices}
+                                exteriorHandleChange={handleSpecificToSelection}
                             />}
                             createInfo={{
-                                title: "EVENT TARGET NAME",
-                                description: "The event target name field should contain the event name for which the seeding will be generated.",
-                                permitted_values: "Any string."
+                                title: "SEEDING TARGET TYPE",
+                                description: "The seeding target type field should contain the type for which the seeding will be generated.",
+                                permitted_values: "\"Meet,\" \"Session,\" or \"Event.\""
                             }}
                             optional={false}
                         />
-                        : <>
-                            {/* shift DOM to force options reload */}
-                            <div className="hidden"></div>
-                            <CreationFormGroup
-                                label={<InputLabel inputId={idPrefix + "-model_name-model-select-field"} text="Session target name" />}
+                    </div>
+                    <div className="max-w-min min-w-[300px]">
+                        {specificTo === "meet"
+                            ? <NeutralFormGroup
+                                label={<InputLabel inputId={idPrefix + "-model_name-model-select-field"} text="Meet target name" />}
                                 field={<ModelSearchSelect
                                     idPrefix={idPrefix + "-model_name"}
                                     regex={/^.*$/}
                                     otherEnabled={false}
-                                    placeholderText="Session target name"
+                                    placeholderText="Meet target name"
                                     pixelWidth={300}
-                                    defaultSelection={modelSelection}
+                                    defaultSelection={{
+                                        text: seedingData.meet_name,
+                                        model_id: seedingData.meet_id
+                                    }}
                                     setModelSelection={handleModelSelection}
-                                    options={sessionChoices}
+                                    options={[
+                                        { text: seedingData.meet_name, model_id: seedingData.meet_id }
+                                    ]}
+                                />}
+                                baseInfo={{
+                                    title: "MEET TARGET NAME",
+                                    description: `The meet target name field contains the meet name for which the seeding will be generated. The value of the field is read-only as only the current meet's seeding can be generated on this page.`,
+                                }}
+                            />
+                            : specificTo === "event"
+                                ? <CreationFormGroup
+                                    label={<InputLabel inputId={idPrefix + "-model_name-model-select-field"} text="Event target name" />}
+                                    field={<ModelSearchSelect
+                                        idPrefix={idPrefix + "-model_name"}
+                                        regex={/^.*$/}
+                                        otherEnabled={false}
+                                        placeholderText="Event target name"
+                                        pixelWidth={300}
+                                        defaultSelection={modelSelection}
+                                        setModelSelection={handleModelSelection}
+                                        options={eventChoices}
+                                    />}
+                                    createInfo={{
+                                        title: "EVENT TARGET NAME",
+                                        description: "The event target name field should contain the event name for which the seeding will be generated.",
+                                        permitted_values: "Any string."
+                                    }}
+                                    optional={false}
+                                />
+                                : <>
+                                    {/* shift DOM to force options reload */}
+                                    <div className="hidden"></div>
+                                    <CreationFormGroup
+                                        label={<InputLabel inputId={idPrefix + "-model_name-model-select-field"} text="Session target name" />}
+                                        field={<ModelSearchSelect
+                                            idPrefix={idPrefix + "-model_name"}
+                                            regex={/^.*$/}
+                                            otherEnabled={false}
+                                            placeholderText="Session target name"
+                                            pixelWidth={300}
+                                            defaultSelection={modelSelection}
+                                            setModelSelection={handleModelSelection}
+                                            options={sessionChoices}
+                                        />}
+                                        createInfo={{
+                                            title: "SESSION TARGET NAME",
+                                            description: "The session target name field should contain the session name for which the seeding will be generated.",
+                                            permitted_values: "Any string."
+                                        }}
+                                        optional={false}
+                                    />
+                                </>
+                        }
+                    </div>
+                </div>
+
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <CreationFormGroup
+                            label={<InputLabel inputId={idPrefix + "-min_entries-text-field"} text="Minimum entries per heat" />}
+                            field={<TextInput
+                                idPrefix={idPrefix + "-min_entries"}
+                                regex={/^([123456789][0-9]*)?$/}
+                                placeholderText="Minimum entries per heat"
+                                defaultText="3"
+                                pixelWidth={300}
+                            />}
+                            createInfo={{
+                                title: "MINIMUM ENTRIES PER HEAT",
+                                description: "The minimum entries per heat field should contain the number of entries that each heat should contain at minimum.",
+                                common_values: "3",
+                                permitted_values: "Any positive integer.",
+                                warning: "Swimeeter will attempt to satisfy the specified minimum entries per heat when generating the seeding. In some cases, however, doing so is not possible."
+                            }}
+                            optional={false}
+                        />
+                    </div>
+                </div>
+
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <CreationFormGroup
+                            label={<InputLabel inputId={idPrefix + "-seeding_type-select-field"} text="Seeding method" />}
+                            field={<SearchSelect
+                                idPrefix={idPrefix + "-seeding_type"}
+                                regex={/^(S(t(a(n(d(a(r(d?)?)?)?)?)?)?)?)?$|^(C(i(r(c(l(e?)?)?)?)?)?)?$/}
+                                otherEnabled={false}
+                                placeholderText="Seeding method"
+                                defaultText="Standard"
+                                options={[
+                                    "Standard", "Circle"
+                                ]}
+                                pixelWidth={300}
+                                exteriorHandleChange={handleSeedingTypeSelection}
+                            />}
+                            createInfo={{
+                                title: "SEEDING METHOD",
+                                description: "The seeding method field should contain the method for generating the seeding. Seeding methods determine how entries are organized into heats and lanes.",
+                                permitted_values: "\"Standard\" or \"Circle.\""
+                            }}
+                            optional={false}
+                        />
+                    </div>
+                    <div className="max-w-min min-w-[300px]">
+                        {seedingType === "circle" &&
+                            <CreationFormGroup
+                                label={<InputLabel inputId={idPrefix + "-num_circled-select-field"} text="Number of circle-seeded heats" />}
+                                field={<SearchSelect
+                                    idPrefix={idPrefix + "-num_circled"}
+                                    regex={/^(A(l(l( (f(u(l(l( (h(e(a(t(s?)?)?)?)?)?)?)?)?)?)?)?)?)?)?$|^([123456789][0-9]*)?$/}
+                                    otherEnabled={true}
+                                    placeholderText="Number of circle-seeded heats"
+                                    defaultText="3"
+                                    options={[
+                                        "3", "All full heats"
+                                    ]}
+                                    pixelWidth={300}
                                 />}
                                 createInfo={{
-                                    title: "SESSION TARGET NAME",
-                                    description: "The session target name field should contain the session name for which the seeding will be generated.",
-                                    permitted_values: "Any string."
+                                    title: "NUMBER OF CIRCLE-SEEDED HEATS",
+                                    description: "The number of circle-seeded heats field should contain the number of fully-filled fastest heats that should be circle-seeded. All other heats will be seeded using standard seeding rules.",
+                                    permitted_values: "\"All full heats\" or any positive integer."
                                 }}
                                 optional={false}
                             />
-                        </>
-                }
-                <CreationFormGroup
-                    label={<InputLabel inputId={idPrefix + "-min_entries-text-field"} text="Minimum entries per heat" />}
-                    field={<TextInput
-                        idPrefix={idPrefix + "-min_entries"}
-                        regex={/^([123456789][0-9]*)?$/}
-                        placeholderText="Minimum entries per heat"
-                        defaultText="3"
-                        pixelWidth={300}
-                    />}
-                    createInfo={{
-                        title: "MINIMUM ENTRIES PER HEAT",
-                        description: "The minimum entries per heat field should contain the number of entries that each heat should contain at minimum.",
-                        common_values: "3",
-                        permitted_values: "Any positive integer.",
-                        warning: "Swimeeter will attempt to satisfy the specified minimum entries per heat when generating the seeding. In some cases, however, doing so is not possible."
-                    }}
-                    optional={false}
-                />
-                <CreationFormGroup
-                    label={<InputLabel inputId={idPrefix + "-seeding_type-select-field"} text="Seeding method" />}
-                    field={<SearchSelect
-                        idPrefix={idPrefix + "-seeding_type"}
-                        regex={/^(S(t(a(n(d(a(r(d?)?)?)?)?)?)?)?)?$|^(C(i(r(c(l(e?)?)?)?)?)?)?$/}
-                        otherEnabled={false}
-                        placeholderText="Seeding method"
-                        defaultText="Standard"
-                        options={[
-                            "Standard", "Circle"
-                        ]}
-                        pixelWidth={300}
-                        exteriorHandleChange={handleSeedingTypeSelection}
-                    />}
-                    createInfo={{
-                        title: "SEEDING METHOD",
-                        description: "The seeding method field should contain the method for generating the seeding. Seeding methods determine how entries are organized into heats and lanes.",
-                        permitted_values: "\"Standard\" or \"Circle.\""
-                    }}
-                    optional={false}
-                />
-                {seedingType === "circle" &&
-                    <CreationFormGroup
-                        label={<InputLabel inputId={idPrefix + "-num_circled-select-field"} text="Number of circle-seeded heats" />}
-                        field={<SearchSelect
-                            idPrefix={idPrefix + "-num_circled"}
-                            regex={/^(A(l(l( (f(u(l(l( (h(e(a(t(s?)?)?)?)?)?)?)?)?)?)?)?)?)?)?$|^([123456789][0-9]*)?$/}
-                            otherEnabled={true}
-                            placeholderText="Number of circle-seeded heats"
-                            defaultText="3"
-                            options={[
-                                "3", "All full heats"
-                            ]}
-                            pixelWidth={300}
-                        />}
-                        createInfo={{
-                            title: "NUMBER OF CIRCLE-SEEDED HEATS",
-                            description: "The number of circle-seeded heats field should contain the number of fully-filled fastest heats that should be circle-seeded. All other heats will be seeded using standard seeding rules.",
-                            permitted_values: "\"All full heats\" or any positive integer."
-                        }}
-                        optional={false}
-                    />
-                }
+                        }
+                    </div>
+                </div>
             </FormContext.Provider>
 
             <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Generate seeding" type="submit" handleClick={(event: any) => {

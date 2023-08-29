@@ -3,7 +3,7 @@ export function InputLabel({inputId, text}: {
     text: string
 }) {
     return (
-        <label className="text-xl text-slate-600 dark:text-slate-300" htmlFor={inputId}>
+        <label className="text-xl text-slate-600 dark:text-slate-300 whitespace-nowrap" htmlFor={inputId}>
             {text}
         </label>
     )

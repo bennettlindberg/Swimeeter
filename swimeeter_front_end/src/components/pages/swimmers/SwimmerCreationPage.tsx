@@ -58,7 +58,6 @@ export function SwimmerCreationPage() {
                 });
             } catch (error) {
                 // ? back-end error retrieving tree data
-                console.log(error)
                 navigate("/errors/unknown");
             }
         }

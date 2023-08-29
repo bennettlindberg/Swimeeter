@@ -174,10 +174,6 @@ class Update_profile(APIView):
                         status=status.HTTP_403_FORBIDDEN,
                     )
                 
-                print(request.data["email"])
-                print(request.data["old_password"])
-                print(request.data["new_password"])
-
                 user = authenticate(
                     username=request.data["email"],
                     password=request.data["old_password"],

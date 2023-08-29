@@ -22,7 +22,7 @@ export function MeetCreationForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
         <>
             <CreationForm
                 scrollRef={scrollRef}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "name",
                         idSuffix: "-name-text-field",
@@ -104,28 +104,7 @@ export function MeetCreationForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                                 return convertedVisibility;
                             }
                         }
-                    },
-                    {
-                        title: "host",
-                        idSuffix: "-host-text-field",
-                        readOnly: true,
-                        duplicateSensitive: false,
-                        formGroup: <NeutralFormGroup
-                            label={<InputLabel inputId={idPrefix + "-host-text-field"} text="Host" />}
-                            key={idPrefix + "-host-text-field"}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="Host name"
-                                defaultText={userState.profile ? generateUserProfileName(userState.profile) : ""}
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-host"}
-                            />}
-                            baseInfo={{
-                                title: "HOST",
-                                description: "The host field contains the name of the account that created and owns the meet. The value of this field is read-only as it must contain the currently logged-in user.",
-                            }}
-                        />,
-                    },
+                    }], [
                     {
                         title: "begin_time",
                         idSuffix: "-begin_time-text-field",
@@ -166,7 +145,29 @@ export function MeetCreationForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                             }}
                         />,
                     }
-                ]}
+                ], [
+                    {
+                        title: "host",
+                        idSuffix: "-host-text-field",
+                        readOnly: true,
+                        duplicateSensitive: false,
+                        formGroup: <NeutralFormGroup
+                            label={<InputLabel inputId={idPrefix + "-host-text-field"} text="Host" />}
+                            key={idPrefix + "-host-text-field"}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="Host name"
+                                defaultText={userState.profile ? generateUserProfileName(userState.profile) : ""}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-host"}
+                            />}
+                            baseInfo={{
+                                title: "HOST",
+                                description: "The host field contains the name of the account that created and owns the meet. The value of this field is read-only as it must contain the currently logged-in user.",
+                            }}
+                        />,
+                    }
+                ]]}
                 modelSelectFields={[]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",

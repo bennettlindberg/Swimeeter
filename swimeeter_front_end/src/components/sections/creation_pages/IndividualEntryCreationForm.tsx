@@ -33,7 +33,7 @@ export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_i
         <>
             <CreationForm
                 scrollRef={scrollRef}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "seed_time",
                         idSuffix: "-seed_time-duration-field",
@@ -74,7 +74,7 @@ export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_i
                                 }
                             }
                         }
-                    },
+                    }], [
                     {
                         title: "heat_number",
                         idSuffix: "-heat_number-text-field",
@@ -115,8 +115,8 @@ export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_i
                             }}
                         />,
                     }
-                ]}
-                modelSelectFields={[
+                ]]}
+                modelSelectFields={[[
                     {
                         queryParamTitle: "event_id",
                         baseInfo: {
@@ -164,7 +164,7 @@ export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_i
                             }
                         }
                     }
-                ]}
+                ]]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
                     description: "Replacing previously-created duplicate entries with this one will result in the deletion of the original entries. Are you sure you want to continue?",
@@ -210,6 +210,7 @@ export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_i
                         error: {
                             title: "EVENT FIELD ERROR",
                             description: "No event matching the event name provided in the event field exists. Every individual entry must be associated with a event.",
+                            fields: "Event",
                             recommendation: "Choose an existing event for the individual entry to be associated with. If no events exist, first add an event to the meet."
                         }
                     },
@@ -218,6 +219,7 @@ export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_i
                         error: {
                             title: "EVENT FIELD ERROR",
                             description: "No event matching the event name provided in the event field exists. Every individual entry must be associated with a event.",
+                            fields: "Event",
                             recommendation: "Choose an existing event for the individual entry to be associated with. If no events exist, first add an event to the meet."
                         }
                     },
@@ -226,6 +228,7 @@ export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_i
                         error: {
                             title: "SWIMMER FIELD ERROR",
                             description: "No swimmer matching the swimmer name provided in the swimmer field exists. Every individual entry must be associated with a swimmer.",
+                            fields: "Swimmer",
                             recommendation: "Choose an existing swimmer for the individual entry to be associated with. If no swimmers exist, first add a swimmer to the meet."
                         }
                     },
@@ -234,6 +237,7 @@ export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_i
                         error: {
                             title: "SWIMMER FIELD ERROR",
                             description: "No swimmer matching the swimmer name provided in the swimmer field exists. Every individual entry must be associated with a swimmer.",
+                            fields: "Swimmer",
                             recommendation: "Choose an existing swimmer for the individual entry to be associated with. If no swimmers exist, first add a swimmer to the meet."
                         }
                     },
@@ -242,6 +246,7 @@ export function IndividualEntryCreationForm({ meet_id_INT, scrollRef }: { meet_i
                         error: {
                             title: "SWIMMER AND EVENT COMPATIBILITY ERROR",
                             description: "The chosen swimmer and event for this individual entry are incompatible. The entry's swimmer must meet the event's competitor demographic requirements.",
+                            fields: "Swimmer, Event",
                             recommendation: "Choose a swimmer and event pairing for the individual entry such that the swimmer's age and gender are compatible with the event's competing age range and gender."
                         }
                     }

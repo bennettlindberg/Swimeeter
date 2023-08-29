@@ -59,7 +59,7 @@ export function SwimmerHeatSheetTable() {
                             setInfoShown(false);
                         }}
                         info={{
-                            title: "Swimmer Heat Sheet",
+                            title: "SWIMMER HEAT SHEET",
                             description: "The swimmer heat sheet contains the heat and lane seeding information for all heats of the meet being viewed that contain an entry from the current swimmer."
                         }}
                     />}

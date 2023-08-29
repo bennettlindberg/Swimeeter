@@ -59,7 +59,7 @@ export function PoolHeatSheetTable() {
                             setInfoShown(false);
                         }}
                         info={{
-                            title: "Pool Heat Sheet",
+                            title: "POOL HEAT SHEET",
                             description: "The pool heat sheet contains the heat and lane seeding information for all events and sessions of the meet being viewed that are located at the current pool."
                         }}
                     />}

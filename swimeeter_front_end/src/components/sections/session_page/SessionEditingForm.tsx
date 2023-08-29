@@ -28,7 +28,7 @@ export function SessionEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                 modelData={sessionData}
                 setModelData={setSessionData}
                 isMeetHost={isMeetHost}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "name",
                         idSuffix: "-name-text-field",
@@ -67,7 +67,7 @@ export function SessionEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                                 }
                             }
                         }
-                    },
+                    }], [
                     {
                         title: "begin_time",
                         idSuffix: "-begin_time-datetime-field",
@@ -164,9 +164,9 @@ export function SessionEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                             }
                         }
                     },
-                ]}
+                ]]}
                 modelSelectFields={sessionData.pk !== -1
-                    ? [
+                    ? [[
                         {
                             queryParamTitle: "pool_id",
                             idSuffix: "-pool-model-select-field",
@@ -195,7 +195,7 @@ export function SessionEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                                 }
                             }
                         }
-                    ]
+                    ]]
                     : []}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
@@ -243,6 +243,7 @@ export function SessionEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                         error: {
                             title: "POOL FIELD ERROR",
                             description: "No pool matching the pool name provided in the pool field exists. Every session must be associated with a pool.",
+                            fields: "Pool",
                             recommendation: "Choose an existing pool for the session to be associated with. If no pools exist, first add a pool to the meet."
                         }
                     },
@@ -251,6 +252,7 @@ export function SessionEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                         error: {
                             title: "POOL FIELD ERROR",
                             description: "No pool matching the pool name provided in the pool field exists. Every session must be associated with a pool.",
+                            fields: "Pool",
                             recommendation: "Choose an existing pool for the session to be associated with. If no pools exist, first add a pool to the meet."
                         }
                     },

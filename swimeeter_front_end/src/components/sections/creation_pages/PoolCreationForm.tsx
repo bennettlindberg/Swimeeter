@@ -8,7 +8,7 @@ import { TextInput } from "../../utilities/inputs/TextInput.tsx";
 import { SearchSelect } from "../../utilities/inputs/SearchSelect.tsx";
 
 // ~ component
-export function PoolCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: number, scrollRef: React.RefObject<HTMLHeadingElement>}) {
+export function PoolCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: number, scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize id
     const idPrefix = useId();
 
@@ -16,7 +16,7 @@ export function PoolCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: numb
         <>
             <CreationForm
                 scrollRef={scrollRef}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "name",
                         idSuffix: "-name-text-field",
@@ -50,118 +50,7 @@ export function PoolCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: numb
                                 }
                             }
                         }
-                    },
-                    {
-                        title: "street_address",
-                        idSuffix: "-street_address-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <CreationFormGroup
-                            label={<InputLabel inputId={idPrefix + "-street_address-text-field"} text="Street address" />}
-                            key={idPrefix + "-street_address-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="Street address"
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-street_address"}
-                            />}
-                            createInfo={{
-                                title: "STREET ADDRESS",
-                                description: "The street address field should contain the street address of the pool being created.",
-                                common_values: "Street addresses generally come in the form of the following example: \"123 Main Street.\"",
-                                permitted_values: "Any string. May be left blank.",
-                            }}
-                        />
-                    },
-                    {
-                        title: "city",
-                        idSuffix: "-city-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <CreationFormGroup
-                            label={<InputLabel inputId={idPrefix + "-city-text-field"} text="City" />}
-                            key={idPrefix + "-city-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="City"
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-city"}
-                            />}
-                            createInfo={{
-                                title: "CITY",
-                                description: "The city field should contain the city the pool being created is located in.",
-                                permitted_values: "Any string. May be left blank.",
-                            }}
-                        />
-                    },
-                    {
-                        title: "state",
-                        idSuffix: "-state-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <CreationFormGroup
-                            label={<InputLabel inputId={idPrefix + "-state-text-field"} text="State" />}
-                            key={idPrefix + "-state-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="State"
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-state"}
-                            />}
-                            createInfo={{
-                                title: "STATE",
-                                description: "The state field should contain the state the pool being created is located in.",
-                                permitted_values: "Any string. May be left blank.",
-                            }}
-                        />
-                    },
-                    {
-                        title: "country",
-                        idSuffix: "-country-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <CreationFormGroup
-                            label={<InputLabel inputId={idPrefix + "-country-text-field"} text="Country" />}
-                            key={idPrefix + "-country-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="Country"
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-country"}
-                            />}
-                            createInfo={{
-                                title: "COUNTRY",
-                                description: "The country field should contain the country the pool being created is located in.",
-                                permitted_values: "Any string. May be left blank.",
-                            }}
-                        />
-                    },
-                    {
-                        title: "zipcode",
-                        idSuffix: "-zipcode-text-field",
-                        readOnly: false,
-                        duplicateSensitive: false,
-                        formGroup: <CreationFormGroup
-                            label={<InputLabel inputId={idPrefix + "-zipcode-text-field"} text="Zip code" />}
-                            key={idPrefix + "-zipcode-text-field"}
-                            optional={true}
-                            field={<TextInput
-                                regex={/^[0-9]*$/}
-                                placeholderText="Zip code"
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-zipcode"}
-                            />}
-                            createInfo={{
-                                title: "ZIP CODE",
-                                description: "The zip code field should contain the zip code of location of the created pool.",
-                                permitted_values: "Any numerical string. May be left blank.",
-                            }}
-                        />
-                    },
+                    }], [
                     {
                         title: "lanes",
                         idSuffix: "-lanes-text-field",
@@ -291,8 +180,119 @@ export function PoolCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: numb
                                 }
                             }
                         }
+                    }], [
+                    {
+                        title: "street_address",
+                        idSuffix: "-street_address-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <CreationFormGroup
+                            label={<InputLabel inputId={idPrefix + "-street_address-text-field"} text="Street address" />}
+                            key={idPrefix + "-street_address-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="Street address"
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-street_address"}
+                            />}
+                            createInfo={{
+                                title: "STREET ADDRESS",
+                                description: "The street address field should contain the street address of the pool being created.",
+                                common_values: "Street addresses generally come in the form of the following example: \"123 Main Street.\"",
+                                permitted_values: "Any string. May be left blank.",
+                            }}
+                        />
                     },
-                ]}
+                    {
+                        title: "city",
+                        idSuffix: "-city-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <CreationFormGroup
+                            label={<InputLabel inputId={idPrefix + "-city-text-field"} text="City" />}
+                            key={idPrefix + "-city-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="City"
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-city"}
+                            />}
+                            createInfo={{
+                                title: "CITY",
+                                description: "The city field should contain the city the pool being created is located in.",
+                                permitted_values: "Any string. May be left blank.",
+                            }}
+                        />
+                    },
+                    {
+                        title: "state",
+                        idSuffix: "-state-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <CreationFormGroup
+                            label={<InputLabel inputId={idPrefix + "-state-text-field"} text="State" />}
+                            key={idPrefix + "-state-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="State"
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-state"}
+                            />}
+                            createInfo={{
+                                title: "STATE",
+                                description: "The state field should contain the state the pool being created is located in.",
+                                permitted_values: "Any string. May be left blank.",
+                            }}
+                        />
+                    },
+                    {
+                        title: "country",
+                        idSuffix: "-country-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <CreationFormGroup
+                            label={<InputLabel inputId={idPrefix + "-country-text-field"} text="Country" />}
+                            key={idPrefix + "-country-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="Country"
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-country"}
+                            />}
+                            createInfo={{
+                                title: "COUNTRY",
+                                description: "The country field should contain the country the pool being created is located in.",
+                                permitted_values: "Any string. May be left blank.",
+                            }}
+                        />
+                    },
+                    {
+                        title: "zipcode",
+                        idSuffix: "-zipcode-text-field",
+                        readOnly: false,
+                        duplicateSensitive: false,
+                        formGroup: <CreationFormGroup
+                            label={<InputLabel inputId={idPrefix + "-zipcode-text-field"} text="Zip code" />}
+                            key={idPrefix + "-zipcode-text-field"}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^[0-9]*$/}
+                                placeholderText="Zip code"
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-zipcode"}
+                            />}
+                            createInfo={{
+                                title: "ZIP CODE",
+                                description: "The zip code field should contain the zip code of location of the created pool.",
+                                permitted_values: "Any numerical string. May be left blank.",
+                            }}
+                        />
+                    }
+                ]]}
                 modelSelectFields={[]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",

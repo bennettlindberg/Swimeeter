@@ -144,7 +144,7 @@ export function EditingForm({
         formGroup: React.ReactNode,
         validator?: (value: any) => true | ErrorType
         converter?: (value: any) => any
-    }[],
+    }[][],
     modelSelectFields: {
         queryParamTitle: string,
         idSuffix?: string,
@@ -163,7 +163,7 @@ export function EditingForm({
             apiRoute: string,
             id_params: Object
         }
-    }[],
+    }[][],
     destructiveKeepNewInfo: DestructiveType,
     destructiveSubmitInfo?: DestructiveType,
     duplicateInfo: DuplicateType,
@@ -208,34 +208,38 @@ export function EditingForm({
             return;
         }
 
-        for (const formInput of formInputFields) {
-            const inputElement = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
+        for (const formInputRow of formInputFields) {
+            for (const formInput of formInputRow) {
+                const inputElement = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
 
-            if (formInput.readOnly) {
-                inputElement.readOnly = true;
-            } else {
-                inputElement.readOnly = formState.mode === "view";
-            }
-
-            // ! handle "view" vs. "edit" versions of datetime and duration fields
-            if (new RegExp("datetime").test(formInput.idSuffix) || new RegExp("duration").test(formInput.idSuffix)) {
-                const viewElement = document.getElementById(idPrefix + formInput.idSuffix + "-view") as HTMLInputElement;
-                const editElement = document.getElementById(idPrefix + formInput.idSuffix + "-edit") as HTMLInputElement;
-
-                if (formState.mode === "edit") {
-                    viewElement.readOnly = true;
-                    editElement.readOnly = false;
+                if (formInput.readOnly) {
+                    inputElement.readOnly = true;
                 } else {
-                    viewElement.readOnly = false;
-                    editElement.readOnly = true;
+                    inputElement.readOnly = formState.mode === "view";
+                }
+
+                // ! handle "view" vs. "edit" versions of datetime and duration fields
+                if (new RegExp("datetime").test(formInput.idSuffix) || new RegExp("duration").test(formInput.idSuffix)) {
+                    const viewElement = document.getElementById(idPrefix + formInput.idSuffix + "-view") as HTMLInputElement;
+                    const editElement = document.getElementById(idPrefix + formInput.idSuffix + "-edit") as HTMLInputElement;
+
+                    if (formState.mode === "edit") {
+                        viewElement.readOnly = true;
+                        editElement.readOnly = false;
+                    } else {
+                        viewElement.readOnly = false;
+                        editElement.readOnly = true;
+                    }
                 }
             }
         }
 
-        for (const modelSelectInput of modelSelectFields) {
-            const inputElement = document.getElementById(idPrefix + modelSelectInput.idSuffix) as HTMLInputElement;
+        for (const modelSelectRow of modelSelectFields) {
+            for (const modelSelectInput of modelSelectRow) {
+                const inputElement = document.getElementById(idPrefix + modelSelectInput.idSuffix) as HTMLInputElement;
 
-            inputElement.readOnly = formState.mode === "view";
+                inputElement.readOnly = formState.mode === "view";
+            }
         }
     }, [formState.mode, modelData]);
 
@@ -303,7 +307,7 @@ export function EditingForm({
         if (scrollRef) {
             scrollRef.current?.scrollIntoView();
         }
-        
+
         // ~ submit counts as destructive action -> show destructive pop-up
         if (destructiveSubmitInfo && !bypassDestructiveSubmission) {
             formDispatch({
@@ -317,32 +321,34 @@ export function EditingForm({
         let formData = rawDataInit;
 
         try {
-            for (const formInput of formInputFields) {
-                if (formInput.readOnly) {
-                    continue;
-                }
-
-                // * retrieve input
-                const inputField = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
-                formData[formInput.title] = inputField.value;
-
-                // * validate input
-                if (formInput.validator) {
-                    const isValid = formInput.validator(formData[formInput.title]);
-
-                    // ? input validation error
-                    if (isValid !== true) {
-                        formDispatch({
-                            type: "SAVE_FAILURE",
-                            error: isValid
-                        });
-                        return;
+            for (const formInputRow of formInputFields) {
+                for (const formInput of formInputRow) {
+                    if (formInput.readOnly) {
+                        continue;
                     }
-                }
 
-                // * convert input to proper form
-                if (formInput.converter) {
-                    formData[formInput.title] = formInput.converter(formData[formInput.title]);
+                    // * retrieve input
+                    const inputField = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
+                    formData[formInput.title] = inputField.value;
+
+                    // * validate input
+                    if (formInput.validator) {
+                        const isValid = formInput.validator(formData[formInput.title]);
+
+                        // ? input validation error
+                        if (isValid !== true) {
+                            formDispatch({
+                                type: "SAVE_FAILURE",
+                                error: isValid
+                            });
+                            return;
+                        }
+                    }
+
+                    // * convert input to proper form
+                    if (formInput.converter) {
+                        formData[formInput.title] = formInput.converter(formData[formInput.title]);
+                    }
                 }
             }
         } catch (error) {
@@ -359,9 +365,11 @@ export function EditingForm({
 
         // * duplicate-sensitive data did not change -> skip duplicate conflict
         let ignoreDuplicates = true;
-        for (const formInput of formInputFields) {
-            if (formInput.duplicateSensitive && formData[formInput.title] !== modelData["fields"][formInput.title]) {
-                ignoreDuplicates = false;
+        for (const formInputRow of formInputFields) {
+            for (const formInput of formInputRow) {
+                if (formInput.duplicateSensitive && formData[formInput.title] !== modelData["fields"][formInput.title]) {
+                    ignoreDuplicates = false;
+                }
             }
         }
         if (ignoreDuplicates) {
@@ -521,7 +529,7 @@ export function EditingForm({
         if (scrollRef) {
             scrollRef.current?.scrollIntoView();
         }
-        
+
         formDispatch({
             type: "EDIT_CLICKED"
         })
@@ -539,25 +547,37 @@ export function EditingForm({
             {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}
 
             <FormContext.Provider value={formState.mode === "edit"}>
-                {formInputFields.map(formInput => formInput.formGroup)}
-                {modelSelectFields.map(modelSelectInput => {
-                    return (
-                        <ModelSelectGenerator
-                            formGroupType="editing"
-                            optional={modelSelectInput.optional}
-                            idPrefix={idPrefix}
-                            modelInfo={modelSelectInput.modelInfo}
-                            label={modelSelectInput.label}
-                            baseInfo={modelSelectInput.baseInfo}
-                            viewInfo={modelSelectInput.viewInfo}
-                            placeholderText={modelSelectInput.placeholderText}
-                            defaultSelection={modelSelectInput.defaultSelection}
-                            setModelSelection={(selection: {
-                                text: string,
-                                model_id: number
-                            }) => handleModelSelection(modelSelectInput.queryParamTitle, selection)}
-                        />
-                    )
+                {formInputFields.map(formInputRow => {
+                    return <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                        {formInputRow.map(formInput => {
+                            return <div className="max-w-min min-w-[300px]">
+                                {formInput.formGroup}
+                            </div>
+                        })}
+                    </div>
+                })}
+                {modelSelectFields.map(modelSelectRow => {
+                    return <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                        {modelSelectRow.map(modelSelectInput => {
+                            return <div className="max-w-min">
+                                <ModelSelectGenerator
+                                    formGroupType="editing"
+                                    optional={modelSelectInput.optional}
+                                    idPrefix={idPrefix}
+                                    modelInfo={modelSelectInput.modelInfo}
+                                    label={modelSelectInput.label}
+                                    baseInfo={modelSelectInput.baseInfo}
+                                    viewInfo={modelSelectInput.viewInfo}
+                                    placeholderText={modelSelectInput.placeholderText}
+                                    defaultSelection={modelSelectInput.defaultSelection}
+                                    setModelSelection={(selection: {
+                                        text: string,
+                                        model_id: number
+                                    }) => handleModelSelection(modelSelectInput.queryParamTitle, selection)}
+                                />
+                            </div>
+                        })}
+                    </div>
                 })}
             </FormContext.Provider>
 

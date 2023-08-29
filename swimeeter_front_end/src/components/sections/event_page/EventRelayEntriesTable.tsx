@@ -43,7 +43,7 @@ export function EventRelayEntriesTable() {
             searchType="RELAY_ENTRY_OF_EVENT"
             tableBarItems={[]}
             tableBarHostItems={[
-                <PageButton color="orange" text="Create an relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(
+                <PageButton color="orange" text="Create a relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(
                     `/meets/${eventData.fields.session.fields.meet.pk}/relay_entries/create`,
                     {
                         state:
@@ -51,6 +51,7 @@ export function EventRelayEntriesTable() {
                             defaultEvent:
                             {
                                 name: generateEventName(eventData),
+                                swimmers_per_entry: eventData.fields.swimmers_per_entry,
                                 event_id: eventData.pk
                             }
                         }

@@ -27,7 +27,7 @@ export function SwimmerEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                 modelData={swimmerData}
                 setModelData={setSwimmerData}
                 isMeetHost={isMeetHost}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "first_name",
                         idSuffix: "-first_name-text-field",
@@ -105,7 +105,7 @@ export function SwimmerEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                                 }
                             }
                         }
-                    },
+                    }], [
                     {
                         title: "middle_initials",
                         idSuffix: "-middle_initials-text-field",
@@ -191,7 +191,7 @@ export function SwimmerEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                                 description: "The suffix field contains any special suffixes included in the swimmer's name.",
                             }}
                         />
-                    },
+                    }], [
                     {
                         title: "age",
                         idSuffix: "-age-text-field",
@@ -284,9 +284,9 @@ export function SwimmerEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                             }
                         }
                     }
-                ]}
+                ]]}
                 modelSelectFields={swimmerData.pk !== -1
-                    ? [
+                    ? [[
                         {
                             queryParamTitle: "team_id",
                             idSuffix: "-team-model-select-field",
@@ -315,7 +315,7 @@ export function SwimmerEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                                 }
                             }
                         }
-                    ]
+                    ]]
                     : []}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
@@ -367,6 +367,7 @@ export function SwimmerEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                         error: {
                             title: "TEAM FIELD ERROR",
                             description: "No team matching the team name provided in the team field exists. Every swimmer must be associated with a team.",
+                            fields: "Team",
                             recommendation: "Choose an existing team for the swimmer to be associated with. If no teams exist, first add a team to the meet."
                         }
                     },
@@ -375,6 +376,7 @@ export function SwimmerEditingForm({scrollRef}: {scrollRef: React.RefObject<HTML
                         error: {
                             title: "TEAM FIELD ERROR",
                             description: "No team matching the team name provided in the team field exists. Every swimmer must be associated with a team.",
+                            fields: "Team",
                             recommendation: "Choose an existing team for the swimmer to be associated with. If no teams exist, first add a team to the meet."
                         }
                     }

@@ -21,49 +21,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
     const idPrefix = useId();
 
     // * create form input fields
-    const formInputFields = [
-        {
-            title: "stroke",
-            idSuffix: "-stroke-select-field",
-            readOnly: false,
-            duplicateSensitive: true,
-            formGroup: <EditingFormGroup
-                label={<InputLabel inputId={idPrefix + "-stroke-select-field"} text="Stroke" />}
-                key={idPrefix + "-stroke-select-field"}
-                optional={false}
-                field={<SearchSelect
-                    regex={/^.*$/}
-                    otherEnabled={true}
-                    placeholderText="Stroke"
-                    defaultText={eventData.fields.stroke}
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-stroke"}
-                    options={["Butterfly", "Backstroke", "Breaststroke", "Freestyle", eventData.fields.is_relay ? "Medley" : "IM"]}
-                />}
-                editInfo={{
-                    title: "STROKE",
-                    description: "The stroke field should contain the competition stroke of the event.",
-                    common_values: `Butterfly, Backstroke, Breaststroke, Freestyle, ${eventData.fields.is_relay ? "Medley" : "IM"}`,
-                    permitted_values: "Any string. Although the most common values are provided as select options, you may provide any stroke string."
-                }}
-                viewInfo={{
-                    title: "STROKE",
-                    description: "The stroke field contains the competition stroke of the event.",
-                }}
-            />,
-            validator: (stroke: string) => {
-                if (stroke === "") {
-                    return {
-                        title: "STROKE FIELD ERROR",
-                        description: "The stroke field was left blank. Event strokes are required and can be any string.",
-                        fields: "Stroke",
-                        recommendation: "Alter the entered event stroke to conform to the requirements of the field."
-                    }
-                } else {
-                    return true;
-                }
-            }
-        },
+    const formInputFields = [[
         {
             title: "distance",
             idSuffix: "-distance-text-field",
@@ -124,47 +82,47 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
             }
         },
         {
-            title: "stage",
-            idSuffix: "-stage-select-field",
+            title: "stroke",
+            idSuffix: "-stroke-select-field",
             readOnly: false,
             duplicateSensitive: true,
             formGroup: <EditingFormGroup
-                label={<InputLabel inputId={idPrefix + "-stage-select-field"} text="Stage" />}
-                key={idPrefix + "-stage-select-field"}
+                label={<InputLabel inputId={idPrefix + "-stroke-select-field"} text="Stroke" />}
+                key={idPrefix + "-stroke-select-field"}
                 optional={false}
                 field={<SearchSelect
                     regex={/^.*$/}
                     otherEnabled={true}
-                    placeholderText="Stage"
-                    defaultText={eventData.fields.stage}
+                    placeholderText="Stroke"
+                    defaultText={eventData.fields.stroke}
                     pixelWidth={300}
-                    idPrefix={idPrefix + "-stage"}
-                    options={["Prelim", "Final"]}
+                    idPrefix={idPrefix + "-stroke"}
+                    options={["Butterfly", "Backstroke", "Breaststroke", "Freestyle", eventData.fields.is_relay ? "Medley" : "IM"]}
                 />}
                 editInfo={{
-                    title: "STAGE",
-                    description: "The stage field should contain the competition round of the event. This field's value should be \"Final\" unless the meet is a prelims-finals or other round-based meet.",
-                    common_values: "Prelim, Final",
-                    permitted_values: "Any string. Although the most common values are provided as select options, you may provide any stage string."
+                    title: "STROKE",
+                    description: "The stroke field should contain the competition stroke of the event.",
+                    common_values: `Butterfly, Backstroke, Breaststroke, Freestyle, ${eventData.fields.is_relay ? "Medley" : "IM"}`,
+                    permitted_values: "Any string. Although the most common values are provided as select options, you may provide any stroke string."
                 }}
                 viewInfo={{
-                    title: "STAGE",
-                    description: "The stage field contains the competition round of the event.",
+                    title: "STROKE",
+                    description: "The stroke field contains the competition stroke of the event.",
                 }}
             />,
-            validator: (stage: string) => {
-                if (stage === "") {
+            validator: (stroke: string) => {
+                if (stroke === "") {
                     return {
-                        title: "STAGE FIELD ERROR",
-                        description: "The stage field was left blank. Event stages are required and can be any string.",
-                        fields: "Stage",
-                        recommendation: "Alter the entered event stage to conform to the requirements of the field."
+                        title: "STROKE FIELD ERROR",
+                        description: "The stroke field was left blank. Event strokes are required and can be any string.",
+                        fields: "Stroke",
+                        recommendation: "Alter the entered event stroke to conform to the requirements of the field."
                     }
                 } else {
                     return true;
                 }
             }
-        },
+        }], [
         {
             title: "competing_gender",
             idSuffix: "-competing_gender-select-field",
@@ -317,7 +275,49 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                 }
                 return parseInt(max_age);
             }
-        },
+        }], [
+        {
+            title: "stage",
+            idSuffix: "-stage-select-field",
+            readOnly: false,
+            duplicateSensitive: true,
+            formGroup: <EditingFormGroup
+                label={<InputLabel inputId={idPrefix + "-stage-select-field"} text="Stage" />}
+                key={idPrefix + "-stage-select-field"}
+                optional={false}
+                field={<SearchSelect
+                    regex={/^.*$/}
+                    otherEnabled={true}
+                    placeholderText="Stage"
+                    defaultText={eventData.fields.stage}
+                    pixelWidth={300}
+                    idPrefix={idPrefix + "-stage"}
+                    options={["Prelim", "Final"]}
+                />}
+                editInfo={{
+                    title: "STAGE",
+                    description: "The stage field should contain the competition round of the event. This field's value should be \"Final\" unless the meet is a prelims-finals or other round-based meet.",
+                    common_values: "Prelim, Final",
+                    permitted_values: "Any string. Although the most common values are provided as select options, you may provide any stage string."
+                }}
+                viewInfo={{
+                    title: "STAGE",
+                    description: "The stage field contains the competition round of the event.",
+                }}
+            />,
+            validator: (stage: string) => {
+                if (stage === "") {
+                    return {
+                        title: "STAGE FIELD ERROR",
+                        description: "The stage field was left blank. Event stages are required and can be any string.",
+                        fields: "Stage",
+                        recommendation: "Alter the entered event stage to conform to the requirements of the field."
+                    }
+                } else {
+                    return true;
+                }
+            }
+        }], [
         {
             title: "order_in_session",
             idSuffix: "-order_in_session-select-field",
@@ -377,9 +377,9 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                 }
             }
         },
-    ]
+    ]]
     if (eventData.fields.is_relay) {
-        formInputFields.push(
+        formInputFields.push([
             {
                 title: "swimmers_per_entry",
                 idSuffix: "-swimmers_per_entry-text-field",
@@ -440,7 +440,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                     return parseInt(distance);
                 }
             },
-        )
+        ])
     }
 
     return (
@@ -452,7 +452,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                 isMeetHost={isMeetHost}
                 formInputFields={formInputFields}
                 modelSelectFields={eventData.pk !== -1
-                    ? [
+                    ? [[
                         {
                             queryParamTitle: "session_id",
                             idSuffix: "-session-model-select-field",
@@ -481,7 +481,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                                 }
                             }
                         }
-                    ]
+                    ]]
                     : []}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
@@ -535,6 +535,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                         error: {
                             title: "SESSION FIELD ERROR",
                             description: "No session matching the session name provided in the session field exists. Every event must be associated with a session.",
+                            fields: "Session",
                             recommendation: "Choose an existing session for the event to be associated with. If no sessions exist, first add a session to the meet."
                         }
                     },
@@ -543,6 +544,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                         error: {
                             title: "SESSION FIELD ERROR",
                             description: "No session matching the session name provided in the session field exists. Every event must be associated with a session.",
+                            fields: "Session",
                             recommendation: "Choose an existing session for the event to be associated with. If no sessions exist, first add a session to the meet."
                         }
                     },
@@ -551,6 +553,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                         error: {
                             title: "COMPETING AGE RANGE ERROR",
                             description: "The provided maximum competing age was smaller than the provided minimum competing age. Event maximum ages must be greater than or equal to event minimum ages.",
+                            fields: "Competing min age, Competing max age",
                             recommendation: "Choose maximum and minimum competing ages where the maximum age is greater than or equal to the minimum age."
                         }
                     },
@@ -559,6 +562,7 @@ export function EventEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                         error: {
                             title: "SWIMMERS PER MEDLEY RELAY ENTRY ERROR",
                             description: "The provided number of swimmers per relay entry was not 4 but the event stroke was \"Medley\". Medley relays must have exactly 4 swimmers per relay.",
+                            fields: "Swimmers per relay",
                             recommendation: "Either change the number of swimmers per relay to 4 or change the event stroke to a different stroke than \"Medley\"."
                         }
                     }

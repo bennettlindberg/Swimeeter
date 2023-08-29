@@ -371,8 +371,6 @@ class Event_view(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
-        print("4")
-
         # * move event order numbers forward
         if "order_in_session" in request.data:
             order_shifted_events = Event.objects.filter(

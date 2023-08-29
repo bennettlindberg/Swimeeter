@@ -60,7 +60,7 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function ProfileForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
+export function ProfileForm({ scrollRef }: { scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize context, state, and id
     const { userState, userDispatch }: {
         userState: UserState,
@@ -96,7 +96,7 @@ export function ProfileForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeading
     // * define form handlers
     async function handleSubmit() {
         scrollRef.current?.scrollIntoView();
-        
+
         // * retrieve raw data
         let rawData: {
             email: string
@@ -280,7 +280,7 @@ export function ProfileForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeading
 
     function handleEdit() {
         scrollRef.current?.scrollIntoView();
-        
+
         formDispatch({
             type: "EDIT_CLICKED"
         })
@@ -291,124 +291,136 @@ export function ProfileForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeading
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
 
             <FormContext.Provider value={formState.mode === "edit"}>
-                <EditingFormGroup
-                    label={<InputLabel inputId={idPrefix + "-first_name-text-field"} text="First name" />}
-                    optional={false}
-                    field={<TextInput
-                        regex={/^[A-Za-z\'\-]*$/}
-                        placeholderText="First name"
-                        defaultText={userState.profile?.first_name}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-first_name"}
-                    />}
-                    editInfo={{
-                        title: "FIRST NAME",
-                        description: "The first name field should contain the account owner's given name.",
-                        permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
-                    }}
-                    viewInfo={{
-                        title: "FIRST NAME",
-                        description: "The first name field contains the account owner's given name.",
-                    }}
-                />
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-first_name-text-field"} text="First name" />}
+                            optional={false}
+                            field={<TextInput
+                                regex={/^[A-Za-z\'\-]*$/}
+                                placeholderText="First name"
+                                defaultText={userState.profile?.first_name}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-first_name"}
+                            />}
+                            editInfo={{
+                                title: "FIRST NAME",
+                                description: "The first name field should contain the account owner's given name.",
+                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
+                            }}
+                            viewInfo={{
+                                title: "FIRST NAME",
+                                description: "The first name field contains the account owner's given name.",
+                            }}
+                        />
+                    </div>
+                    <div className="max-w-min min-w-[300px]">
+                        <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-last_name-text-field"} text="Last name" />}
+                            optional={false}
+                            field={<TextInput
+                                regex={/^[A-Za-z\'\-]*$/}
+                                placeholderText="Last name"
+                                defaultText={userState.profile?.last_name}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-last_name"}
+                            />}
+                            editInfo={{
+                                title: "LAST NAME",
+                                description: "The last name field should contain the account owner's family name.",
+                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
+                            }}
+                            viewInfo={{
+                                title: "LAST NAME",
+                                description: "The last name field contains the account owner's family name.",
+                            }}
+                        />
+                    </div>
+                </div>
 
-                <EditingFormGroup
-                    label={<InputLabel inputId={idPrefix + "-last_name-text-field"} text="Last name" />}
-                    optional={false}
-                    field={<TextInput
-                        regex={/^[A-Za-z\'\-]*$/}
-                        placeholderText="Last name"
-                        defaultText={userState.profile?.last_name}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-last_name"}
-                    />}
-                    editInfo={{
-                        title: "LAST NAME",
-                        description: "The last name field should contain the account owner's family name.",
-                        permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
-                    }}
-                    viewInfo={{
-                        title: "LAST NAME",
-                        description: "The last name field contains the account owner's family name.",
-                    }}
-                />
-
-                <EditingFormGroup
-                    label={<InputLabel inputId={idPrefix + "-middle_initials-text-field"} text="Middle initials" />}
-                    optional={true}
-                    field={<TextInput
-                        regex={/^([A-Z] )*$|^([A-Z] )*[A-Z]?$/}
-                        placeholderText="None"
-                        defaultText={userState.profile?.middle_initials}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-middle_initials"}
-                    />}
-                    editInfo={{
-                        title: "MIDDLE INITIALS",
-                        description: "The middle initials field should contain a space-separated list of the account owner's uppercase middle initials.",
-                        permitted_values: "Any string at least 1 character long containing space-separated uppercase alphabetic characters. May be left blank."
-                    }}
-                    viewInfo={{
-                        title: "MIDDLE INITIALS",
-                        description: "The middle initials field contains a space-separated list of account owner's uppercase middle initials.",
-                    }}
-                />
-
-                <EditingFormGroup
-                    label={<InputLabel inputId={idPrefix + "-prefix-text-field"} text="Prefix" />}
-                    optional={true}
-                    field={<TextInput
-                        regex={/^[A-Za-z\'\-\.]*$/}
-                        placeholderText="None"
-                        defaultText={userState.profile?.prefix}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-prefix"}
-                    />}
-                    editInfo={{
-                        title: "PREFIX",
-                        description: "The prefix field should contain any special prefixes included in the account owner's name.",
-                        common_values: "\"St.\", \"Sir.\" This field is not intended for \"Mr.\", \"Mrs.\", and \"Ms.\" prefixes.",
-                        permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
-                    }}
-                    viewInfo={{
-                        title: "PREFIX",
-                        description: "The prefix field contains any special prefixes included in the account owner's name.",
-                    }}
-                />
-
-                <EditingFormGroup
-                    label={<InputLabel inputId={idPrefix + "-suffix-text-field"} text="Suffix" />}
-                    optional={true}
-                    field={<TextInput
-                        regex={/^[A-Za-z\'\-\.]*$/}
-                        placeholderText="None"
-                        defaultText={userState.profile?.suffix}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-suffix"}
-                    />}
-                    editInfo={{
-                        title: "SUFFIX",
-                        description: "The suffix field should contain any special suffixes included in the account owner's name.",
-                        common_values: "\"Jr.\", \"Sr.\", \"III\"",
-                        permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
-                    }}
-                    viewInfo={{
-                        title: "SUFFIX",
-                        description: "The suffix field contains any special suffixes included in the account owner's name.",
-                    }}
-                />
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-middle_initials-text-field"} text="Middle initials" />}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^([A-Z] )*$|^([A-Z] )*[A-Z]?$/}
+                                placeholderText="None"
+                                defaultText={userState.profile?.middle_initials}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-middle_initials"}
+                            />}
+                            editInfo={{
+                                title: "MIDDLE INITIALS",
+                                description: "The middle initials field should contain a space-separated list of the account owner's uppercase middle initials.",
+                                permitted_values: "Any string at least 1 character long containing space-separated uppercase alphabetic characters. May be left blank."
+                            }}
+                            viewInfo={{
+                                title: "MIDDLE INITIALS",
+                                description: "The middle initials field contains a space-separated list of account owner's uppercase middle initials.",
+                            }}
+                        />
+                    </div>
+                    <div className="max-w-min min-w-[300px]">
+                        <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-prefix-text-field"} text="Prefix" />}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^[A-Za-z\'\-\.]*$/}
+                                placeholderText="None"
+                                defaultText={userState.profile?.prefix}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-prefix"}
+                            />}
+                            editInfo={{
+                                title: "PREFIX",
+                                description: "The prefix field should contain any special prefixes included in the account owner's name.",
+                                common_values: "\"St.\", \"Sir.\" This field is not intended for \"Mr.\", \"Mrs.\", and \"Ms.\" prefixes.",
+                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
+                            }}
+                            viewInfo={{
+                                title: "PREFIX",
+                                description: "The prefix field contains any special prefixes included in the account owner's name.",
+                            }}
+                        />
+                    </div>
+                    <div className="max-w-min min-w-[300px]">
+                        <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-suffix-text-field"} text="Suffix" />}
+                            optional={true}
+                            field={<TextInput
+                                regex={/^[A-Za-z\'\-\.]*$/}
+                                placeholderText="None"
+                                defaultText={userState.profile?.suffix}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-suffix"}
+                            />}
+                            editInfo={{
+                                title: "SUFFIX",
+                                description: "The suffix field should contain any special suffixes included in the account owner's name.",
+                                common_values: "\"Jr.\", \"Sr.\", \"III\"",
+                                permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
+                            }}
+                            viewInfo={{
+                                title: "SUFFIX",
+                                description: "The suffix field contains any special suffixes included in the account owner's name.",
+                            }}
+                        />
+                    </div>
+                </div>
             </FormContext.Provider>
 
-            {formState.mode === "edit"
-                ? <div className="flex flex-row flex-wrap gap-x-2">
-                    <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Save changes" type="submit" handleClick={(event: any) => {
-                        event.preventDefault();
-                        handleSubmit();
-                    }} />
-                    <InputButton idPrefix={idPrefix + "-cancel"} color="red" icon="CIRCLE_CROSS" text="Cancel" type="button" handleClick={handleCancel} />
-                </div>
-                : <InputButton idPrefix={idPrefix + "-edit"} color="purple" icon="CIRCLE_BOLT" text="Edit profile" type="button" handleClick={handleEdit} />
+            {
+                formState.mode === "edit"
+                    ? <div className="flex flex-row flex-wrap gap-x-2">
+                        <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Save changes" type="submit" handleClick={(event: any) => {
+                            event.preventDefault();
+                            handleSubmit();
+                        }} />
+                        <InputButton idPrefix={idPrefix + "-cancel"} color="red" icon="CIRCLE_CROSS" text="Cancel" type="button" handleClick={handleCancel} />
+                    </div>
+                    : <InputButton idPrefix={idPrefix + "-edit"} color="purple" icon="CIRCLE_BOLT" text="Edit profile" type="button" handleClick={handleEdit} />
             }
-        </DataForm>
+        </DataForm >
     )
 }

@@ -30,7 +30,7 @@ export function MeetEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
                 modelData={meetData}
                 setModelData={setMeetData}
                 isMeetHost={isMeetHost}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "name",
                         idSuffix: "-name-text-field",
@@ -121,32 +121,7 @@ export function MeetEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
                                 return convertedVisibility;
                             }
                         }
-                    },
-                    {
-                        title: "host",
-                        idSuffix: "-host-text-field",
-                        readOnly: true,
-                        duplicateSensitive: false,
-                        formGroup: <NeutralFormGroup
-                            label={<InputLabel inputId={idPrefix + "-host-text-field"} text="Host" />}
-                            key={idPrefix + "-host-text-field"}
-                            field={<TextInput
-                                regex={/^.*$/}
-                                placeholderText="Host name"
-                                defaultText={generateHostName(meetData.fields.host)}
-                                pixelWidth={300}
-                                idPrefix={idPrefix + "-host"}
-                            />}
-                            baseInfo={{
-                                title: "HOST",
-                                description: "The host field contains the name of the account that created and owns the meet. The value of this field is read-only as it cannot be changed after meet creation.",
-                            }}
-                            viewInfo={{
-                                title: "HOST",
-                                description: "The host field contains the name of the account that created and owns the meet.",
-                            }}
-                        />,
-                    },
+                    }], [
                     {
                         title: "begin_time",
                         idSuffix: "-begin_time-text-field",
@@ -196,8 +171,33 @@ export function MeetEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
                                 description: "The end time field contains the overall ending time of the meet in your local timezone. The value of this field is equal to the latest ending time across all of the meet's sessions.",
                             }}
                         />,
+                    }], [
+                    {
+                        title: "host",
+                        idSuffix: "-host-text-field",
+                        readOnly: true,
+                        duplicateSensitive: false,
+                        formGroup: <NeutralFormGroup
+                            label={<InputLabel inputId={idPrefix + "-host-text-field"} text="Host" />}
+                            key={idPrefix + "-host-text-field"}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="Host name"
+                                defaultText={generateHostName(meetData.fields.host)}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-host"}
+                            />}
+                            baseInfo={{
+                                title: "HOST",
+                                description: "The host field contains the name of the account that created and owns the meet. The value of this field is read-only as it cannot be changed after meet creation.",
+                            }}
+                            viewInfo={{
+                                title: "HOST",
+                                description: "The host field contains the name of the account that created and owns the meet.",
+                            }}
+                        />,
                     }
-                ]}
+                ]]}
                 modelSelectFields={[]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
@@ -229,6 +229,14 @@ export function MeetEditingForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
                             title: "AUTHORIZATION ERROR",
                             description: "You are not currently logged into an account. Log into an account before modifying this meet.",
                             recommendation: "Log into an account using the log in button found in the navigation bar."
+                        }
+                    },
+                    {
+                        matchString: "user is not logged into meet host account",
+                        error: {
+                            title: "AUTHORIZATION ERROR",
+                            description: "You are not currently logged into the host account for this meet. Log into the host account before modifying this meet.",
+                            recommendation: "Log into the host account using the log in button found in the navigation bar."
                         }
                     }
                 ]}

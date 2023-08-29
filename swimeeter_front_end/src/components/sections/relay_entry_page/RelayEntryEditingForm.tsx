@@ -140,6 +140,7 @@ const errorPossibilities = [
         error: {
             title: "EVENT FIELD ERROR",
             description: "No event matching the event name provided in the event field exists. Every relay entry must be associated with a event.",
+            fields: "Event",
             recommendation: "Choose an existing event for the relay entry to be associated with. If no events exist, first add an event to the meet."
         }
     },
@@ -148,15 +149,35 @@ const errorPossibilities = [
         error: {
             title: "EVENT FIELD ERROR",
             description: "No event matching the event name provided in the event field exists. Every relay entry must be associated with a event.",
+            fields: "Event",
             recommendation: "Choose an existing event for the relay entry to be associated with. If no events exist, first add an event to the meet."
         }
     },
     {
-        matchString: "swimmers and event are incompatible",
+        matchString: "swimmer and event are incompatible",
         error: {
             title: "SWIMMERS AND EVENT COMPATIBILITY ERROR",
             description: "At least one of the selected swimmers is incompatible with the selected event for this relay entry. All of the entry's swimmers must meet the event's competitor demographic requirements.",
+            fields: "Leg swimmer(s), Event",
             recommendation: "Choose swimmers and an event for the relay entry such that the swimmers' ages and genders are compatible with the event's competing age range and gender."
+        }
+    },
+    {
+        matchString: "duplicate swimmers exist inside relay",
+        error: {
+            title: "REPEATED SWIMMERS ERROR",
+            description: "At least one of the selected swimmers is selected to swim multiple relay legs. All relay entry legs must be swam by different swimmers.",
+            fields: "Leg swimmers",
+            recommendation: "Choose a unique swimmer to complete each leg of the relay entry."
+        }
+    },
+    {
+        matchString: "swimmers of different teams exist inside relay",
+        error: {
+            title: "SWIMMER TEAMS COMPATIBILITY ERROR",
+            description: "Not all of the selected swimmers belong to the same team. All relay entry legs must be swam by swimmers on the same team.",
+            fields: "Leg swimmers",
+            recommendation: "Choose swimmers on the same team for each leg of the relay entry."
         }
     }
 ];
@@ -213,7 +234,7 @@ export function RelayEntryEditingForm({ meet_id_INT, scrollRef }: { meet_id_INT:
     }[]>(relayEntryData.fields.relay_assignments.map((assignment, mapIndex) => {
         return {
             swimmer_id: assignment.fields.swimmer.pk,
-            swimmer_name: generateSwimmerName(assignment.fields.swimmer),
+            swimmer_name: generateSwimmerName(assignment.fields.swimmer) + " (" + assignment.fields.swimmer.fields.age + ", " + assignment.fields.swimmer.fields.gender + ", " + assignment.fields.swimmer.fields.team.fields.acronym + ")",
             order_in_relay: mapIndex + 1,
             seed_relay_split: assignment.fields.seed_relay_split
         }
@@ -389,7 +410,7 @@ export function RelayEntryEditingForm({ meet_id_INT, scrollRef }: { meet_id_INT:
 
     async function handleSubmit(duplicate_handling?: "unhandled" | "keep_new" | "keep_both", bypassDestructiveSubmission?: boolean) {
         scrollRef.current?.scrollIntoView();
-        
+
         // ~ submit counts as destructive action -> show destructive pop-up
         if (!bypassDestructiveSubmission) {
             formDispatch({
@@ -413,6 +434,7 @@ export function RelayEntryEditingForm({ meet_id_INT, scrollRef }: { meet_id_INT:
                 error: {
                     title: `EVENT FIELD ERROR`,
                     description: `The event field was provided an invalid value. The event field must be provided the name of a valid event in this meet.`,
+                    fields: "Event",
                     recommendation: `Alter the provided event value to conform to the requirements of the event field.`
                 }
             });
@@ -436,8 +458,34 @@ export function RelayEntryEditingForm({ meet_id_INT, scrollRef }: { meet_id_INT:
 
             for (let i = 0; i < assignments.length; ++i) {
                 const split_seed_time = parseInt((document.getElementById(`${idPrefix}-${i}-seed_split_time-duration-field`) as HTMLInputElement).value);
+                if (split_seed_time <= 0) {
+                    // ? zero seed duration entered
+                    formDispatch({
+                        type: "SAVE_FAILURE",
+                        error: {
+                            title: `LEG ${i + 1} SEED SPLIT TIME FIELD ERROR`,
+                            description: `A zero time duration was provided to the seed split time field for relay leg ${i + 1}. All relay legs must have a non-zero seed split time duration.`,
+                            fields: `Seed split time (leg ${i + 1})`,
+                            recommendation: "Alter the provided seed split time to conform to the requirements of the field."
+                        }
+                    });
+                    return;
+                }
                 cumulative_seed_time += split_seed_time;
 
+                if (assignments[i].swimmer_id === -1) {
+                    // ? no swimmer chosen for leg
+                    formDispatch({
+                        type: "SAVE_FAILURE",
+                        error: {
+                            title: `LEG ${i + 1} LEG SWIMMER FIELD ERROR`,
+                            description: `No leg swimmer was provided for relay leg ${i + 1}. All relay legs must have an eligible swimmer completing the leg.`,
+                            fields: `Leg swimmer (leg ${i + 1})`,
+                            recommendation: "Choose an eligible swimmer to complete each leg of the relay entry."
+                        }
+                    });
+                    return;
+                }
                 formData.assignments.push({
                     swimmer_id: assignments[i].swimmer_id,
                     seed_relay_split: split_seed_time,
@@ -600,7 +648,7 @@ export function RelayEntryEditingForm({ meet_id_INT, scrollRef }: { meet_id_INT:
 
     function handleCancel() {
         scrollRef.current?.scrollIntoView();
-        
+
         formDispatch({
             type: "CANCEL_CLICKED"
         })
@@ -628,122 +676,138 @@ export function RelayEntryEditingForm({ meet_id_INT, scrollRef }: { meet_id_INT:
             {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}
 
             <FormContext.Provider value={formState.mode === "edit"}>
-                <NeutralFormGroup
-                    label={<InputLabel inputId={idPrefix + "-seed_time-text-field"} text="Seed time" />}
-                    key={idPrefix + "-seed_time-text-field"}
-                    field={<TextInput
-                        regex={/^.*$/}
-                        placeholderText="N/A"
-                        defaultText={generateSeedTimeString(relayEntryData.fields.seed_time)}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-seed_time"}
-                    />}
-                    baseInfo={{
-                        title: "SEED TIME",
-                        description: "The seed time field contains the seed time of the relay entry. The value of this field is read-only as it is determined automatically by summing each relay participant's seed split time.",
-                    }}
-                    viewInfo={{
-                        title: "SEED TIME",
-                        description: "The seed time field contains the seed time of the relay entry being created.",
-                    }}
-                />
-                <NeutralFormGroup
-                    label={<InputLabel inputId={idPrefix + "-heat_number-text-field"} text="Heat number" />}
-                    key={idPrefix + "-heat_number-text-field"}
-                    field={<TextInput
-                        regex={/^.*$/}
-                        placeholderText="N/A"
-                        defaultText={`${relayEntryData.fields.heat_number || ""}`}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-heat_number"}
-                    />}
-                    baseInfo={{
-                        title: "HEAT NUMBER",
-                        description: "The heat number field contains the heat of the entry's seed placement. The value of this field is read-only as it is determined automatically by generating the heat sheet seeding for the entry's associated event.",
-                    }}
-                    viewInfo={{
-                        title: "HEAT NUMBER",
-                        description: "The heat number field contains the heat of the entry's seed placement.",
-                    }}
-                />
-                <NeutralFormGroup
-                    label={<InputLabel inputId={idPrefix + "-lane_number-text-field"} text="Lane number" />}
-                    key={idPrefix + "-lane_number-text-field"}
-                    field={<TextInput
-                        regex={/^.*$/}
-                        placeholderText="N/A"
-                        defaultText={`${relayEntryData.fields.lane_number || ""}`}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-lane_number"}
-                    />}
-                    baseInfo={{
-                        title: "LANE NUMBER",
-                        description: "The lane number field contains the lane of the entry's seed placement. The value of this field is read-only as it is determined automatically by generating the heat sheet seeding for the entry's associated event.",
-                    }}
-                    viewInfo={{
-                        title: "LANE NUMBER",
-                        description: "The lane number field contains the lane of the entry's seed placement.",
-                    }}
-                />
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <NeutralFormGroup
+                            label={<InputLabel inputId={idPrefix + "-seed_time-text-field"} text="Seed time" />}
+                            key={idPrefix + "-seed_time-text-field"}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="N/A"
+                                defaultText={generateSeedTimeString(relayEntryData.fields.seed_time)}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-seed_time"}
+                            />}
+                            baseInfo={{
+                                title: "SEED TIME",
+                                description: "The seed time field contains the seed time of the relay entry. The value of this field is read-only as it is determined automatically by summing each relay participant's seed split time.",
+                            }}
+                            viewInfo={{
+                                title: "SEED TIME",
+                                description: "The seed time field contains the seed time of the relay entry being created.",
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <NeutralFormGroup
+                            label={<InputLabel inputId={idPrefix + "-heat_number-text-field"} text="Heat number" />}
+                            key={idPrefix + "-heat_number-text-field"}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="N/A"
+                                defaultText={`${relayEntryData.fields.heat_number || ""}`}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-heat_number"}
+                            />}
+                            baseInfo={{
+                                title: "HEAT NUMBER",
+                                description: "The heat number field contains the heat of the entry's seed placement. The value of this field is read-only as it is determined automatically by generating the heat sheet seeding for the entry's associated event.",
+                            }}
+                            viewInfo={{
+                                title: "HEAT NUMBER",
+                                description: "The heat number field contains the heat of the entry's seed placement.",
+                            }}
+                        />
+                    </div>
+                    <div className="max-w-min min-w-[300px]">
+                        <NeutralFormGroup
+                            label={<InputLabel inputId={idPrefix + "-lane_number-text-field"} text="Lane number" />}
+                            key={idPrefix + "-lane_number-text-field"}
+                            field={<TextInput
+                                regex={/^.*$/}
+                                placeholderText="N/A"
+                                defaultText={`${relayEntryData.fields.lane_number || ""}`}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-lane_number"}
+                            />}
+                            baseInfo={{
+                                title: "LANE NUMBER",
+                                description: "The lane number field contains the lane of the entry's seed placement. The value of this field is read-only as it is determined automatically by generating the heat sheet seeding for the entry's associated event.",
+                            }}
+                            viewInfo={{
+                                title: "LANE NUMBER",
+                                description: "The lane number field contains the lane of the entry's seed placement.",
+                            }}
+                        />
+                    </div>
+                </div>
 
-                <RelayEntryModelSelect
-                    idPrefix={idPrefix}
-                    meet_id_INT={meet_id_INT}
-                    type="editing"
-                    defaultSelection={{
-                        text: generateEventNameShallow(relayEntryData.fields.event),
-                        swimmers_per_entry: relayEntryData.fields.event.fields.swimmers_per_entry,
-                        model_id: relayEntryData.fields.event.pk
-                    }}
-                    setModelSelection={(selection: {
-                        text: string,
-                        swimmers_per_entry: number,
-                        model_id: number
-                    }) => handleEventSelection(selection)}
-                />
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <RelayEntryModelSelect
+                            idPrefix={idPrefix}
+                            meet_id_INT={meet_id_INT}
+                            type="editing"
+                            defaultSelection={{
+                                text: generateEventNameShallow(relayEntryData.fields.event),
+                                swimmers_per_entry: relayEntryData.fields.event.fields.swimmers_per_entry,
+                                model_id: relayEntryData.fields.event.pk
+                            }}
+                            setModelSelection={(selection: {
+                                text: string,
+                                swimmers_per_entry: number,
+                                model_id: number
+                            }) => handleEventSelection(selection)}
+                        />
+                    </div>
+                </div>
 
-                {assignments.map((assignment, mapIndex) => {
-                    return (
-                        <div className="flex flex-col gap-y-2 p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-800 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
-                            <MainContentText>
-                                {`Leg #${mapIndex + 1}`}
-                            </MainContentText>
-                            <EditingFormGroup
-                                label={<InputLabel inputId={`${idPrefix}-${mapIndex}-seed_split_time-duration-field`} text="Seed split time" />}
-                                key={`${idPrefix}-${mapIndex}-seed_split_time-duration-field`}
-                                optional={false}
-                                field={<DurationInput
-                                    idPrefix={`${idPrefix}-${mapIndex}-seed_split_time`}
-                                    defaults={generateSeedTimeElements(relayEntryData.fields.relay_assignments[mapIndex].fields.seed_relay_split)}
-                                    rawDurationString={generateSeedTimeString(relayEntryData.fields.relay_assignments[mapIndex].fields.seed_relay_split)}
-                                    rawDurationNumber={relayEntryData.fields.relay_assignments[mapIndex].fields.seed_relay_split}
-                                />}
-                                editInfo={{
-                                    title: "SEED SPLIT TIME",
-                                    description: "The seed split time field should contain the seed time of this relay leg. Usually, this is the fastest time previously swam by the chosen swimmer in the event matching the leg being swam.",
-                                    permitted_values: "Any valid non-zero duration. Any subsection may be left blank if zero of the specified time increments are required to represent the duration."
-                                }}
-                                viewInfo={{
-                                    title: "SEED SPLIT TIME",
-                                    description: "The seed split time field should contain the seed time of this relay leg. Usually, this is the fastest time previously swam by the chosen swimmer in the event matching the leg being swam.",
-                                }}
-                            />
-                            <RelaySwimmerModelSelect
-                                idPrefix={idPrefix + "-" + mapIndex}
-                                meet_id_INT={meet_id_INT}
-                                type="editing"
-                                defaultSelection={{
-                                    text: assignments[mapIndex].swimmer_name,
-                                    model_id: assignments[mapIndex].swimmer_id
-                                }}
-                                setModelSelection={(selection: {
-                                    text: string,
-                                    model_id: number
-                                }) => handleSwimmerSelection(mapIndex, selection)}
-                            />
-                        </div>
-                    )
-                })}
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    {assignments.map((assignment, mapIndex) => {
+                        return (
+                            <div className="flex flex-col gap-y-2 p-2 h-fit w-fit max-w-min rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                                <MainContentText>
+                                    {`Leg #${mapIndex + 1}`}
+                                </MainContentText>
+                                <EditingFormGroup
+                                    label={<InputLabel inputId={`${idPrefix}-${mapIndex}-seed_split_time-duration-field`} text="Seed split time" />}
+                                    key={`${idPrefix}-${mapIndex}-seed_split_time-duration-field`}
+                                    optional={false}
+                                    field={<DurationInput
+                                        idPrefix={`${idPrefix}-${mapIndex}-seed_split_time`}
+                                        defaults={generateSeedTimeElements(relayEntryData.fields.relay_assignments[mapIndex].fields.seed_relay_split)}
+                                        rawDurationString={generateSeedTimeString(relayEntryData.fields.relay_assignments[mapIndex].fields.seed_relay_split)}
+                                        rawDurationNumber={relayEntryData.fields.relay_assignments[mapIndex].fields.seed_relay_split}
+                                    />}
+                                    editInfo={{
+                                        title: "SEED SPLIT TIME",
+                                        description: "The seed split time field should contain the seed time of this relay leg. Usually, this is the fastest time previously swam by the chosen swimmer in the event matching the leg being swam.",
+                                        permitted_values: "Any valid non-zero duration. Any subsection may be left blank if zero of the specified time increments are required to represent the duration."
+                                    }}
+                                    viewInfo={{
+                                        title: "SEED SPLIT TIME",
+                                        description: "The seed split time field should contain the seed time of this relay leg. Usually, this is the fastest time previously swam by the chosen swimmer in the event matching the leg being swam.",
+                                    }}
+                                />
+                                <RelaySwimmerModelSelect
+                                    idPrefix={idPrefix + "-" + mapIndex}
+                                    meet_id_INT={meet_id_INT}
+                                    type="editing"
+                                    defaultSelection={{
+                                        text: assignments[mapIndex].swimmer_name,
+                                        model_id: assignments[mapIndex].swimmer_id
+                                    }}
+                                    setModelSelection={(selection: {
+                                        text: string,
+                                        model_id: number
+                                    }) => handleSwimmerSelection(mapIndex, selection)}
+                                />
+                            </div>
+                        )
+                    })}
+                </div>
             </FormContext.Provider>
 
             {formState.mode === "edit"

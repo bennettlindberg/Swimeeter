@@ -15,7 +15,7 @@ export function TeamCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: numb
         <>
             <CreationForm
                 scrollRef={scrollRef}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "name",
                         idSuffix: "-name-text-field",
@@ -85,7 +85,7 @@ export function TeamCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: numb
                             }
                         }
                     }
-                ]}
+                ]]}
                 modelSelectFields={[]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",

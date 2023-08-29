@@ -59,7 +59,7 @@ export function SessionHeatSheetTable() {
                             setInfoShown(false);
                         }}
                         info={{
-                            title: "Session Heat Sheet",
+                            title: "SESSION HEAT SHEET",
                             description: "The session heat sheet contains the heat and lane seeding information for all events of the meet being viewed that belong to the current session."
                         }}
                     />}

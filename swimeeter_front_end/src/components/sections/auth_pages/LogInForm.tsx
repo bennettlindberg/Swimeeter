@@ -186,37 +186,45 @@ export function LogInForm({ forwardTo, scrollRef }: { forwardTo?: string, scroll
         <DataForm>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
 
-            <NeutralFormGroup
-                label={<InputLabel inputId={idPrefix + "-email-text-field"} text="Email" />}
-                field={<TextInput
-                    regex={/^[A-Za-z0-9\.\@]*$/}
-                    placeholderText="Email"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-email"}
-                />}
-                baseInfo={{
-                    title: "EMAIL",
-                    description: "The email field should contain the email address used to create the account. This field cannot be changed after account creation.",
-                    permitted_values: "Any email address containing alphanumeric strings, a single @ symbol, no consecutive periods, and no periods at the start or end of alphanumeric strings.",
-                    warning: "Email addresses are considered case-insensitive. Emails such as A@A.com and a@a.com will refer to the same email address."
-                }}
-            />
+            <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                <div className="max-w-min min-w-[300px]">
+                    <NeutralFormGroup
+                        label={<InputLabel inputId={idPrefix + "-email-text-field"} text="Email" />}
+                        field={<TextInput
+                            regex={/^[A-Za-z0-9\.\@]*$/}
+                            placeholderText="Email"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-email"}
+                        />}
+                        baseInfo={{
+                            title: "EMAIL",
+                            description: "The email field should contain the email address used to create the account. This field cannot be changed after account creation.",
+                            permitted_values: "Any email address containing alphanumeric strings, a single @ symbol, no consecutive periods, and no periods at the start or end of alphanumeric strings.",
+                            warning: "Email addresses are considered case-insensitive. Emails such as A@A.com and a@a.com will refer to the same email address."
+                        }}
+                    />
+                </div>
+            </div>
 
-            <NeutralFormGroup
-                label={<InputLabel inputId={idPrefix + "-password-text-field"} text="Password" />}
-                field={<TextInput
-                    regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
-                    placeholderText="Password"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-password"}
-                    isPassword={true}
-                />}
-                baseInfo={{
-                    title: "PASSWORD",
-                    description: "The password field should contain the current password associated with the account. This field can be changed after account creation.",
-                    permitted_values: "Any string at least 8 characters long containing at least one uppercase character (A-Z), one lowercase character (a-z), one number (0-9), and one special character (~`! @#$%^&*()_-+={[}]|\\:;\"\'<,>.?/)."
-                }}
-            />
+            <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                <div className="max-w-min min-w-[300px]">
+                    <NeutralFormGroup
+                        label={<InputLabel inputId={idPrefix + "-password-text-field"} text="Password" />}
+                        field={<TextInput
+                            regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
+                            placeholderText="Password"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-password"}
+                            isPassword={true}
+                        />}
+                        baseInfo={{
+                            title: "PASSWORD",
+                            description: "The password field should contain the current password associated with the account. This field can be changed after account creation.",
+                            permitted_values: "Any string at least 8 characters long containing at least one uppercase character (A-Z), one lowercase character (a-z), one number (0-9), and one special character (~`! @#$%^&*()_-+={[}]|\\:;\"\'<,>.?/)."
+                        }}
+                    />
+                </div>
+            </div>
 
             <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Log in" type="submit" handleClick={(event: any) => {
                 event.preventDefault();

@@ -306,149 +306,163 @@ export function SignUpForm({ forwardTo, scrollRef }: { forwardTo?: string, scrol
         <DataForm>
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
 
-            <MainContentSubheading subheading="Credentials" />
+            <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                <div className="max-w-min min-w-[300px]">
+                    <CreationFormGroup
+                        label={<InputLabel inputId={idPrefix + "-email-text-field"} text="Email" />}
+                        optional={false}
+                        field={<TextInput
+                            regex={/^[A-Za-z0-9\.\@]*$/}
+                            placeholderText="Email"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-email"}
+                        />}
+                        createInfo={{
+                            title: "EMAIL",
+                            description: "The email field should contain a valid email address to be associated with the account. This field cannot be changed after account creation.",
+                            permitted_values: "Any email address containing alphanumeric strings, a single @ symbol, no consecutive periods, and no periods at the start or end of alphanumeric strings.",
+                            warning: "Email addresses are considered case-insensitive. Emails such as A@A.com and a@a.com will refer to the same email address."
+                        }}
+                    />
+                </div>
+            </div>
 
-            <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-email-text-field"} text="Email" />}
-                optional={false}
-                field={<TextInput
-                    regex={/^[A-Za-z0-9\.\@]*$/}
-                    placeholderText="Email"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-email"}
-                />}
-                createInfo={{
-                    title: "EMAIL",
-                    description: "The email field should contain a valid email address to be associated with the account. This field cannot be changed after account creation.",
-                    permitted_values: "Any email address containing alphanumeric strings, a single @ symbol, no consecutive periods, and no periods at the start or end of alphanumeric strings.",
-                    warning: "Email addresses are considered case-insensitive. Emails such as A@A.com and a@a.com will refer to the same email address."
-                }}
-            />
+            <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                <div className="max-w-min min-w-[300px]">
+                    <CreationFormGroup
+                        label={<InputLabel inputId={idPrefix + "-password-text-field"} text="Password" />}
+                        optional={false}
+                        field={<TextInput
+                            regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
+                            placeholderText="Password"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-password"}
+                            isPassword={true}
+                        />}
+                        createInfo={{
+                            title: "PASSWORD",
+                            description: "The password field should contain a password to be associated with the account. This field can be changed after account creation.",
+                            permitted_values: "Any string at least 8 characters long containing at least one uppercase character (A-Z), one lowercase character (a-z), one number (0-9), and one special character (~`! @#$%^&*()_-+={[}]|\\:;\"\'<,>.?/)."
+                        }}
+                    />
+                </div>
+                <div className="max-w-min min-w-[300px]">
+                    <CreationFormGroup
+                        label={<InputLabel inputId={idPrefix + "-repeat_password-text-field"} text="Repeat password" />}
+                        optional={false}
+                        field={<TextInput
+                            regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
+                            placeholderText="Repeat password"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-repeat_password"}
+                            isPassword={true}
+                        />}
+                        createInfo={{
+                            title: "REPEAT PASSWORD",
+                            description: "The repeat password field should contain the same password as provided above. The purpose of the repeat password field is to ensure that the user has entered their password as they intend.",
+                            permitted_values: "The same string as provided in the password field above."
+                        }}
+                    />
+                </div>
+            </div>
 
-            <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-password-text-field"} text="Password" />}
-                optional={false}
-                field={<TextInput
-                    regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
-                    placeholderText="Password"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-password"}
-                    isPassword={true}
-                />}
-                createInfo={{
-                    title: "PASSWORD",
-                    description: "The password field should contain a password to be associated with the account. This field can be changed after account creation.",
-                    permitted_values: "Any string at least 8 characters long containing at least one uppercase character (A-Z), one lowercase character (a-z), one number (0-9), and one special character (~`! @#$%^&*()_-+={[}]|\\:;\"\'<,>.?/)."
-                }}
-            />
+            <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                <div className="max-w-min min-w-[300px]">
+                    <CreationFormGroup
+                        label={<InputLabel inputId={idPrefix + "-first_name-text-field"} text="First name" />}
+                        optional={false}
+                        field={<TextInput
+                            regex={/^[A-Za-z\'\-]*$/}
+                            placeholderText="First name"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-first_name"}
+                        />}
+                        createInfo={{
+                            title: "FIRST NAME",
+                            description: "The first name field should contain the account owner's given name.",
+                            permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
+                        }}
+                    />
+                </div>
+                <div className="max-w-min min-w-[300px]">
+                    <CreationFormGroup
+                        label={<InputLabel inputId={idPrefix + "-last_name-text-field"} text="Last name" />}
+                        optional={false}
+                        field={<TextInput
+                            regex={/^[A-Za-z\'\-]*$/}
+                            placeholderText="Last name"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-last_name"}
+                        />}
+                        createInfo={{
+                            title: "LAST NAME",
+                            description: "The last name field should contain the account owner's family name.",
+                            permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
+                        }}
+                    />
+                </div>
+            </div>
 
-            <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-repeat_password-text-field"} text="Repeat Password" />}
-                optional={false}
-                field={<TextInput
-                    regex={/^[A-Za-z0-9\~\`\! \@\#\$\%\^\&\*\(\)\_\-\+\=\{\[\}\]\|\\\:\;\"\'\<\,\>\.\?\/]*$/}
-                    placeholderText="Password"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-repeat_password"}
-                    isPassword={true}
-                />}
-                createInfo={{
-                    title: "REPEAT PASSWORD",
-                    description: "The repeat password field should contain the same password as provided above. The purpose of the repeat password field is to ensure that the user has entered their password as they intend.",
-                    permitted_values: "The same string as provided in the password field above."
-                }}
-            />
-
-            <MainContentSubheading subheading="Name (required)" />
-
-            <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-first_name-text-field"} text="First name" />}
-                optional={false}
-                field={<TextInput
-                    regex={/^[A-Za-z\'\-]*$/}
-                    placeholderText="First name"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-first_name"}
-                />}
-                createInfo={{
-                    title: "FIRST NAME",
-                    description: "The first name field should contain the account owner's given name.",
-                    permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
-                }}
-            />
-
-            <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-last_name-text-field"} text="Last name" />}
-                optional={false}
-                field={<TextInput
-                    regex={/^[A-Za-z\'\-]*$/}
-                    placeholderText="Last name"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-last_name"}
-                />}
-                createInfo={{
-                    title: "LAST NAME",
-                    description: "The last name field should contain the account owner's family name.",
-                    permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, and hyphens."
-                }}
-            />
-
-            <MainContentSubheading subheading="Name (optional)" />
-
-            <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-middle_initials-text-field"} text="Middle initials" />}
-                optional={true}
-                field={<TextInput
-                    regex={/^([A-Z] )*$|^([A-Z] )*[A-Z]?$/}
-                    placeholderText="None"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-middle_initials"}
-                />}
-                createInfo={{
-                    title: "MIDDLE INITIALS",
-                    description: "The middle initials field should contain a space-separated list of the account owner's uppercase middle initials.",
-                    permitted_values: "Any string at least 1 character long containing space-separated uppercase alphabetic characters. May be left blank."
-                }}
-            />
-
-            <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-prefix-text-field"} text="Prefix" />}
-                optional={true}
-                field={<TextInput
-                    regex={/^[A-Za-z\'\-\.]*$/}
-                    placeholderText="None"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-prefix"}
-                />}
-                createInfo={{
-                    title: "PREFIX",
-                    description: "The prefix field should contain any special prefixes included in the account owner's name.",
-                    common_values: "\"St.,\" \"Sir.\" This field is not intended for \"Mr.,\" \"Mrs.,\" and \"Ms.\" prefixes.",
-                    permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
-                }}
-            />
-
-            <CreationFormGroup
-                label={<InputLabel inputId={idPrefix + "-suffix-text-field"} text="Suffix" />}
-                optional={true}
-                field={<TextInput
-                    regex={/^[A-Za-z\'\-\.]*$/}
-                    placeholderText="None"
-                    pixelWidth={300}
-                    idPrefix={idPrefix + "-suffix"}
-                />}
-                createInfo={{
-                    title: "SUFFIX",
-                    description: "The suffix field should contain any special suffixes included in the account owner's name.",
-                    common_values: "\"Jr.,\" \"Sr.,\" \"III.\"",
-                    permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
-                }}
-            />
+            <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                <div className="max-w-min min-w-[300px]">
+                    <CreationFormGroup
+                        label={<InputLabel inputId={idPrefix + "-middle_initials-text-field"} text="Middle initials" />}
+                        optional={true}
+                        field={<TextInput
+                            regex={/^([A-Z] )*$|^([A-Z] )*[A-Z]?$/}
+                            placeholderText="None"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-middle_initials"}
+                        />}
+                        createInfo={{
+                            title: "MIDDLE INITIALS",
+                            description: "The middle initials field should contain a space-separated list of the account owner's uppercase middle initials.",
+                            permitted_values: "Any string at least 1 character long containing space-separated uppercase alphabetic characters. May be left blank."
+                        }}
+                    />
+                </div>
+                <div className="max-w-min min-w-[300px]">
+                    <CreationFormGroup
+                        label={<InputLabel inputId={idPrefix + "-prefix-text-field"} text="Prefix" />}
+                        optional={true}
+                        field={<TextInput
+                            regex={/^[A-Za-z\'\-\.]*$/}
+                            placeholderText="None"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-prefix"}
+                        />}
+                        createInfo={{
+                            title: "PREFIX",
+                            description: "The prefix field should contain any special prefixes included in the account owner's name.",
+                            common_values: "\"St.,\" \"Sir.\" This field is not intended for \"Mr.,\" \"Mrs.,\" and \"Ms.\" prefixes.",
+                            permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
+                        }}
+                    />
+                </div >
+                <div className="max-w-min min-w-[300px]">
+                    <CreationFormGroup
+                        label={<InputLabel inputId={idPrefix + "-suffix-text-field"} text="Suffix" />}
+                        optional={true}
+                        field={<TextInput
+                            regex={/^[A-Za-z\'\-\.]*$/}
+                            placeholderText="None"
+                            pixelWidth={300}
+                            idPrefix={idPrefix + "-suffix"}
+                        />}
+                        createInfo={{
+                            title: "SUFFIX",
+                            description: "The suffix field should contain any special suffixes included in the account owner's name.",
+                            common_values: "\"Jr.,\" \"Sr.,\" \"III.\"",
+                            permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
+                        }}
+                    />
+                </div >
+            </div >
 
             <InputButton idPrefix={idPrefix + "-submit"} color="green" icon="CIRCLE_CHECK" text="Sign up" type="submit" handleClick={(event: any) => {
                 event.preventDefault();
                 handleSubmit();
             }} />
-        </DataForm>
+        </DataForm >
     )
 }

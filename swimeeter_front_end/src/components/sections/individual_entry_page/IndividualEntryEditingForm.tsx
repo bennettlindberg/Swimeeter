@@ -30,7 +30,7 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                 modelData={individualEntryData}
                 setModelData={setIndividualEntryData}
                 isMeetHost={isMeetHost}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "seed_time",
                         idSuffix: "-seed_time-duration-field",
@@ -78,7 +78,7 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                                 }
                             }
                         }
-                    },
+                    }], [
                     {
                         title: "heat_number",
                         idSuffix: "-heat_number-text-field",
@@ -129,9 +129,9 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                             }}
                         />,
                     }
-                ]}
+                ]]}
                 modelSelectFields={individualEntryData.pk !== -1
-                    ? [
+                    ? [[
                         {
                             queryParamTitle: "event_id",
                             idSuffix: "-event-model-select-field",
@@ -189,7 +189,7 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                                 }
                             }
                         }
-                    ]
+                    ]]
                     : []}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
@@ -235,6 +235,7 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                         error: {
                             title: "EVENT FIELD ERROR",
                             description: "No event matching the event name provided in the event field exists. Every individual entry must be associated with a event.",
+                            fields: "Event",
                             recommendation: "Choose an existing event for the individual entry to be associated with. If no events exist, first add an event to the meet."
                         }
                     },
@@ -243,6 +244,7 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                         error: {
                             title: "EVENT FIELD ERROR",
                             description: "No event matching the event name provided in the event field exists. Every individual entry must be associated with a event.",
+                            fields: "Event",
                             recommendation: "Choose an existing event for the individual entry to be associated with. If no events exist, first add an event to the meet."
                         }
                     },
@@ -251,6 +253,7 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                         error: {
                             title: "SWIMMER FIELD ERROR",
                             description: "No swimmer matching the swimmer name provided in the swimmer field exists. Every individual entry must be associated with a swimmer.",
+                            fields: "Swimmer",
                             recommendation: "Choose an existing swimmer for the individual entry to be associated with. If no swimmers exist, first add a swimmer to the meet."
                         }
                     },
@@ -259,6 +262,7 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                         error: {
                             title: "SWIMMER FIELD ERROR",
                             description: "No swimmer matching the swimmer name provided in the swimmer field exists. Every individual entry must be associated with a swimmer.",
+                            fields: "Swimmer",
                             recommendation: "Choose an existing swimmer for the individual entry to be associated with. If no swimmers exist, first add a swimmer to the meet."
                         }
                     },
@@ -267,6 +271,7 @@ export function IndividualEntryEditingForm({scrollRef}: {scrollRef: React.RefObj
                         error: {
                             title: "SWIMMER AND EVENT COMPATIBILITY ERROR",
                             description: "The chosen swimmer and event for this individual entry are incompatible. The entry's swimmer must meet the event's competitor demographic requirements.",
+                            fields: "Swimmer, Event",
                             recommendation: "Choose a swimmer and event pairing for the individual entry such that the swimmer's age and gender are compatible with the event's competing age range and gender."
                         }
                     }

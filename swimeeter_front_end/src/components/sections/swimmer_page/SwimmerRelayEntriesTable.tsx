@@ -43,14 +43,14 @@ export function SwimmerRelayEntriesTable() {
             searchType="RELAY_ENTRY_OF_SWIMMER"
             tableBarItems={[]}
             tableBarHostItems={[
-                <PageButton color="orange" text="Create an relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(
+                <PageButton color="orange" text="Create a relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(
                     `/meets/${swimmerData.fields.meet.pk}/relay_entries/create`,
                     {
                         state:
                         {
                             defaultSwimmer:
                             {
-                                name: generateSwimmerName(swimmerData),
+                                name: generateSwimmerName(swimmerData) + " (" + swimmerData.fields.age + ", " + swimmerData.fields.gender + ", " + swimmerData.fields.team.fields.acronym + ")",
                                 swimmer_id: swimmerData.pk
                             }
                         }

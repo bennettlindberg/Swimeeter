@@ -43,7 +43,7 @@ export function TeamRelayEntriesTable() {
             searchType="RELAY_ENTRY_OF_TEAM"
             tableBarItems={[]}
             tableBarHostItems={[
-                <PageButton color="orange" text="Create an relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${teamData.fields.meet.pk}/relay_entries/create`)} />
+                <PageButton color="orange" text="Create a relay entry" icon="CIRCLE_PLUS" handleClick={() => navigate(`/meets/${teamData.fields.meet.pk}/relay_entries/create`)} />
             ]}
             tableCols={[
                 <col span={1} className="w-auto" />,

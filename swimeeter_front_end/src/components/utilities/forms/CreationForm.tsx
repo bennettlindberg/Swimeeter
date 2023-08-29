@@ -113,7 +113,7 @@ export function CreationForm({
         formGroup: React.ReactNode,
         validator?: (value: any) => true | ErrorType
         converter?: (value: any) => any
-    }[],
+    }[][],
     modelSelectFields: {
         queryParamTitle: string,
         idSuffix?: string,
@@ -132,7 +132,7 @@ export function CreationForm({
             apiRoute: string,
             id_params: Object
         }
-    }[],
+    }[][],
     destructiveKeepNewInfo: DestructiveType,
     destructiveSubmitInfo?: DestructiveType,
     duplicateInfo: DuplicateType,
@@ -153,22 +153,24 @@ export function CreationForm({
         duplicate: null,
         destructive: null,
     });
-    const [modelIdSelections, setModelIdSelections] = useState<{[key: string]: number}>({});
+    const [modelIdSelections, setModelIdSelections] = useState<{ [key: string]: number }>({});
     const navigate = useNavigate();
 
     // * disable read-only inputs
     useEffect(() => {
-        for (const formInput of formInputFields) {
-            const inputElement = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
+        for (const formInputRow of formInputFields) {
+            for (const formInput of formInputRow) {
+                const inputElement = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
 
-            if (formInput.readOnly) {
-                inputElement.readOnly = true;
-            }
+                if (formInput.readOnly) {
+                    inputElement.readOnly = true;
+                }
 
-            // ! disable "view" version of datetime and duration fields
-            if (new RegExp("datetime").test(formInput.idSuffix) || new RegExp("duration").test(formInput.idSuffix)) {
-                const viewElement = document.getElementById(idPrefix + formInput.idSuffix + "-view") as HTMLInputElement;
-                viewElement.readOnly = true;
+                // ! disable "view" version of datetime and duration fields
+                if (new RegExp("datetime").test(formInput.idSuffix) || new RegExp("duration").test(formInput.idSuffix)) {
+                    const viewElement = document.getElementById(idPrefix + formInput.idSuffix + "-view") as HTMLInputElement;
+                    viewElement.readOnly = true;
+                }
             }
         }
     }, []);
@@ -204,8 +206,8 @@ export function CreationForm({
     }
 
     function handleDestructiveSelection(
-        selection: "continue" | "cancel", 
-        context: "duplicate_keep_new" | "destructive_submission" | "destructive_deletion" | "unknown", 
+        selection: "continue" | "cancel",
+        context: "duplicate_keep_new" | "destructive_submission" | "destructive_deletion" | "unknown",
         duplicate_handling?: "unhandled" | "keep_new" | "keep_both"
     ) {
         if (selection === "continue") {
@@ -233,7 +235,7 @@ export function CreationForm({
         if (scrollRef) {
             scrollRef.current?.scrollIntoView();
         }
-        
+
         // ~ submit counts as destructive action -> show destructive pop-up
         if (destructiveSubmitInfo && !bypassDestructiveSubmission) {
             formDispatch({
@@ -244,19 +246,22 @@ export function CreationForm({
         }
 
         // * ensure all model selections are made
-        for (const modelSelectInput of modelSelectFields) {
-            if (modelIdSelections[modelSelectInput.queryParamTitle] === -1 
-                || modelIdSelections[modelSelectInput.queryParamTitle] === undefined) {
-                // ? invalid model selection
-                const fieldName = modelSelectInput.modelInfo.modelName;
-                formDispatch({
-                    type: "SAVE_FAILURE",
-                    error: {
-                        title: `${fieldName} FIELD ERROR`,
-                        description: `The ${fieldName.toLowerCase()} field was provided an invalid value. The ${fieldName.toLowerCase()} field must be provided the name of a valid ${fieldName.toLowerCase()} in this meet.`,
-                        recommendation: `Alter the ${fieldName.toLowerCase()} to conform to the requirements of the ${fieldName.toLowerCase()} field.`
-                    }
-                });
+        for (const modelSelectRow of modelSelectFields) {
+            for (const modelSelectInput of modelSelectRow) {
+                if (modelIdSelections[modelSelectInput.queryParamTitle] === -1
+                    || modelIdSelections[modelSelectInput.queryParamTitle] === undefined) {
+                    // ? invalid model selection
+                    const fieldName = modelSelectInput.modelInfo.modelName;
+                    formDispatch({
+                        type: "SAVE_FAILURE",
+                        error: {
+                            title: `${fieldName} FIELD ERROR`,
+                            description: `The ${fieldName.toLowerCase()} field was provided an invalid value. The ${fieldName.toLowerCase()} field must be provided the name of a valid ${fieldName.toLowerCase()} in this meet.`,
+                            fields: fieldName.length > 1 ? `${fieldName.substring(0, 1)}${fieldName.substring(1).toLowerCase()}` : fieldName.length === 1 ? fieldName : "Unknown",
+                            recommendation: `Alter the ${fieldName.toLowerCase()} to conform to the requirements of the ${fieldName.toLowerCase()} field.`
+                        }
+                    });
+                }
             }
         }
 
@@ -264,32 +269,34 @@ export function CreationForm({
         let formData = rawDataInit;
 
         try {
-            for (const formInput of formInputFields) {
-                if (formInput.readOnly) {
-                    continue;
-                }
-
-                // * retrieve input
-                const inputField = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
-                formData[formInput.title] = inputField.value;
-
-                // * validate input
-                if (formInput.validator) {
-                    const isValid = formInput.validator(formData[formInput.title]);
-
-                    // ? input validation error
-                    if (isValid !== true) {
-                        formDispatch({
-                            type: "SAVE_FAILURE",
-                            error: isValid
-                        });
-                        return;
+            for (const formInputRow of formInputFields) {
+                for (const formInput of formInputRow) {
+                    if (formInput.readOnly) {
+                        continue;
                     }
-                }
 
-                // * convert input to proper form
-                if (formInput.converter) {
-                    formData[formInput.title] = formInput.converter(formData[formInput.title]);
+                    // * retrieve input
+                    const inputField = document.getElementById(idPrefix + formInput.idSuffix) as HTMLInputElement;
+                    formData[formInput.title] = inputField.value;
+
+                    // * validate input
+                    if (formInput.validator) {
+                        const isValid = formInput.validator(formData[formInput.title]);
+
+                        // ? input validation error
+                        if (isValid !== true) {
+                            formDispatch({
+                                type: "SAVE_FAILURE",
+                                error: isValid
+                            });
+                            return;
+                        }
+                    }
+
+                    // * convert input to proper form
+                    if (formInput.converter) {
+                        formData[formInput.title] = formInput.converter(formData[formInput.title]);
+                    }
                 }
             }
         } catch (error) {
@@ -378,25 +385,37 @@ export function CreationForm({
             {formState.destructive && <DestructivePane handleClick={handleDestructiveSelection} info={formState.destructive} />}
 
             <FormContext.Provider value={true}>
-                {formInputFields.map(formInput => formInput.formGroup)}
-                {modelSelectFields.map(modelSelectInput => {
-                    return (
-                        <ModelSelectGenerator 
-                            formGroupType="creation"
-                            optional={modelSelectInput.optional}
-                            idPrefix={idPrefix}
-                            modelInfo={modelSelectInput.modelInfo}
-                            label={modelSelectInput.label}
-                            baseInfo={modelSelectInput.baseInfo}
-                            viewInfo={modelSelectInput.viewInfo}
-                            placeholderText={modelSelectInput.placeholderText}
-                            defaultSelection={modelSelectInput.defaultSelection}
-                            setModelSelection={(selection: {
-                                text: string,
-                                model_id: number
-                            }) => handleModelSelection(modelSelectInput.queryParamTitle, selection)}
-                        />
-                    )
+                {formInputFields.map(formInputRow => {
+                    return <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                        {formInputRow.map(formInput => {
+                            return <div className="max-w-min min-w-[300px]">
+                                {formInput.formGroup}
+                            </div>
+                        })}
+                    </div>
+                })}
+                {modelSelectFields.map(modelSelectRow => {
+                    return <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                        {modelSelectRow.map(modelSelectInput => {
+                            return <div className="max-w-min">
+                                <ModelSelectGenerator
+                                    formGroupType="creation"
+                                    optional={modelSelectInput.optional}
+                                    idPrefix={idPrefix}
+                                    modelInfo={modelSelectInput.modelInfo}
+                                    label={modelSelectInput.label}
+                                    baseInfo={modelSelectInput.baseInfo}
+                                    viewInfo={modelSelectInput.viewInfo}
+                                    placeholderText={modelSelectInput.placeholderText}
+                                    defaultSelection={modelSelectInput.defaultSelection}
+                                    setModelSelection={(selection: {
+                                        text: string,
+                                        model_id: number
+                                    }) => handleModelSelection(modelSelectInput.queryParamTitle, selection)}
+                                />
+                            </div>
+                        })}
+                    </div>
                 })}
             </FormContext.Provider>
 

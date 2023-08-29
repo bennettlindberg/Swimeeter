@@ -61,7 +61,7 @@ function formReducer(state: FormState, action: FormAction) {
 }
 
 // ~ component
-export function PreferencesForm({scrollRef}: {scrollRef: React.RefObject<HTMLHeadingElement>}) {
+export function PreferencesForm({ scrollRef }: { scrollRef: React.RefObject<HTMLHeadingElement> }) {
     // * initialize context, state, and id
     const { userState, userDispatch }: {
         userState: UserState,
@@ -287,7 +287,7 @@ export function PreferencesForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
 
     function handleEdit() {
         scrollRef.current?.scrollIntoView();
-        
+
         formDispatch({
             type: "EDIT_CLICKED"
         })
@@ -298,93 +298,106 @@ export function PreferencesForm({scrollRef}: {scrollRef: React.RefObject<HTMLHea
             {formState.error && <ErrorPane error={formState.error} handleXClick={() => formDispatch({ type: "DISMISS_ERROR" })} />}
 
             <FormContext.Provider value={formState.mode === "edit"}>
-                <EditingFormGroup
-                    label={<InputLabel inputId={idPrefix + "-screen_mode-select-field"} text="Screen mode" />}
-                    optional={false}
-                    field={<SearchSelect
-                        regex={/^(S(y(s(t(e(m?)?)?)?)?)?)?$|^(D(a(r(k?)?)?)?)?$|^(L(i(g(h(t?)?)?)?)?)?$/}
-                        otherEnabled={false}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-screen_mode"}
-                        defaultText={userState.preferences.screen_mode == "system" ? "System" : userState.preferences.screen_mode == "dark" ? "Dark" : "Light"}
-                        options={["System", "Light", "Dark"]}
-                    />}
-                    editInfo={{
-                        title: "SCREEN MODE",
-                        description: "The screen mode option determines if the site is displayed in light or dark mode. Use the value \"System\" to use your system's screen mode setting.",
-                        permitted_values: "System, Light, Dark"
-                    }}
-                    viewInfo={{
-                        title: "SCREEN MODE",
-                        description: "The screen mode option determines if the site is displayed in light or dark mode. Use the value \"System\" to use your system's screen mode setting.",
-                    }}
-                />
-
-                <EditingFormGroup
-                    label={<InputLabel inputId={idPrefix + "-data_entry_information-select-field"} text="Information buttons" />}
-                    optional={false}
-                    field={<SearchSelect
-                        regex={/^(S(h(o(w?)?)?)?)?$|^(H(i(d(e?)?)?)?)?$/}
-                        otherEnabled={false}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-data_entry_information"}
-                        defaultText={userState.preferences.data_entry_information ? "Show" : "Hide"}
-                        options={["Show", "Hide"]}
-                    />}
-                    editInfo={{
-                        title: "INFORMATION BUTTONS",
-                        description: "The information buttons option determines if information buttons and panes (such as this one) are displayed on site forms.",
-                        permitted_values: "Show, Hide"
-                    }}
-                    viewInfo={{
-                        title: "INFORMATION BUTTONS",
-                        description: "The information buttons option determines if information buttons and panes (such as this one) are displayed on site forms.",
-                    }}
-                />
-
-                <EditingFormGroup
-                    label={<InputLabel inputId={idPrefix + "-destructive_action_confirms-select-field"} text="Destructive action confirmations" />}
-                    optional={false}
-                    field={<SearchSelect
-                        regex={/^(S(h(o(w?)?)?)?)?$|^(H(i(d(e?)?)?)?)?$/}
-                        otherEnabled={false}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-destructive_action_confirms"}
-                        defaultText={userState.preferences.destructive_action_confirms ? "Show" : "Hide"}
-                        options={["Show", "Hide"]}
-                    />}
-                    editInfo={{
-                        title: "DESTRUCTIVE ACTION CONFIRMATIONS",
-                        description: "The data entry confirmations option determines if confirmation panes are displayed when a user\'s action may result in data destruction.",
-                        permitted_values: "Show, Hide"
-                    }}
-                    viewInfo={{
-                        title: "DESTRUCTIVE ACTION CONFIRMATIONS",
-                        description: "The data entry confirmations option determines if confirmation panes are displayed when a user\'s action may result in data destruction.",
-                    }}
-                />
-
-                <EditingFormGroup
-                    label={<InputLabel inputId={idPrefix + "-motion_safe-select-field"} text="Motion effects" />}
-                    optional={false}
-                    field={<SearchSelect
-                        regex={/^(S(h(o(w?)?)?)?)?$|^(H(i(d(e?)?)?)?)?$/}
-                        otherEnabled={false}
-                        pixelWidth={300}
-                        idPrefix={idPrefix + "-motion_safe"}
-                        defaultText={userState.preferences.motion_safe ? "Show" : "Hide"}
-                        options={["Show", "Hide"]}
-                    />}
-                    editInfo={{
-                        title: "MOTION EFFECTS",
-                        description: "The motion effects option determines if applicable site components display animations. For example, setting this option to \"Hide\" will freeze the site\'s navigation bar waves.",
-                        permitted_values: "Show, Hide"
-                    }}
-                    viewInfo={{
-                        title: "MOTION EFFECTS",
-                        description: "The motion effects option determines if applicable site components display animations. For example, setting this option to \"Hide\" will freeze the site\'s navigation bar waves.",
-                    }}
-                />
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-screen_mode-select-field"} text="Screen mode" />}
+                            optional={false}
+                            field={<SearchSelect
+                                regex={/^(S(y(s(t(e(m?)?)?)?)?)?)?$|^(D(a(r(k?)?)?)?)?$|^(L(i(g(h(t?)?)?)?)?)?$/}
+                                otherEnabled={false}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-screen_mode"}
+                                defaultText={userState.preferences.screen_mode == "system" ? "System" : userState.preferences.screen_mode == "dark" ? "Dark" : "Light"}
+                                options={["System", "Light", "Dark"]}
+                            />}
+                            editInfo={{
+                                title: "SCREEN MODE",
+                                description: "The screen mode option determines if the site is displayed in light or dark mode. Use the value \"System\" to use your system's screen mode setting.",
+                                permitted_values: "System, Light, Dark"
+                            }}
+                            viewInfo={{
+                                title: "SCREEN MODE",
+                                description: "The screen mode option determines if the site is displayed in light or dark mode. Use the value \"System\" to use your system's screen mode setting.",
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-data_entry_information-select-field"} text="Information buttons" />}
+                            optional={false}
+                            field={<SearchSelect
+                                regex={/^(S(h(o(w?)?)?)?)?$|^(H(i(d(e?)?)?)?)?$/}
+                                otherEnabled={false}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-data_entry_information"}
+                                defaultText={userState.preferences.data_entry_information ? "Show" : "Hide"}
+                                options={["Show", "Hide"]}
+                            />}
+                            editInfo={{
+                                title: "INFORMATION BUTTONS",
+                                description: "The information buttons option determines if information buttons and panes (such as this one) are displayed on site forms.",
+                                permitted_values: "Show, Hide"
+                            }}
+                            viewInfo={{
+                                title: "INFORMATION BUTTONS",
+                                description: "The information buttons option determines if information buttons and panes (such as this one) are displayed on site forms.",
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-destructive_action_confirms-select-field"} text="Destructive action confirmations" />}
+                            optional={false}
+                            field={<SearchSelect
+                                regex={/^(S(h(o(w?)?)?)?)?$|^(H(i(d(e?)?)?)?)?$/}
+                                otherEnabled={false}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-destructive_action_confirms"}
+                                defaultText={userState.preferences.destructive_action_confirms ? "Show" : "Hide"}
+                                options={["Show", "Hide"]}
+                            />}
+                            editInfo={{
+                                title: "DESTRUCTIVE ACTION CONFIRMATIONS",
+                                description: "The data entry confirmations option determines if confirmation panes are displayed when a user\'s action may result in data destruction.",
+                                permitted_values: "Show, Hide"
+                            }}
+                            viewInfo={{
+                                title: "DESTRUCTIVE ACTION CONFIRMATIONS",
+                                description: "The data entry confirmations option determines if confirmation panes are displayed when a user\'s action may result in data destruction.",
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="flex flex-row flex-wrap gap-x-8 gap-y-2 items-end p-2 rounded-md border-2 odd:bg-slate-50 even:bg-transparent odd:dark:bg-slate-900 even:dark:bg-transparent border-slate-200 dark:border-slate-700">
+                    <div className="max-w-min min-w-[300px]">
+                        <EditingFormGroup
+                            label={<InputLabel inputId={idPrefix + "-motion_safe-select-field"} text="Motion effects" />}
+                            optional={false}
+                            field={<SearchSelect
+                                regex={/^(S(h(o(w?)?)?)?)?$|^(H(i(d(e?)?)?)?)?$/}
+                                otherEnabled={false}
+                                pixelWidth={300}
+                                idPrefix={idPrefix + "-motion_safe"}
+                                defaultText={userState.preferences.motion_safe ? "Show" : "Hide"}
+                                options={["Show", "Hide"]}
+                            />}
+                            editInfo={{
+                                title: "MOTION EFFECTS",
+                                description: "The motion effects option determines if applicable site components display animations. For example, setting this option to \"Hide\" will freeze the site\'s navigation bar waves.",
+                                permitted_values: "Show, Hide"
+                            }}
+                            viewInfo={{
+                                title: "MOTION EFFECTS",
+                                description: "The motion effects option determines if applicable site components display animations. For example, setting this option to \"Hide\" will freeze the site\'s navigation bar waves.",
+                            }}
+                        />
+                    </div>
+                </div>
             </FormContext.Provider>
 
             {formState.mode === "edit"

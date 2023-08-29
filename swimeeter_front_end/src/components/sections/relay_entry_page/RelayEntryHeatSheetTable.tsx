@@ -58,7 +58,7 @@ export function RelayEntryHeatSheetTable() {
                             setInfoShown(false);
                         }}
                         info={{
-                            title: "Relay Entry Heat Sheet",
+                            title: "RELAY ENTRY HEAT SHEET",
                             description: "The relay entry heat sheet contains the heat and lane seeding information for the heat of the relay entry being viewed."
                         }}
                     />}
@@ -92,7 +92,12 @@ export function RelayEntryHeatSheetTable() {
                             }
                         </HeatSheetHeatHeader>
                     </HeatSheetHeader>
-                    : <HeatSheetText text="This entry has no seeding yet." />
+                    : <HeatSheetHeader
+                        color="primary"
+                        title={"Heat"}
+                    >
+                        <HeatSheetText text="Sorry, no seeding exists yet for this entry's event." />
+                    </HeatSheetHeader>
                 )
             }
         </>

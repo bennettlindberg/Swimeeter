@@ -26,7 +26,7 @@ export function SwimmerCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
         <>
             <CreationForm
                 scrollRef={scrollRef}
-                formInputFields={[
+                formInputFields={[[
                     {
                         title: "first_name",
                         idSuffix: "-first_name-text-field",
@@ -94,7 +94,7 @@ export function SwimmerCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                                 }
                             }
                         }
-                    },
+                    }], [
                     {
                         title: "middle_initials",
                         idSuffix: "-middle_initials-text-field",
@@ -165,7 +165,7 @@ export function SwimmerCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                                 permitted_values: "Any string at least 1 character long containing alphabetic characters, apostrophes, hyphens, and periods. May be left blank."
                             }}
                         />
-                    },
+                    }], [
                     {
                         title: "age",
                         idSuffix: "-age-text-field",
@@ -248,8 +248,8 @@ export function SwimmerCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                             }
                         }
                     }
-                ]}
-                modelSelectFields={[
+                ]]}
+                modelSelectFields={[[
                     {
                         queryParamTitle: "team_id",
                         baseInfo: {
@@ -273,7 +273,7 @@ export function SwimmerCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                             }
                         }
                     }
-                ]}
+                ]]}
                 destructiveKeepNewInfo={{
                     title: "POTENTIALLY DESTRUCTIVE ACTION",
                     description: "Replacing previously-created duplicate swimmers with this one will result in the deletion of the original swimmers. Are you sure you want to continue?",
@@ -325,6 +325,7 @@ export function SwimmerCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                         error: {
                             title: "TEAM FIELD ERROR",
                             description: "No team matching the team name provided in the team field exists. Every swimmer must be associated with a team.",
+                            fields: "Team",
                             recommendation: "Choose an existing team for the swimmer to be associated with. If no teams exist, first add a team to the meet."
                         }
                     },
@@ -333,6 +334,7 @@ export function SwimmerCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT: n
                         error: {
                             title: "TEAM FIELD ERROR",
                             description: "No team matching the team name provided in the team field exists. Every swimmer must be associated with a team.",
+                            fields: "Team",
                             recommendation: "Choose an existing team for the swimmer to be associated with. If no teams exist, first add a team to the meet."
                         }
                     }
