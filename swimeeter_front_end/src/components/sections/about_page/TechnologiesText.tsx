@@ -12,7 +12,7 @@ export function TechnologiesText() {
                 <BoldText>Front-End</BoldText>
                 <IndentedList>
                     <li>
-                        • Technologies: React JS, Tailwind CSS, Vite, Axios
+                        • Technologies: React JS, React Router, Tailwind CSS, Vite, Axios
                     </li>
                     <li>
                         • Languages: TypeScript, HTML, CSS

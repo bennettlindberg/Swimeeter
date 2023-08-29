@@ -44,7 +44,7 @@ Navigating around the Swimeeter site is made simple through the site's navbar an
 Swimeeter was built using a collection of front-end and back-end technologies. On the front-end, Swimeeter was built using React JS, written in primarily in TypeScript, and styled using Tailwind CSS. Swimeeter's back-end was written in Python using the Django web framework, and PostgreSQL was used for the site's database management system. A more-extensive list of the technologies used to build the site is included below.
 
 - **Front-End**
-  - Technologies: React JS, Tailwind CSS, Vite, Axios
+  - Technologies: React JS, React Router, Tailwind CSS, Vite, Axios
   - Languages: TypeScript, HTML, CSS
 - **Back-End**
   - Technologies: Django, Django REST Framework, PostgreSQL
