@@ -110,7 +110,9 @@ export function NavBar() {
             // * very small screen navbar
             return (
                 <>
-                    <IconSVG icon="WATER_WAVES" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[45px]" height="h-[45px]" />
+                    <div className="ml-3 flex flex-row items-center gap-x-[10px]" onClick={() => navigate("/")}>
+                        <IconSVG icon="WATER_WAVES" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[45px]" height="h-[45px]" />
+                    </div>
 
                     <div className="flex-auto"></div>
 
@@ -120,60 +122,64 @@ export function NavBar() {
 
                     <div className="flex-auto"></div>
 
-                    <NavBarButton handleClick={() => {
-                        selectedNavItem === "miscellaneous"
-                            ? setSelectedNavItem("none")
-                            : setSelectedNavItem("miscellaneous");
-                    }} handleBlur={(event: any) => handleLostFocus(event, "miscellaneous")}>
-                        <div className="flex flex-row items-center gap-x-1">
-                            <IconSVG icon="WIDGET_MENU" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[35px]" height="h-[35px]" />
-                            <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/")}>
-                                    <IconSVG icon="HOUSE" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Home
-                                </NavDropItem>
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/meets")}>
-                                    <IconSVG icon="LIBRARY" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Meets
-                                </NavDropItem>
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/about")}>
-                                    <IconSVG icon="CIRCLE_INFO" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    About
-                                </NavDropItem>
-                                <div className="b border-t-[2px] border-black dark:border-white w-full h-[2px]"></div>
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
-                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Settings
-                                </NavDropItem>
-                                {
-                                    userState.logged_in
-                                        ? <>
-                                            <NavDropItem isSelected={false} handleClick={handleLogOut}>
-                                                <IconSVG icon="USER_MINUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                                Log out
-                                            </NavDropItem>
-                                        </>
-                                        : <>
-                                            <NavDropItem isSelected={false} handleClick={() => navigate("/log_in")}>
-                                                <IconSVG icon="USER_CHECK" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                                Log in
-                                            </NavDropItem>
-                                            <NavDropItem isSelected={false} handleClick={() => navigate("/sign_up")}>
-                                                <IconSVG icon="USER_PLUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                                Sign up
-                                            </NavDropItem>
-                                        </>
-                                }
-                            </NavDropMenu>
-                        </div>
-                    </NavBarButton>
+                    <div className="mr-1">
+                        <NavBarButton handleClick={() => {
+                            selectedNavItem === "miscellaneous"
+                                ? setSelectedNavItem("none")
+                                : setSelectedNavItem("miscellaneous");
+                        }} handleBlur={(event: any) => handleLostFocus(event, "miscellaneous")}>
+                            <div className="ml-5 flex flex-row items-center gap-x-1">
+                                <IconSVG icon="WIDGET_MENU" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[35px]" height="h-[35px]" />
+                                <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
+                                    <NavDropItem isSelected={false} handleClick={() => navigate("/")}>
+                                        <IconSVG icon="HOUSE" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                        Home
+                                    </NavDropItem>
+                                    <NavDropItem isSelected={false} handleClick={() => navigate("/meets")}>
+                                        <IconSVG icon="LIBRARY" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                        Meets
+                                    </NavDropItem>
+                                    <NavDropItem isSelected={false} handleClick={() => navigate("/about")}>
+                                        <IconSVG icon="CIRCLE_INFO" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                        About
+                                    </NavDropItem>
+                                    <div className="b border-t-[2px] border-black dark:border-white w-full h-[2px]"></div>
+                                    <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
+                                        <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                        Settings
+                                    </NavDropItem>
+                                    {
+                                        userState.logged_in
+                                            ? <>
+                                                <NavDropItem isSelected={false} handleClick={handleLogOut}>
+                                                    <IconSVG icon="USER_MINUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                                    Log out
+                                                </NavDropItem>
+                                            </>
+                                            : <>
+                                                <NavDropItem isSelected={false} handleClick={() => navigate("/log_in")}>
+                                                    <IconSVG icon="USER_CHECK" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                                    Log in
+                                                </NavDropItem>
+                                                <NavDropItem isSelected={false} handleClick={() => navigate("/sign_up")}>
+                                                    <IconSVG icon="USER_PLUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                                    Sign up
+                                                </NavDropItem>
+                                            </>
+                                    }
+                                </NavDropMenu>
+                            </div>
+                        </NavBarButton>
+                    </div>
                 </>
             )
         } else if (windowWidth < 600) {
             // * small screen navbar
             return (
                 <>
-                    <IconSVG icon="WATER_WAVES" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[50px]" height="h-[50px]" />
+                    <div className="ml-3 flex flex-row items-center gap-x-[10px]" onClick={() => navigate("/")}>
+                        <IconSVG icon="WATER_WAVES" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[50px]" height="h-[50px]" />
+                    </div>
 
                     <div className="flex-auto"></div>
 
@@ -183,59 +189,63 @@ export function NavBar() {
 
                     <div className="flex-auto"></div>
 
-                    <NavBarButton handleClick={() => {
-                        selectedNavItem === "miscellaneous"
-                            ? setSelectedNavItem("none")
-                            : setSelectedNavItem("miscellaneous");
-                    }} handleBlur={(event: any) => handleLostFocus(event, "miscellaneous")}>
-                        <div className="flex flex-row items-center gap-x-1">
-                            <IconSVG icon="WIDGET_MENU" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[40px]" height="h-[40px]" />
-                            <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/")}>
-                                    <IconSVG icon="HOUSE" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Home
-                                </NavDropItem>
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/meets")}>
-                                    <IconSVG icon="LIBRARY" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Meets
-                                </NavDropItem>
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/about")}>
-                                    <IconSVG icon="CIRCLE_INFO" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    About
-                                </NavDropItem>
-                                <div className="b border-t-[2px] border-black dark:border-white w-full h-[2px]"></div>
-                                <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
-                                    <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                    Settings
-                                </NavDropItem>
-                                {
-                                    userState.logged_in
-                                        ? <>
-                                            <NavDropItem isSelected={false} handleClick={handleLogOut}>
-                                                <IconSVG icon="USER_MINUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                                Log out
-                                            </NavDropItem>
-                                        </>
-                                        : <>
-                                            <NavDropItem isSelected={false} handleClick={() => navigate("/log_in")}>
-                                                <IconSVG icon="USER_CHECK" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                                Log in
-                                            </NavDropItem>
-                                            <NavDropItem isSelected={false} handleClick={() => navigate("/sign_up")}>
-                                                <IconSVG icon="USER_PLUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
-                                                Sign up
-                                            </NavDropItem>
-                                        </>
-                                }
-                            </NavDropMenu>
-                        </div>
-                    </NavBarButton>
+                    <div className="mr-1">
+                        <NavBarButton handleClick={() => {
+                            selectedNavItem === "miscellaneous"
+                                ? setSelectedNavItem("none")
+                                : setSelectedNavItem("miscellaneous");
+                        }} handleBlur={(event: any) => handleLostFocus(event, "miscellaneous")}>
+                            <div className="flex flex-row items-center gap-x-1">
+                                <IconSVG icon="WIDGET_MENU" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[40px]" height="h-[40px]" />
+                                <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
+                                    <NavDropItem isSelected={false} handleClick={() => navigate("/")}>
+                                        <IconSVG icon="HOUSE" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                        Home
+                                    </NavDropItem>
+                                    <NavDropItem isSelected={false} handleClick={() => navigate("/meets")}>
+                                        <IconSVG icon="LIBRARY" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                        Meets
+                                    </NavDropItem>
+                                    <NavDropItem isSelected={false} handleClick={() => navigate("/about")}>
+                                        <IconSVG icon="CIRCLE_INFO" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                        About
+                                    </NavDropItem>
+                                    <div className="b border-t-[2px] border-black dark:border-white w-full h-[2px]"></div>
+                                    <NavDropItem isSelected={false} handleClick={() => navigate("/settings")}>
+                                        <IconSVG icon="SETTINGS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                        Settings
+                                    </NavDropItem>
+                                    {
+                                        userState.logged_in
+                                            ? <>
+                                                <NavDropItem isSelected={false} handleClick={handleLogOut}>
+                                                    <IconSVG icon="USER_MINUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                                    Log out
+                                                </NavDropItem>
+                                            </>
+                                            : <>
+                                                <NavDropItem isSelected={false} handleClick={() => navigate("/log_in")}>
+                                                    <IconSVG icon="USER_CHECK" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                                    Log in
+                                                </NavDropItem>
+                                                <NavDropItem isSelected={false} handleClick={() => navigate("/sign_up")}>
+                                                    <IconSVG icon="USER_PLUS" color={`${interpretedScreenMode == "dark" ? "fill-white" : "fill-black"}`} width="w-[20px]" height="h-[20px]" />
+                                                    Sign up
+                                                </NavDropItem>
+                                            </>
+                                    }
+                                </NavDropMenu>
+                            </div>
+                        </NavBarButton>
+                    </div>
                 </>
             )
         } else if (windowWidth < 850) {
             // * medium screen navbar
             return (
                 <>
+                    <div className="w-[0px]"></div>
+
                     <div className="flex flex-row items-center gap-x-[10px]" onClick={() => navigate("/")}>
                         <IconSVG icon="WATER_WAVES" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[50px]" height="h-[50px]" />
                         <h1 className="font-extrabold italic text-4xl">SWIMEETER</h1>
@@ -316,12 +326,16 @@ export function NavBar() {
                             </NavDropMenu>
                         </div>
                     </NavBarButton>
+
+                    <div className="w-[0px]"></div>
                 </>
             )
         } else if (windowWidth < 1100) {
             // * large screen navbar
             return (
                 <>
+                    <div className="w-[0px]"></div>
+
                     <div className="flex flex-row items-center gap-x-[10px]" onClick={() => navigate("/")}>
                         <IconSVG icon="WATER_WAVES" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[50px]" height="h-[50px]" />
                         <h1 className="font-extrabold italic text-4xl">SWIMEETER</h1>
@@ -399,12 +413,16 @@ export function NavBar() {
                             </NavDropMenu>
                         </div>
                     </NavBarButton>
+
+                    <div className="w-[0px]"></div>
                 </>
             )
         } else {
             // * very large screen navbar
             return (
                 <>
+                    <div className="w-[0px]"></div>
+
                     <div className="flex flex-row items-center gap-x-[10px]" onClick={() => navigate("/")}>
                         <IconSVG icon="WATER_WAVES" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[50px]" height="h-[50px]" />
                         <h1 className="font-extrabold italic text-4xl">SWIMEETER</h1>
@@ -482,6 +500,8 @@ export function NavBar() {
                             </NavDropMenu>
                         </div>
                     </NavBarButton>
+
+                    <div className="w-[0px]"></div>
                 </>
             )
         }
@@ -491,11 +511,7 @@ export function NavBar() {
         <>
             <div className="fixed z-10 top-0 left-0 w-full">
                 <div className="flex flex-row items-center text-white dark:text-black gap-x-5 h-[60px] w-full bg-sky-400 dark:bg-blue-500 relative">
-                    <div className="w-[0px]"></div>
-
                     {navbarContent}
-
-                    <div className="w-[0px]"></div>
                 </div>
 
                 <div className="w-full relative">
