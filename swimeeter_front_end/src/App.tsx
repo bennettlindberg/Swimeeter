@@ -192,6 +192,15 @@ export function App() {
                     console.error(error);
                 }
             });
+
+        const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        colorSchemeMediaQuery.onchange = (query) => {
+            if (query.matches) {
+                setInterpretedScreenMode("dark");
+            } else {
+                setInterpretedScreenMode("light");
+            }
+        }
     }, []);
 
     // * interpret screen mode preference
