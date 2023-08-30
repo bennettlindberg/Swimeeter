@@ -128,7 +128,7 @@ export function NavBar() {
                                 ? setSelectedNavItem("none")
                                 : setSelectedNavItem("miscellaneous");
                         }} handleBlur={(event: any) => handleLostFocus(event, "miscellaneous")}>
-                            <div className="ml-5 flex flex-row items-center gap-x-1">
+                            <div className="flex flex-row items-center gap-x-1">
                                 <IconSVG icon="WIDGET_MENU" color={`${interpretedScreenMode == "dark" ? "fill-black" : "fill-white"}`} width="w-[35px]" height="h-[35px]" />
                                 <NavDropMenu selectedNavItem={selectedNavItem} nameForSelection="miscellaneous">
                                     <NavDropItem isSelected={false} handleClick={() => navigate("/")}>

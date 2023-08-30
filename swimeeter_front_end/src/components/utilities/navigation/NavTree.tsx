@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import type { NavTreeItem } from '../../../App';
@@ -18,13 +18,15 @@ export function NavTree() {
     for (const item of navTreeState) {
         // * add link
         formattedNavTreeItems.push(
-            <Link to={item.route} className="whitespace-nowrap text-slate-400 dark:text-slate-500 hover:text-sky-400 hover:dark:text-blue-500 text-xl">
+            <Link to={item.route} className="whitespace-nowrap flex-shrink-0 text-slate-400 dark:text-slate-500 hover:text-sky-400 hover:dark:text-blue-500 text-xl">
                 {item.title}
             </Link>
         )
         // * add arrow
         formattedNavTreeItems.push(
-            <IconSVG icon="ARROW_RIGHT" color={interpretedScreenMode === "dark" ? "fill-slate-500" : "fill-slate-400"} width="w-[20px]" height="h-[20px]" />
+            <span className="flex-shrink-0">
+                <IconSVG icon="ARROW_RIGHT" color={interpretedScreenMode === "dark" ? "fill-slate-500" : "fill-slate-400"} width="w-[20px]" height="h-[20px]" />
+            </span>
         )
     }
 
@@ -48,9 +50,9 @@ export function NavTree() {
             <div className="flex flex-row justify-center">
                 <div className="w-[95%] relative rounded-md border-2 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 py-1">
                     <div className="flex flex-row items-center gap-x-7 overflow-x-auto no-scrollbar" id="nav-tree-div">
-                        <div className="w-0" id="nav-tree-start"></div>
+                        <div className="w-0 flex-shrink-0 invisible" id="nav-tree-start">|</div>
                         {formattedNavTreeItems}
-                        <div className="w-0" id="nav-tree-end"></div>
+                        <div className="w-0 flex-shrink-0 invisible" id="nav-tree-end">|</div>
                     </div>
                     <div className="absolute z-5 left-0 top-0 h-full w-8 bg-gradient-to-r rounded-md from-slate-100 dark:from-slate-800"></div>
                     <div className="absolute z-5 right-0 top-0 h-full w-8 bg-gradient-to-l rounded-md from-slate-100 dark:from-slate-800"></div>

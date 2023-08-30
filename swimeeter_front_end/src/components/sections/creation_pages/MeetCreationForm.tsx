@@ -70,7 +70,7 @@ export function MeetCreationForm({scrollRef}: {scrollRef: React.RefObject<HTMLHe
                                 regex={/^(P(u(b(l(i(c?)?)?)?)?)?)?$|^(P(r(i(v(a(t(e?)?)?)?)?)?)?)?$/}
                                 otherEnabled={false}
                                 placeholderText="Visibility"
-                                defaultText="Public"
+                                defaultText="Private"
                                 pixelWidth={300}
                                 idPrefix={idPrefix + "-visibility"}
                                 options={["Public", "Private"]}
