@@ -1,8 +1,11 @@
-import axios from "axios";
 import { useState, useId, useEffect } from "react";
-import { Event } from "../helpers/modelTypes";
-import { generateEventName } from "../helpers/nameGenerators";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+import { Event } from "../helpers/modelTypes";
+import { escapeRegexString } from "../helpers/helperFunctions";
+import { generateEventName } from "../helpers/nameGenerators";
+
 import { InputLabel } from "../forms/InputLabel";
 import { CreationFormGroup } from "../forms/CreationFormGroup";
 import { EditingFormGroup } from "../forms/EditingFormGroup";
@@ -61,7 +64,7 @@ export function RelayEntryModelSelect({
         const tempMatchingOptions = [];
 
         const lowercaseInput: string = event.target.value.toLowerCase()
-        const inputRegex = new RegExp(lowercaseInput);
+        const inputRegex = new RegExp(escapeRegexString(lowercaseInput));
 
         for (const option of allOptions) {
             const lowercaseOption = option.text.toLowerCase();
@@ -91,7 +94,7 @@ export function RelayEntryModelSelect({
         setOptionsShown(false);
 
         const lowercaseInput: string = event.target.value.toLowerCase()
-        const inputRegex = new RegExp(lowercaseInput);
+        const inputRegex = new RegExp(escapeRegexString(lowercaseInput));
 
         let maxLengthMatch = 0;
         let matchOption = {

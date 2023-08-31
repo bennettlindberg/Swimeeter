@@ -9,3 +9,16 @@ export function convertStringParamToInt(id_STR: string) {
 
     return id_INT
 }
+
+export function escapeRegexString(str: string) {
+    let newString = "";
+
+    for (const ch of str) {
+        if (["^", "$", "\\", ".", "*", "+", "?", "(", ")", "[", "]", "{", "}", "|", "/"].find((escapedCh) => escapedCh === ch) !== undefined) {
+            newString += "\\";
+        }
+        newString += ch;
+    }
+
+    return newString;
+}

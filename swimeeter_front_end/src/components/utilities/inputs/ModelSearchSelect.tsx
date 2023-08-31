@@ -1,5 +1,7 @@
 import { useState, useId, useEffect } from "react";
 
+import { escapeRegexString } from "../helpers/helperFunctions";
+
 // ~ component
 export function ModelSearchSelect({
     regex,
@@ -60,7 +62,7 @@ export function ModelSearchSelect({
         const tempMatchingOptions = [];
 
         const lowercaseInput: string = event.target.value.toLowerCase()
-        const inputRegex = new RegExp(lowercaseInput);
+        const inputRegex = new RegExp(escapeRegexString(lowercaseInput));
 
         for (const option of options) {
             const lowercaseOption = option.text.toLowerCase();
@@ -95,7 +97,7 @@ export function ModelSearchSelect({
         setOptionsShown(false);
 
         const lowercaseInput: string = event.target.value.toLowerCase()
-        const inputRegex = new RegExp(lowercaseInput);
+        const inputRegex = new RegExp(escapeRegexString(lowercaseInput));
 
         let maxLengthMatch = 0;
         let matchOption = {

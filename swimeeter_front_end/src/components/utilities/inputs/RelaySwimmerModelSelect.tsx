@@ -1,8 +1,11 @@
-import axios from "axios";
 import { useState, useId, useEffect } from "react";
-import { Swimmer } from "../helpers/modelTypes";
-import { generateSwimmerName } from "../helpers/nameGenerators";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+import { Swimmer } from "../helpers/modelTypes";
+import { escapeRegexString } from "../helpers/helperFunctions";
+import { generateSwimmerName } from "../helpers/nameGenerators";
+
 import { InputLabel } from "../forms/InputLabel";
 import { CreationFormGroup } from "../forms/CreationFormGroup";
 import { EditingFormGroup } from "../forms/EditingFormGroup";
@@ -55,7 +58,7 @@ export function RelaySwimmerModelSelect({
         const tempMatchingOptions = [];
 
         const lowercaseInput: string = event.target.value.toLowerCase()
-        const inputRegex = new RegExp(lowercaseInput);
+        const inputRegex = new RegExp(escapeRegexString(lowercaseInput));
 
         for (const option of allOptions) {
             const lowercaseOption = option.text.toLowerCase();
@@ -85,7 +88,7 @@ export function RelaySwimmerModelSelect({
         setOptionsShown(false);
 
         const lowercaseInput: string = event.target.value.toLowerCase()
-        const inputRegex = new RegExp(lowercaseInput);
+        const inputRegex = new RegExp(escapeRegexString(lowercaseInput));
 
         let maxLengthMatch = 0;
         let matchOption = {

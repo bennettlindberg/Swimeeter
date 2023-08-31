@@ -493,14 +493,14 @@ class Relay_entry_view(APIView):
                 str(err),
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
+        
         # ? relay has incorrect number of swimmers
         if len(swimmer_ids) != event_of_id.swimmers_per_entry:
             return Response(
                 "relay has incorrect number of swimmers",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
+        
         relay_placements.sort()
         for i in range(len(relay_placements)):
             # ? relay placements are incorrect
@@ -509,7 +509,7 @@ class Relay_entry_view(APIView):
                     "relay placements are incorrect",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
+            
         check_swimmers_against_others = vh.check_swimmers_against_others(swimmer_ids)
         # ? duplicate swimmers exist inside relay
         if isinstance(check_swimmers_against_others, Response):
@@ -522,7 +522,7 @@ class Relay_entry_view(APIView):
             # ? no swimmer of swimmer_id exists
             if isinstance(swimmer_of_id, Response):
                 return swimmer_of_id
-
+            
         for swimmer_of_id in swimmers_of_ids:
             # ? swimmer and event meets do not match
             if swimmer_of_id.meet_id != event_of_id.session.meet_id:
@@ -536,7 +536,7 @@ class Relay_entry_view(APIView):
             # ? swimmer and event are not compatible
             if isinstance(check_compatibility, Response):
                 return check_compatibility
-
+            
         # ~ begin handling duplicates
         duplicate_handling = vh.get_entry_duplicate_handling(request)
         original_duplicates = Relay_entry.objects.filter(

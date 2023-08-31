@@ -225,7 +225,7 @@ export function RelayEntryCreationForm({ meet_id_INT, scrollRef }: { meet_id_INT
                 {
                     swimmer_id: -1,
                     swimmer_name: "",
-                    order_in_relay: 1,
+                    order_in_relay: i + 1,
                     seed_relay_split: -1
                 }
             );

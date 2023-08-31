@@ -64,7 +64,7 @@ export function AboutPage() {
                 secondaryContent={[
                     <>
                         <SideBarText>
-                            You are viewing Swimeeter version 1.0.1.
+                            You are viewing Swimeeter version 1.0.2.
                         </SideBarText>
                     </>,
                     <>
