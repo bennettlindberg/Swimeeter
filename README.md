@@ -5,7 +5,7 @@
 
 - **Author:** Bennett Lindberg
 - **Date:** Summer 2023
-- **Link:** [***swimeeter.com***](https://swimeeter.com)
+- **Link:** ~~swimeeter.com~~ *not currently being hosted*
 
 ## Core Features
 
